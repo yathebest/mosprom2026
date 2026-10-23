@@ -4,6 +4,16 @@ import hashlib
 import json
 from pathlib import Path
 
+# Sampled train-only QC found a vertically mirrored border labelled as helmet
+# although that crop contains only chin/shoulder. Keep raw data immutable and
+# exclude all classifier crops from this image (no complete detector task).
+QC_EXCLUDED_IMAGE_SHA256={'8ab6abebd308d47cead1c3b6403e4bc767c288766d4113dde197c3609373a0c3'}
+
+
+def valid_classifier_file(path):
+    p=Path(path)
+    return p.suffix.lower() in {'.jpg','.jpeg','.png'} and p.stem[:64] not in QC_EXCLUDED_IMAGE_SHA256
+
 
 def train_detector(args):
     from ultralytics import YOLO,settings
@@ -17,11 +27,15 @@ def train_detector(args):
     data_file=output/(args.task+'-data.yaml');data_file.write_text(yaml.safe_dump(config),encoding='utf-8')
     last=output/args.task/'weights/last.pt'
     model=YOLO(str(last) if args.resume and last.exists() else args.weights)
-    model.train(data=str(data_file),epochs=args.epochs,
-                imgsz=args.imgsz,batch=args.batch,device=args.device,seed=42,
-                project=args.output,name=args.task,exist_ok=True,patience=30,
-                close_mosaic=min(10,args.epochs),workers=2,amp=True,save_period=5,
-                resume=bool(args.resume and last.exists()))
+    resume=bool(args.resume and last.exists())
+    completed=resume and model.ckpt.get('epoch',0)<0
+    if completed and model.ckpt.get('train_args',{}).get('epochs')!=args.epochs:
+        raise ValueError('A completed checkpoint cannot resume a different epoch budget; use a new output experiment')
+    if not completed:
+        model.train(data=str(data_file),epochs=args.epochs,
+                    imgsz=args.imgsz,batch=args.batch,device=args.device,seed=42,
+                    project=args.output,name=args.task,exist_ok=True,patience=30,
+                    close_mosaic=min(10,args.epochs),workers=2,amp=True,save_period=-1,resume=resume)
     best=Path(args.output)/args.task/'weights/best.pt'
     model=YOLO(str(best))
     metrics=model.val(data=str(data_file),split='test',
@@ -51,9 +65,9 @@ def train_classifier(args):
     common=[transforms.Resize((224,224)),transforms.ToTensor(),transforms.Normalize(mean,std)]
     train=datasets.ImageFolder(root/'train',transforms.Compose([
         transforms.Resize((224,224)),transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(.15,.15,.15,.03),*common[1:]]))
-    val=datasets.ImageFolder(root/'val',transforms.Compose(common))
-    test=datasets.ImageFolder(root/'test',transforms.Compose(common))
+        transforms.ColorJitter(.15,.15,.15,.03),*common[1:]]),is_valid_file=valid_classifier_file)
+    val=datasets.ImageFolder(root/'val',transforms.Compose(common),is_valid_file=valid_classifier_file)
+    test=datasets.ImageFolder(root/'test',transforms.Compose(common),is_valid_file=valid_classifier_file)
     if train.class_to_idx!=val.class_to_idx or train.class_to_idx!=test.class_to_idx:
         raise ValueError('Every split must have the same labelled classes')
     if min(len(train),len(val),len(test))<20:raise ValueError('Not enough reviewed crops for independent splits')
@@ -67,6 +81,7 @@ def train_classifier(args):
     weights=np.bincount(train.targets,minlength=len(train.classes))
     loss_fn=torch.nn.CrossEntropyLoss(weight=torch.tensor(1/np.maximum(weights,1),dtype=torch.float32,device=device))
     optimizer=torch.optim.AdamW(model.parameters(),lr=1e-4,weight_decay=1e-4)
+    scaler=torch.amp.GradScaler('cuda',enabled=device.type=='cuda')
     folder=Path(args.output);folder.mkdir(parents=True,exist_ok=True)
     best_loss=float('inf');checkpoint=folder/(args.task+'-classifier.pt')
     start_epoch=0;last=folder/(args.task+'-classifier-last.pt')
@@ -74,6 +89,7 @@ def train_classifier(args):
         state=torch.load(last,map_location=device,weights_only=True)
         if state['classes']!=train.classes:raise ValueError('Resume class order differs')
         model.load_state_dict(state['state_dict']);optimizer.load_state_dict(state['optimizer'])
+        if state.get('scaler'):scaler.load_state_dict(state['scaler'])
         start_epoch=state['epoch'];best_loss=state['best_loss']
     def evaluate(loader):
         model.eval();losses=[];scores=[];targets=[]
@@ -85,13 +101,15 @@ def train_classifier(args):
     for epoch in range(start_epoch,args.epochs):
         model.train()
         for x,y in loaders['train']:
-            optimizer.zero_grad(set_to_none=True);loss=loss_fn(model(x.to(device)),y.to(device))
-            loss.backward();optimizer.step()
+            optimizer.zero_grad(set_to_none=True)
+            with torch.autocast(device_type=device.type,enabled=device.type=='cuda'):
+                loss=loss_fn(model(x.to(device)),y.to(device))
+            scaler.scale(loss).backward();scaler.step(optimizer);scaler.update()
         validation_loss,_,_=evaluate(loaders['val'])
         print(json.dumps({'epoch':epoch+1,'val_loss':validation_loss}),flush=True)
         if validation_loss<best_loss:
             best_loss=validation_loss;torch.save({'state_dict':model.state_dict(),'classes':train.classes},checkpoint)
-        torch.save({'state_dict':model.state_dict(),'optimizer':optimizer.state_dict(),
+        torch.save({'state_dict':model.state_dict(),'optimizer':optimizer.state_dict(),'scaler':scaler.state_dict(),
                     'epoch':epoch+1,'best_loss':best_loss,'classes':train.classes},last)
     saved=torch.load(checkpoint,map_location=device,weights_only=True);model.load_state_dict(saved['state_dict'])
     _,probabilities,truth=evaluate(loaders['val'])
@@ -126,6 +144,8 @@ def train_classifier(args):
     onnx.save(graph,target)
     report={'classes':train.classes,'threshold':threshold,'validation_precision_target_met':bool(choices),
             'test':stats,'test_coverage':float(selected.mean()),'linq_status':'not_compiled',
+            'qc_excluded_image_sha256':sorted(QC_EXCLUDED_IMAGE_SHA256),
+            'split_crops':{'train':len(train),'val':len(val),'test':len(test)},
             'warning':'Crop classification metrics are not event metrics; unobservable crops need a separate evaluation set.'}
     (folder/(args.task+'-classifier-metrics.json')).write_text(json.dumps(report,indent=2),encoding='utf-8')
 

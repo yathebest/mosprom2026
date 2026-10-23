@@ -39,15 +39,18 @@ markdown('''
 code('''
 import subprocess, sys
 subprocess.run([sys.executable,'-m','pip','install','--quiet',
-                'ultralytics==8.4.88','onnx==1.16.2','onnxruntime==1.29.0',
+                'ultralytics==8.4.88','onnx==1.19.1','protobuf==5.29.5','onnxruntime==1.29.0',
                 'gdown==5.2.0','pyyaml==6.0.3'],check=True)
 from pathlib import Path
 import json, shutil, zipfile, numpy as np, torch
 WORK=Path('/kaggle/working'); WORK.mkdir(exist_ok=True)
 assert torch.cuda.is_available(), 'Выберите GPU в Settings -> Accelerator и перезапустите сессию.'
-print(torch.cuda.get_device_name(0), torch.cuda.get_device_properties(0).total_memory/2**30, 'GiB')
+import platform, importlib.metadata as metadata
+print({'python':platform.python_version(),'torch':torch.__version__,'onnx':metadata.version('onnx'),
+       'gpus':[{'name':torch.cuda.get_device_name(i),'GiB':torch.cuda.get_device_properties(i).total_memory/2**30}
+               for i in range(torch.cuda.device_count())]})
 ''')
-embedded=['download_ppe_data.py','prepare_ppe_data.py','finalize_ppe_data.py','train_ppe.py','check_linq_compatibility.py']
+embedded=['download_ppe_data.py','prepare_ppe_data.py','finalize_ppe_data.py','train_ppe.py','run_ppe_training.py','check_linq_compatibility.py']
 code("SCRIPTS=WORK/'scripts'; SCRIPTS.mkdir(exist_ok=True)\n"+'\n'.join(
     f"(SCRIPTS/{name!r}).write_text({(ROOT/'scripts'/name).read_text(encoding='utf-8')!r},encoding='utf-8')" for name in embedded),True)
 code('''
@@ -60,7 +63,7 @@ EPOCHS=1 if MODE=='smoke' else 150
 CLASSIFIER_EPOCHS=1 if MODE=='smoke' else 30
 LABELS_REVIEWED=False  # В full ставить True после проверки разметки и crop, не по результатам smoke.
 IMGSZ=640  # Сначала статический 640 для воспроизведения LinQ; 960/1280 - отдельная проверка.
-BATCH=4
+BATCH=4 if MODE=='smoke' else 8
 OUTPUT=WORK/('smoke-output' if MODE=='smoke' else 'training-output')
 OUTPUT.mkdir(exist_ok=True)
 if RESUME_FROM: shutil.copytree(RESUME_FROM,OUTPUT,dirs_exist_ok=True)
@@ -130,17 +133,10 @@ if MODE=='smoke':
     print('Smoke uses small fixed subsets:',DATA)
 ''')
 code('''
-for task in ['people','head_ppe','vest_ppe']:
-    subprocess.run([sys.executable,str(SCRIPTS/'train_ppe.py'),'--data',str(DATA),
-                    '--task',task,'--epochs',str(EPOCHS),'--imgsz',str(IMGSZ),
-                    '--batch',str(BATCH),'--device','0','--output',str(OUTPUT),'--resume'],check=True)
-''')
-code('''
-for task in ['head_ppe','vest_ppe']:
-    subprocess.run([sys.executable,str(SCRIPTS/'train_ppe.py'),'--data',str(DATA),
-                    '--task',task,'--mode','classify','--classifier','resnet152',
-                    '--epochs',str(CLASSIFIER_EPOCHS),'--batch','16','--device','0',
-                    '--output',str(OUTPUT),'--resume'],check=True)
+subprocess.run([sys.executable,str(SCRIPTS/'run_ppe_training.py'),'--data',str(DATA),
+                '--epochs',str(EPOCHS),'--classifier-epochs',str(CLASSIFIER_EPOCHS),
+                '--imgsz',str(IMGSZ),'--batch',str(BATCH),'--classifier','resnet152',
+                '--classifier-batch','16','--output',str(OUTPUT)],check=True)
 ''')
 code('''
 # Train-only representative calibration tensors. No test images enter this file.
@@ -156,7 +152,8 @@ for task in ['people','head_ppe','vest_ppe']:
         padded=np.full((IMGSZ,IMGSZ,3),114,np.uint8)
         padded[top:top+nh,left:left+nw]=cv2.resize(image,(nw,nh))
         tensor.append(padded[:,:,::-1].transpose(2,0,1).astype(np.float32)/255)
-    np.savez_compressed(OUTPUT/f'calibration-{task}-train.npz',images=np.stack(tensor),split=np.array('train'))
+    np.savez_compressed(OUTPUT/f'calibration-{task}-train.npz',images=np.stack(tensor),split=np.array('train'),
+                        source_image_sha256=np.array([files[int(i)].stem for i in chosen]))
     del tensor
 # Split parity is local ONNX verification; SDK compilation is performed separately.
 subprocess.run([sys.executable,str(SCRIPTS/'check_linq_compatibility.py'),
@@ -176,7 +173,12 @@ markdown('''
 Старые веса и отчёты сохраните для отката. Smoke-артефакты в рабочий сайт не устанавливать.
 ''')
 code('''
-manifest={'mode':MODE,'torch':torch.__version__,'gpu':torch.cuda.get_device_name(0),
+import hashlib
+source_data=FULL_DATA if MODE=='smoke' else DATA
+manifest={'mode':MODE,'torch':torch.__version__,'gpu':[torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())],
+          'data_manifest_sha256':hashlib.sha256((source_data/'manifest.jsonl').read_bytes()).hexdigest(),
+          'trainer_sha256':hashlib.sha256((SCRIPTS/'train_ppe.py').read_bytes()).hexdigest(),
+          'label_review_scope':'96 sampled train crops; not a complete annotation review',
           'linq_hardware_verified':False,'event_metrics':'not_evaluated',
           'warning':'A smoke run is a pipeline check, not a release model.'}
 (OUTPUT/'run-manifest.json').write_text(json.dumps(manifest,indent=2))

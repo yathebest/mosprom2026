@@ -1,0 +1,15 @@
+{
+  "date_local": "2026-10-24",
+  "scope": "Sampled training crops only; not a complete manual annotation review",
+  "seed": 20261024,
+  "reviewed_crops": 96,
+  "per_class": 24,
+  "detector_label_files_checked": {"head_ppe": 10995, "people": 4194, "vest_ppe": 2801},
+  "malformed_detector_label_files": 0,
+  "head_classifier_train_crops_after_exclusion": 55378,
+  "classes": ["hardhat", "no_hardhat", "vest", "no_vest"],
+  "qc_excluded_image_sha256": ["8ab6abebd308d47cead1c3b6403e4bc767c288766d4113dde197c3609373a0c3"],
+  "exclusion_reason": "hard_hat_workers422.png contains a vertically mirrored border with a helmet-labelled crop showing chin/shoulder. All classifier crops from this incomplete-annotation image are excluded in the loader; raw archive is retained.",
+  "clarified_case": "SHWD part2_000578 shows a green baseball cap, not a hardhat; its no_hardhat annotation is retained after full-image inspection.",
+  "remaining_limitations": ["Source annotation noise may remain", "Visibility labels are incomplete", "Target-camera independent event quality has not been evaluated"]
+}
