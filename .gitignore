@@ -4,6 +4,7 @@ __pycache__/
 data/runs/
 data/*.sqlite3*
 data/cache/
+**/torch-cache/
 data/samples/
 data/datasets/*
 !data/datasets/urfd/
