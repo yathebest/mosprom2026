@@ -1,0 +1,133 @@
+{
+  "purpose": "Phone integration fixtures, not quality metrics",
+  "examples": [
+    {
+      "source": "000000000328.jpg",
+      "objects": [
+        {
+          "label": "cell_phone",
+          "confidence": 0.7897131443023682,
+          "model": "phone-objects:person_crop"
+        }
+      ],
+      "people": 3,
+      "events": [
+        {
+          "track_id": 1,
+          "kind": "possible_phone_use",
+          "zone": "",
+          "start_s": 0.0,
+          "alert_s": 1.0,
+          "sequence": 1,
+          "score": 0.7897,
+          "reason": "Телефон обнаружен рядом с рукой при движении или в размеченной рабочей зоне. Использование требует проверки по клипу.",
+          "confirmation_s": 1.0,
+          "source": "scenario_rules",
+          "scope": "person",
+          "experimental": true,
+          "evidence_label": "cell_phone",
+          "evidence_model": "phone-objects:person_crop",
+          "evidence_box": [
+            433.78907775878906,
+            282.4374084472656,
+            469.7932586669922,
+            302.511474609375
+          ]
+        }
+      ]
+    },
+    {
+      "source": "000000000387.jpg",
+      "objects": [
+        {
+          "label": "cell_phone",
+          "confidence": 0.6115813255310059,
+          "model": "phone-objects"
+        }
+      ],
+      "people": 1,
+      "events": []
+    },
+    {
+      "source": "000000000395.jpg",
+      "objects": [
+        {
+          "label": "cell_phone",
+          "confidence": 0.8040701746940613,
+          "model": "phone-objects"
+        },
+        {
+          "label": "cell_phone",
+          "confidence": 0.6340093016624451,
+          "model": "phone-objects"
+        }
+      ],
+      "people": 5,
+      "events": [
+        {
+          "track_id": 3,
+          "kind": "possible_phone_use",
+          "zone": "",
+          "start_s": 0.0,
+          "alert_s": 1.0,
+          "sequence": 1,
+          "score": 0.634,
+          "reason": "Телефон обнаружен рядом с рукой при движении или в размеченной рабочей зоне. Использование требует проверки по клипу.",
+          "confirmation_s": 1.0,
+          "source": "scenario_rules",
+          "scope": "person",
+          "experimental": true,
+          "evidence_label": "cell_phone",
+          "evidence_model": "phone-objects",
+          "evidence_box": [
+            608.9393920898438,
+            272.8333740234375,
+            639.6865844726562,
+            318.5494384765625
+          ]
+        }
+      ]
+    },
+    {
+      "source": "000000000536.jpg",
+      "objects": [
+        {
+          "label": "cell_phone",
+          "confidence": 0.5651035308837891,
+          "model": "phone-objects"
+        }
+      ],
+      "people": 3,
+      "events": [
+        {
+          "track_id": 2,
+          "kind": "possible_phone_use",
+          "zone": "",
+          "start_s": 0.0,
+          "alert_s": 1.0,
+          "sequence": 1,
+          "score": 0.5651,
+          "reason": "Телефон обнаружен рядом с рукой при движении или в размеченной рабочей зоне. Использование требует проверки по клипу.",
+          "confirmation_s": 1.0,
+          "source": "scenario_rules",
+          "scope": "person",
+          "experimental": true,
+          "evidence_label": "cell_phone",
+          "evidence_model": "phone-objects",
+          "evidence_box": [
+            97.47123718261719,
+            87.4137191772461,
+            127.25349426269531,
+            127.01963806152344
+          ]
+        }
+      ]
+    },
+    {
+      "source": "000000000560.jpg",
+      "objects": [],
+      "people": 0,
+      "events": []
+    }
+  ]
+}

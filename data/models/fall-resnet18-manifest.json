@@ -1,0 +1,8 @@
+{
+  "file": "fall-resnet18.pt",
+  "sha256": "cbae6d86485cf67b8930fbe459fbeae20915578628016d2ffd5ff74087c504c3",
+  "training": "RGB frames from URFD training sequences; whole-video validation",
+  "test_accessed": false,
+  "dataset_license": "CC BY-NC-SA 4.0",
+  "warning": "Indoor controlled dataset. No verified subject-disjoint split or industrial-generalization claim."
+}

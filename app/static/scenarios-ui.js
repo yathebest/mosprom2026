@@ -1,0 +1,47 @@
+// Additional case scenarios share the same evidence, review and clip workflow.
+const scenarioOptions=[
+ ['helmet','Без каски','Явное распознавание головы без каски. Невидимая голова — «неизвестно».'],
+ ['proximity','Сближение с техникой','Движущийся транспорт или размеченная область оборудования.'],
+ ['phone','Телефон при работе / движении','Телефон рядом с рукой + движение или зона оборудования.'],
+ ['fire','Открытый огонь','Вне отмеченных разрешённых областей.'],
+ ['smoking','Курение','Признаки курения вне разрешённых областей; требуется проверка.'],
+ ['harness','Работа на высоте без привязи','Нужна зона «Работа на высоте» и явный класс No Harness.'],
+ ['load_posture','Переноска с сильным наклоном · эксперимент','Пока только распознанные сумки/чемоданы. Массу и коробки не определяет.'],
+ ['smoke','Дым','Дополнительный индикатор; пар и пыль могут вызывать ошибки.'],
+ ['vest','Без сигнального жилета','Дополнительный контроль СИЗ по явному отрицательному классу.'],
+ ['mask','Без защиты лица','Класс Mask; тип и сертификация респиратора не определяются.']
+];
+const extraLabels={no_helmet:'Без каски',no_vest:'Без сигнального жилета',no_mask:'Без защиты лица',no_harness_at_height:'Без привязи в зоне высоты',equipment_proximity:'Опасное сближение с техникой',possible_phone_use:'Возможное использование телефона',fire:'Открытый огонь',smoke:'Дым',possible_smoking:'Возможное курение',barrier_crossing:'Вход за ограждение',under_load:'Человек под грузом',under_conveyor:'Человек под конвейером',unsafe_load_posture:'Наклон при переноске · эксперимент'};
+Object.assign(labels,extraLabels);
+const zoneKinds={danger_zone:'Опасная зона',barrier:'За ограждением',under_load:'Под подвешенным грузом',under_conveyor:'Под конвейером',height:'Работа на высоте',equipment:'Работающее оборудование',smoking_allowed:'Курение разрешено',fire_allowed:'Огонь разрешён'};
+function extraScenarioSelected(prefix='extra'){return scenarioOptions.some(([key])=>$(prefix+'-'+key)?.checked)}
+function scenarioValues(prefix){const c={};for(const [key] of scenarioOptions)c[key+'_detection']=$(prefix+'-'+key).checked;for(const [key] of scenarioParams)c[key]=Number($(prefix+'-'+key).value);return c}
+function setScenarioValues(prefix,c={}){for(const [key] of scenarioOptions)$(prefix+'-'+key).checked=Boolean(c[key+'_detection']);for(const [key,,value] of scenarioParams)$(prefix+'-'+key).value=c[key]??value}
+const scenarioParams=[['ppe_hold','Подтверждение СИЗ, с',1.5,.3,15,.1],['object_hold','Подтверждение объектов, с',1,.3,15,.1],['object_confidence','Порог объектов',.5,.15,.95,.05],['proximity_heights','Дистанция без калибровки, ростов',.6,.1,5,.1],['proximity_m','Дистанция с калибровкой, м',3,.3,15,.1]];
+function controls(prefix){return `<div class="scenario-extension"><div class="between"><h3>Сценарии из задания и СИЗ</h3><span class="pill amber">Нужна валидация</span></div><p class="hint">Включайте нужные модели: каждая увеличивает время анализа. Новые сценарии пока не имеют независимых метрик.</p><div class="extra-scenario-grid">${scenarioOptions.map(([key,title,desc])=>`<label class="extra-scenario"><input type="checkbox" id="${prefix}-${key}"><span><b>${title}</b><small>${desc}</small></span></label>`).join('')}</div><p class="hint">Ограждения, область под грузом и под конвейером задаются типом зоны на кадре. Объект и высоту физической конструкции система самостоятельно не подтверждает.</p><details><summary>Чувствительность новых сценариев</summary><div class="form-grid">${scenarioParams.map(([key,title,value,min,max,step])=>`<label>${title}<input id="${prefix}-${key}" type="number" value="${value}" min="${min}" max="${max}" step="${step}"></label>`).join('')}</div></details></div>`}
+$('step1').querySelector('.scenarios').insertAdjacentHTML('afterend',controls('extra'));
+$('live').querySelector('.live-checks').insertAdjacentHTML('afterend','<details class="live-extra-options"><summary>Дополнительные сценарии и СИЗ</summary>'+controls('live-extra')+'</details>');
+for(const [id] of [['zone-name'],['live-zone-name']])$(id).closest('label').insertAdjacentHTML('beforebegin',`<label>Назначение зоны<select id="${id==='zone-name'?'zone-kind':'live-zone-kind'}">${Object.entries(zoneKinds).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label>`);
+for(const id of ['filter-kind','clip-kind'])$(id).insertAdjacentHTML('beforeend',Object.entries(extraLabels).map(([k,v])=>`<option value="${k}">${v}</option>`).join(''));
+const applyBaseConfig=applyConfig;
+applyConfig=function(c={}){applyBaseConfig(c);setScenarioValues('extra',c)};
+const baseConfigValues=config;
+config=function(){return {...baseConfigValues(),...scenarioValues('extra')}};
+const baseLiveConfig=liveConfig;
+liveConfig=function(){return {...baseLiveConfig(),...scenarioValues('live-extra')}};
+const baseReview=renderReview;
+renderReview=function(){baseReview();const enabled=scenarioOptions.filter(([key])=>$('extra-'+key).checked).map(([,title])=>title);const row=Array.from($('review').querySelectorAll('.review-item')).find(el=>el.querySelector('span')?.textContent==='Сценарии');if(row){const value=row.querySelector('strong');value.textContent=[value.textContent,...enabled].filter(Boolean).join(' · ')||'Не выбраны'}};
+const baseTemplateChange=$('live-template').onchange;
+$('live-template').onchange=()=>{baseTemplateChange();setScenarioValues('live-extra',S.cameras.find(c=>c.name===$('live-template').value)?.config||{})};
+const baseLiveNew=$('live-new').onclick;
+$('live-new').onclick=()=>{const before=L.current?.id;baseLiveNew();if(L.current?.id!==before||L.drafting)setScenarioValues('live-extra')};
+const baseLiveStatus=renderLiveStatus;
+renderLiveStatus=function(){baseLiveStatus();if(!L.current)return;const active=['starting','running','stopping'].includes(L.current.state);for(const el of document.querySelectorAll('#live .scenario-extension input, #live-zone-kind'))el.disabled=active;if(active)setScenarioValues('live-extra',L.current.config||S.jobs.find(j=>j.id===L.current.job_id)?.config||{})};
+const baseSetStep=setStep;
+setStep=function(step){baseSetStep(step);if(step===2)$('drawing-help').textContent='Если выбранный сценарий требует контекста, отметьте область и её назначение. Для каски и огня зоны необязательны. Разрешённые области исключают тревоги огня или курения.'};
+const baseHelp=renderHelp;
+renderHelp=function(){baseHelp();$('help-content').insertAdjacentHTML('afterbegin',`<article class="panel padded scenario-help"><h2>Новые сценарии: что настроить</h2><p><b>Каска и СИЗ:</b> выберите нужный контроль. Красная рамка означает явный отрицательный класс; отсутствие видимой экипировки само по себе тревогу не вызывает.</p><p><b>Контекст камеры:</b> разметьте область за ограждением, под грузом/конвейером, работы на высоте или оборудования. Для ограждения требуется наблюдаемый переход снаружи внутрь. Для привязи обязательна зона высоты.</p><p><b>Телефон и техника:</b> телефон сопоставляется с рукой и движением либо рабочей зоной. Дистанция до движущейся техники оценивается по изображению; для метров нужна калибровка пола.</p><p><b>Огонь и курение:</b> отметьте разрешённые области при их наличии. Каждый кандидат проходит выдержку и попадает в общий журнал с доказательством и клипом.</p><p><b>Граница возможностей:</b> переноска пока поддерживает только сильный наклон с распознанной сумкой/чемоданом. Масса груза, произвольные коробки, реальная высота и крепление страховки не определяются. Эти пункты требуют целевых данных и дообучения.</p></article>`)};
+const baseQuality=renderQuality;
+renderQuality=function(){baseQuality();$('quality-content').insertAdjacentHTML('beforeend',`<article class="panel padded"><h2>Новые сценарии: метрики пока не измерены</h2><p>Есть модели, временные правила и интеграционные проверки. Значения Precision, Recall и F1 для касок, огня, телефона и остальных новых сценариев ещё не получены на независимых размеченных видео. Результат URFD относится только к падениям.</p><p>Нужны целевые записи с отрицательными примерами: скрытая голова, перекрытия людей, пар, пыль, сварка, телефон в руке без использования и безопасная работа рядом с техникой.</p>${(S.quality.requirements?.case_scenarios||[]).map(r=>`<div class="readiness-row"><span class="pill ${r.status==='partial'?'amber':''}">${r.status==='partial'?'Частично':r.status==='measured_urfd'?'URFD: 0,90':'Нужна валидация'}</span><div><b>${esc(r.scenario)}</b><p>${esc(r.limitation)}</p></div></div>`).join('')}</article>`)};
+renderHelp();
+if(S.quality.status)renderQuality();

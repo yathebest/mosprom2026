@@ -1,0 +1,32 @@
+{
+  "purpose": "Selected integration fixtures, not independent quality evaluation.",
+  "phone": [
+    {
+      "file": "000000000328.jpg",
+      "detections": []
+    },
+    {
+      "file": "000000000387.jpg",
+      "detections": []
+    },
+    {
+      "file": "000000000395.jpg",
+      "detections": []
+    },
+    {
+      "file": "000000000536.jpg",
+      "detections": []
+    },
+    {
+      "file": "000000000560.jpg",
+      "detections": []
+    }
+  ],
+  "harness": [
+    {
+      "source": "image225.jpg",
+      "score": 0.725007176399231,
+      "track": 1
+    }
+  ]
+}

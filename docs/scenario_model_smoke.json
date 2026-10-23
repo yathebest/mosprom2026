@@ -1,0 +1,273 @@
+{
+  "purpose": "Integration smoke checks only. Upstream demo/training overlap possible; not quality metrics.",
+  "models": {
+    "ppe-safetyvision.onnx": {
+      "provider": [
+        "CPUExecutionProvider"
+      ],
+      "input": [
+        640,
+        640
+      ],
+      "classes": {
+        "0": "fall_detected",
+        "1": "gloves",
+        "2": "goggles",
+        "3": "hardhat",
+        "4": "mask",
+        "5": "no_gloves",
+        "6": "no_goggles",
+        "7": "no_hardhat",
+        "8": "no_mask",
+        "9": "no_safety_vest",
+        "10": "no_harness",
+        "11": "person",
+        "12": "safety_vest"
+      },
+      "warm_p50_ms": 151.46
+    },
+    "fire-smoke.onnx": {
+      "provider": [
+        "CPUExecutionProvider"
+      ],
+      "input": [
+        640,
+        640
+      ],
+      "classes": {
+        "0": "fire",
+        "1": "smoke"
+      },
+      "warm_p50_ms": 56.08
+    },
+    "smoking.onnx": {
+      "provider": [
+        "CPUExecutionProvider"
+      ],
+      "input": [
+        640,
+        640
+      ],
+      "classes": {
+        "0": "smooking"
+      },
+      "warm_p50_ms": 51.12
+    },
+    "construction-machinery.onnx": {
+      "provider": [
+        "CPUExecutionProvider"
+      ],
+      "input": [
+        640,
+        640
+      ],
+      "classes": {
+        "0": "barricade",
+        "1": "dumpster",
+        "2": "excavators",
+        "3": "gloves",
+        "4": "hardhat",
+        "5": "mask",
+        "6": "no_hardhat",
+        "7": "no_mask",
+        "8": "no_safety_vest",
+        "9": "person",
+        "10": "safety_net",
+        "11": "safety_shoes",
+        "12": "safety_vest",
+        "13": "dump_truck",
+        "14": "mini_van",
+        "15": "truck",
+        "16": "wheel_loader"
+      },
+      "warm_p50_ms": 51.03
+    },
+    "coco-objects.onnx": {
+      "provider": [
+        "CPUExecutionProvider"
+      ],
+      "input": [
+        640,
+        640
+      ],
+      "classes": {
+        "0": "person",
+        "1": "bicycle",
+        "2": "car",
+        "3": "motorcycle",
+        "4": "airplane",
+        "5": "bus",
+        "6": "train",
+        "7": "truck",
+        "8": "boat",
+        "9": "traffic_light",
+        "10": "fire_hydrant",
+        "11": "stop_sign",
+        "12": "parking_meter",
+        "13": "bench",
+        "14": "bird",
+        "15": "cat",
+        "16": "dog",
+        "17": "horse",
+        "18": "sheep",
+        "19": "cow",
+        "20": "elephant",
+        "21": "bear",
+        "22": "zebra",
+        "23": "giraffe",
+        "24": "backpack",
+        "25": "umbrella",
+        "26": "handbag",
+        "27": "tie",
+        "28": "suitcase",
+        "29": "frisbee",
+        "30": "skis",
+        "31": "snowboard",
+        "32": "sports_ball",
+        "33": "kite",
+        "34": "baseball_bat",
+        "35": "baseball_glove",
+        "36": "skateboard",
+        "37": "surfboard",
+        "38": "tennis_racket",
+        "39": "bottle",
+        "40": "wine_glass",
+        "41": "cup",
+        "42": "fork",
+        "43": "knife",
+        "44": "spoon",
+        "45": "bowl",
+        "46": "banana",
+        "47": "apple",
+        "48": "sandwich",
+        "49": "orange",
+        "50": "broccoli",
+        "51": "carrot",
+        "52": "hot_dog",
+        "53": "pizza",
+        "54": "donut",
+        "55": "cake",
+        "56": "chair",
+        "57": "couch",
+        "58": "potted_plant",
+        "59": "bed",
+        "60": "dining_table",
+        "61": "toilet",
+        "62": "tv",
+        "63": "laptop",
+        "64": "mouse",
+        "65": "remote",
+        "66": "keyboard",
+        "67": "cell_phone",
+        "68": "microwave",
+        "69": "oven",
+        "70": "toaster",
+        "71": "sink",
+        "72": "refrigerator",
+        "73": "book",
+        "74": "clock",
+        "75": "vase",
+        "76": "scissors",
+        "77": "teddy_bear",
+        "78": "hair_drier",
+        "79": "toothbrush"
+      },
+      "warm_p50_ms": 60.2
+    }
+  },
+  "examples": [
+    {
+      "model": "ppe-safetyvision.onnx",
+      "file": "data\\datasets\\scenario-fixtures\\hardhat.jpg",
+      "labels": [
+        {
+          "label": "safety_vest",
+          "confidence": 0.925
+        },
+        {
+          "label": "hardhat",
+          "confidence": 0.807
+        }
+      ],
+      "warm_p50_ms": 146.66
+    },
+    {
+      "model": "ppe-safetyvision.onnx",
+      "file": "data\\datasets\\scenario-fixtures\\no_hardhat.jpg",
+      "labels": [
+        {
+          "label": "no_hardhat",
+          "confidence": 0.634
+        }
+      ],
+      "warm_p50_ms": 144.21
+    },
+    {
+      "model": "ppe-safetyvision.onnx",
+      "file": "data\\datasets\\scenario-fixtures\\no_safety_vest.jpg",
+      "labels": [
+        {
+          "label": "no_safety_vest",
+          "confidence": 0.522
+        }
+      ],
+      "warm_p50_ms": 149.47
+    },
+    {
+      "model": "ppe-safetyvision.onnx",
+      "file": "data\\datasets\\scenario-fixtures\\no_mask.jpg",
+      "labels": [
+        {
+          "label": "no_safety_vest",
+          "confidence": 0.744
+        },
+        {
+          "label": "no_mask",
+          "confidence": 0.59
+        }
+      ],
+      "warm_p50_ms": 147.83
+    },
+    {
+      "model": "ppe-safetyvision.onnx",
+      "file": "data\\datasets\\scenario-fixtures\\no_harness.jpg",
+      "labels": [
+        {
+          "label": "hardhat",
+          "confidence": 0.838
+        },
+        {
+          "label": "no_harness",
+          "confidence": 0.725
+        },
+        {
+          "label": "person",
+          "confidence": 0.628
+        },
+        {
+          "label": "no_gloves",
+          "confidence": 0.594
+        }
+      ],
+      "warm_p50_ms": 149.5
+    },
+    {
+      "model": "fire-smoke.onnx",
+      "file": "data\\datasets\\scenario-fixtures\\fire-demo-frame.jpg",
+      "labels": [
+        {
+          "label": "fire",
+          "confidence": 0.802
+        }
+      ],
+      "warm_p50_ms": 44.68
+    },
+    {
+      "model": "smoking.onnx",
+      "file": "data\\datasets\\scenario-fixtures\\smoking-upstream-output.jpg",
+      "labels": [],
+      "warm_p50_ms": 50.84
+    }
+  ],
+  "ppe_images_scanned": 59
+}

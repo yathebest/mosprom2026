@@ -1,0 +1,212 @@
+{
+  "status": "measured",
+  "dataset": "URFD RGB cam0 previews",
+  "split": "frozen whole-sequence test",
+  "model": "ResNet18 RGB scene body-state classifier + temporal events",
+  "checkpoint_sha256": "cbae6d86485cf67b8930fbe459fbeae20915578628016d2ffd5ff74087c504c3",
+  "test_sequences": [
+    "fall-21",
+    "fall-22",
+    "fall-23",
+    "fall-24",
+    "fall-25",
+    "fall-26",
+    "fall-27",
+    "fall-28",
+    "fall-29",
+    "fall-30",
+    "adl-31",
+    "adl-32",
+    "adl-33",
+    "adl-34",
+    "adl-35",
+    "adl-36",
+    "adl-37",
+    "adl-38",
+    "adl-39",
+    "adl-40"
+  ],
+  "operating_point": {
+    "threshold": 0.9,
+    "hold_s": 0.5,
+    "checkpoint_sha256": "cbae6d86485cf67b8930fbe459fbeae20915578628016d2ffd5ff74087c504c3",
+    "selected_on": "validation sequences only",
+    "selection": "event F1, then precision, longer hold and higher threshold"
+  },
+  "events": {
+    "tp": 9,
+    "fp": 1,
+    "fn": 1,
+    "precision": 0.9,
+    "recall": 0.9,
+    "f1": 0.9,
+    "matched_alert_delays_s": [
+      1.2999999999999998,
+      1.1333333333333333,
+      1.2000000000000002,
+      1.1333333333333333,
+      1.2,
+      1.3333333333333335,
+      1.2333333333333336,
+      1.3333333333333333,
+      1.4
+    ],
+    "tolerance_s": 0.0,
+    "threshold": 0.9,
+    "hold_s": 0.5,
+    "sequences": 20,
+    "errors": [
+      {
+        "video": "fall-21",
+        "error": "miss",
+        "alerts": []
+      },
+      {
+        "video": "adl-35",
+        "error": "false_alarm",
+        "alerts": [
+          3.4
+        ]
+      }
+    ],
+    "predictions": [
+      {
+        "video": "fall-22",
+        "kind": "fall",
+        "alert_s": 1.4
+      },
+      {
+        "video": "fall-23",
+        "kind": "fall",
+        "alert_s": 2.2
+      },
+      {
+        "video": "fall-24",
+        "kind": "fall",
+        "alert_s": 1.5
+      },
+      {
+        "video": "fall-25",
+        "kind": "fall",
+        "alert_s": 2.7
+      },
+      {
+        "video": "fall-26",
+        "kind": "fall",
+        "alert_s": 1.6
+      },
+      {
+        "video": "fall-27",
+        "kind": "fall",
+        "alert_s": 3.0
+      },
+      {
+        "video": "fall-28",
+        "kind": "fall",
+        "alert_s": 2.0
+      },
+      {
+        "video": "fall-29",
+        "kind": "fall",
+        "alert_s": 3.0
+      },
+      {
+        "video": "fall-30",
+        "kind": "fall",
+        "alert_s": 2.0
+      },
+      {
+        "video": "adl-35",
+        "kind": "fall",
+        "alert_s": 3.4
+      }
+    ],
+    "truth": [
+      {
+        "video": "fall-21",
+        "kind": "fall",
+        "start_s": 0.6666666666666666,
+        "end_s": 1.8333333333333333
+      },
+      {
+        "video": "fall-22",
+        "kind": "fall",
+        "start_s": 0.1,
+        "end_s": 1.8666666666666667
+      },
+      {
+        "video": "fall-23",
+        "kind": "fall",
+        "start_s": 0.8666666666666667,
+        "end_s": 2.5
+      },
+      {
+        "video": "fall-24",
+        "kind": "fall",
+        "start_s": 0.36666666666666664,
+        "end_s": 2.0
+      },
+      {
+        "video": "fall-25",
+        "kind": "fall",
+        "start_s": 1.4666666666666666,
+        "end_s": 2.8333333333333335
+      },
+      {
+        "video": "fall-26",
+        "kind": "fall",
+        "start_s": 0.4,
+        "end_s": 2.033333333333333
+      },
+      {
+        "video": "fall-27",
+        "kind": "fall",
+        "start_s": 1.6666666666666667,
+        "end_s": 3.066666666666667
+      },
+      {
+        "video": "fall-28",
+        "kind": "fall",
+        "start_s": 0.8666666666666667,
+        "end_s": 2.2
+      },
+      {
+        "video": "fall-29",
+        "kind": "fall",
+        "start_s": 1.6,
+        "end_s": 3.3
+      },
+      {
+        "video": "fall-30",
+        "kind": "fall",
+        "start_s": 0.8,
+        "end_s": 2.3333333333333335
+      }
+    ]
+  },
+  "frames": {
+    "tp": 152,
+    "fp": 0,
+    "fn": 192,
+    "precision": 1.0,
+    "recall": 0.4418604651162791,
+    "f1": 0.6129032258064516,
+    "sampled_labeled_frames": 818
+  },
+  "normal_video_hours": 0.02551851851851852,
+  "normal_false_alarms_per_hour": 39.187227866473144,
+  "elapsed_evaluation_s": 6.45,
+  "linq_measured": false,
+  "limitations": [
+    "20 short controlled indoor sequences; not an industrial deployment benchmark",
+    "Person-disjointness cannot be verified from supplied preview metadata",
+    "No quality claims for running, PPE, phone, smoking, harness or machinery",
+    "Frame metrics exclude transition/unknown author labels; event onset uses first transition/fallen label",
+    "Threshold/model selected on validation; test not used for fitting or threshold selection"
+  ],
+  "audit": {
+    "rules_step_sha256": "2bdfcc3ae1215221c58e41916eab133dd1eceeed9efb32b3c7fc5b7d8e7714c9",
+    "body_classifier_sha256": "a788389b3ac894a446ee539424c6ad154a20faefa700d3b86f9eb61cb373809b",
+    "cached_rules_replay": "exact same predictions and TP/FP/FN; no refitting or threshold changes"
+  }
+}

@@ -1,0 +1,2060 @@
+{
+  "split": "validation",
+  "best": {
+    "tp": 5,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "matched_alert_delays_s": [
+      1.2666666666666666,
+      1.3,
+      1.5333333333333334,
+      1.4000000000000001,
+      1.1666666666666667
+    ],
+    "tolerance_s": 0.0,
+    "threshold": 0.9,
+    "hold_s": 0.5,
+    "sequences": 10,
+    "errors": [],
+    "predictions": [
+      {
+        "video": "fall-16",
+        "kind": "fall",
+        "alert_s": 1.8
+      },
+      {
+        "video": "fall-17",
+        "kind": "fall",
+        "alert_s": 3.1
+      },
+      {
+        "video": "fall-18",
+        "kind": "fall",
+        "alert_s": 1.8
+      },
+      {
+        "video": "fall-19",
+        "kind": "fall",
+        "alert_s": 2.2
+      },
+      {
+        "video": "fall-20",
+        "kind": "fall",
+        "alert_s": 2.1
+      }
+    ],
+    "truth": [
+      {
+        "video": "fall-16",
+        "kind": "fall",
+        "start_s": 0.5333333333333333,
+        "end_s": 1.8333333333333333
+      },
+      {
+        "video": "fall-17",
+        "kind": "fall",
+        "start_s": 1.9333333333333333,
+        "end_s": 3.1666666666666665
+      },
+      {
+        "video": "fall-18",
+        "kind": "fall",
+        "start_s": 0.5,
+        "end_s": 2.1666666666666665
+      },
+      {
+        "video": "fall-19",
+        "kind": "fall",
+        "start_s": 0.8,
+        "end_s": 3.3333333333333335
+      },
+      {
+        "video": "fall-20",
+        "kind": "fall",
+        "start_s": 0.5666666666666667,
+        "end_s": 3.6666666666666665
+      }
+    ]
+  },
+  "selection_grid": [
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.6666666666666666,
+        0.7,
+        1.0333333333333334,
+        1.0,
+        0.6666666666666667
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.5,
+      "hold_s": 0.1,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.2
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.6
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.2
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 1.8
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.6
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.7666666666666667,
+        0.8,
+        1.1333333333333333,
+        1.0999999999999999,
+        0.7666666666666668
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.5,
+      "hold_s": 0.2,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.3
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.7
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.3
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 1.9
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.7
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.8666666666666666,
+        0.8999999999999999,
+        1.2333333333333334,
+        1.2,
+        0.8666666666666665
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.5,
+      "hold_s": 0.3,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.4
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.8
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.4
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.0
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.8
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.9666666666666667,
+        1.0,
+        1.3333333333333333,
+        1.3,
+        0.9666666666666666
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.5,
+      "hold_s": 0.4,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.5
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.9
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.5
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.1
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.9
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        1.0666666666666669,
+        1.1,
+        1.4333333333333333,
+        1.4000000000000001,
+        1.0666666666666667
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.5,
+      "hold_s": 0.5,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.6
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 3.0
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.6
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.2
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 2.0
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.7,
+        0.7666666666666667,
+        1.1333333333333333,
+        1.0,
+        0.6666666666666667
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.65,
+      "hold_s": 0.1,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.3
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.6
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.2
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 1.8
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.7
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.8,
+        0.8666666666666666,
+        1.2333333333333334,
+        1.0999999999999999,
+        0.7666666666666668
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.65,
+      "hold_s": 0.2,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.4
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.7
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.3
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 1.9
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.8
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.8999999999999999,
+        0.9666666666666667,
+        1.3333333333333333,
+        1.2,
+        0.8666666666666665
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.65,
+      "hold_s": 0.3,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.5
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.8
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.4
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.0
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.9
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        1.0,
+        1.0666666666666669,
+        1.4333333333333333,
+        1.3,
+        0.9666666666666666
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.65,
+      "hold_s": 0.4,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.6
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.9
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.5
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.1
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 2.0
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        1.1,
+        1.1666666666666665,
+        1.5333333333333334,
+        1.4000000000000001,
+        1.0666666666666667
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.65,
+      "hold_s": 0.5,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.7
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 3.0
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.6
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.2
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 2.1
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.7,
+        0.8666666666666666,
+        1.1333333333333333,
+        1.0,
+        0.7666666666666668
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.8,
+      "hold_s": 0.1,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.4
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.7
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.2
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 1.8
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.7
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.8,
+        0.9666666666666667,
+        1.2333333333333334,
+        1.0999999999999999,
+        0.8666666666666665
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.8,
+      "hold_s": 0.2,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.5
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.8
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.3
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 1.9
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.8
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.8999999999999999,
+        1.0666666666666669,
+        1.3333333333333333,
+        1.2,
+        0.9666666666666666
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.8,
+      "hold_s": 0.3,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.6
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.9
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.4
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.0
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.9
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        1.0,
+        1.1666666666666665,
+        1.4333333333333333,
+        1.3,
+        1.0666666666666667
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.8,
+      "hold_s": 0.4,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.7
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 3.0
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.5
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.1
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 2.0
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        1.1,
+        1.2666666666666666,
+        1.5333333333333334,
+        1.4000000000000001,
+        1.1666666666666667
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.8,
+      "hold_s": 0.5,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.8
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 3.1
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.6
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.2
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 2.1
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.8666666666666666,
+        0.8999999999999999,
+        1.1333333333333333,
+        1.0,
+        0.7666666666666668
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.9,
+      "hold_s": 0.1,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.4
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.7
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.4
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 1.8
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.7
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.9666666666666667,
+        1.0,
+        1.2333333333333334,
+        1.0999999999999999,
+        0.8666666666666665
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.9,
+      "hold_s": 0.2,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.5
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.8
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.5
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 1.9
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.8
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        1.0666666666666669,
+        1.1,
+        1.3333333333333333,
+        1.2,
+        0.9666666666666666
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.9,
+      "hold_s": 0.3,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.6
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.9
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.6
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.0
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.9
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        1.1666666666666665,
+        1.2,
+        1.4333333333333333,
+        1.3,
+        1.0666666666666667
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.9,
+      "hold_s": 0.4,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.7
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 3.0
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.7
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.1
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 2.0
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        1.2666666666666666,
+        1.3,
+        1.5333333333333334,
+        1.4000000000000001,
+        1.1666666666666667
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.9,
+      "hold_s": 0.5,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.8
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 3.1
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.8
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.2
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 2.1
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.8666666666666666,
+        0.8999999999999999,
+        1.0,
+        1.2333333333333334,
+        0.8666666666666665
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.95,
+      "hold_s": 0.1,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.4
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.8
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.4
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 1.8
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.8
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        0.9666666666666667,
+        1.0,
+        1.0999999999999999,
+        1.3333333333333333,
+        0.9666666666666666
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.95,
+      "hold_s": 0.2,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.5
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 2.9
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.5
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 1.9
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 1.9
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        1.0666666666666669,
+        1.1,
+        1.2,
+        1.4333333333333333,
+        1.0666666666666667
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.95,
+      "hold_s": 0.3,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.6
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 3.0
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.6
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.0
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 2.0
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched_alert_delays_s": [
+        1.1666666666666665,
+        1.2,
+        1.3,
+        1.5333333333333334,
+        1.1666666666666667
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.95,
+      "hold_s": 0.4,
+      "sequences": 10,
+      "errors": [],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.7
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "alert_s": 3.1
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.7
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.1
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 2.1
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    },
+    {
+      "tp": 4,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.8,
+      "f1": 0.8888888888888888,
+      "matched_alert_delays_s": [
+        1.2666666666666666,
+        1.3,
+        1.4000000000000001,
+        1.6333333333333335
+      ],
+      "tolerance_s": 0.0,
+      "threshold": 0.95,
+      "hold_s": 0.5,
+      "sequences": 10,
+      "errors": [
+        {
+          "video": "fall-17",
+          "error": "miss",
+          "alerts": []
+        }
+      ],
+      "predictions": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "alert_s": 1.8
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "alert_s": 1.8
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "alert_s": 2.2
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "alert_s": 2.2
+        }
+      ],
+      "truth": [
+        {
+          "video": "fall-16",
+          "kind": "fall",
+          "start_s": 0.5333333333333333,
+          "end_s": 1.8333333333333333
+        },
+        {
+          "video": "fall-17",
+          "kind": "fall",
+          "start_s": 1.9333333333333333,
+          "end_s": 3.1666666666666665
+        },
+        {
+          "video": "fall-18",
+          "kind": "fall",
+          "start_s": 0.5,
+          "end_s": 2.1666666666666665
+        },
+        {
+          "video": "fall-19",
+          "kind": "fall",
+          "start_s": 0.8,
+          "end_s": 3.3333333333333335
+        },
+        {
+          "video": "fall-20",
+          "kind": "fall",
+          "start_s": 0.5666666666666667,
+          "end_s": 3.6666666666666665
+        }
+      ]
+    }
+  ],
+  "checkpoint_sha256": "cbae6d86485cf67b8930fbe459fbeae20915578628016d2ffd5ff74087c504c3"
+}

@@ -1,0 +1,61 @@
+[
+  {
+    "job_id": "446d9e6933fa4614a458579bc02a9a3a",
+    "source": "fall-02-cam0-rgb.mp4",
+    "stats": {
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt",
+      "model": "yolov8n-pose",
+      "input_frames": 110,
+      "decoded_frames": 110,
+      "processed_frames": 37,
+      "stride": 3,
+      "sample_fps": 10.0,
+      "inference_p50_ms": 28.76,
+      "model_setup_and_warmup_s": 15.606,
+      "inference_p95_ms": 32.27,
+      "pipeline_p95_ms": 40.04,
+      "pipeline_wall_s": 1.36,
+      "processing_fps": 27.21,
+      "media_export_s": 2.163,
+      "events": 1,
+      "clip_failures": 0,
+      "truncated": false,
+      "annotated_video": "runs/446d9e6933fa4614a458579bc02a9a3a/annotated.mp4",
+      "raw_video": "runs/446d9e6933fa4614a458579bc02a9a3a/annotated_raw.mp4",
+      "scope": "Uploaded-file benchmark after one unmeasured warmup frame. Includes decode, tracking, rules, JPEG evidence and MP4V writing. Model setup/warmup and H.264/clip export are reported separately. Not LinQ measurements."
+    },
+    "events": [
+      [
+        "danger_zone",
+        1.0
+      ]
+    ]
+  },
+  {
+    "job_id": "cf5ed4bf8f0c4de094d7966eb9c5b4ba",
+    "source": "adl-02-cam0-rgb.mp4",
+    "stats": {
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt",
+      "model": "yolov8n-pose",
+      "input_frames": 180,
+      "decoded_frames": 180,
+      "processed_frames": 60,
+      "stride": 3,
+      "sample_fps": 10.0,
+      "inference_p50_ms": 27.17,
+      "model_setup_and_warmup_s": 0.127,
+      "inference_p95_ms": 43.94,
+      "pipeline_p95_ms": 51.89,
+      "pipeline_wall_s": 2.296,
+      "processing_fps": 26.13,
+      "media_export_s": 0.856,
+      "events": 0,
+      "clip_failures": 0,
+      "truncated": false,
+      "annotated_video": "runs/cf5ed4bf8f0c4de094d7966eb9c5b4ba/annotated.mp4",
+      "raw_video": "runs/cf5ed4bf8f0c4de094d7966eb9c5b4ba/annotated_raw.mp4",
+      "scope": "Uploaded-file benchmark after one unmeasured warmup frame. Includes decode, tracking, rules, JPEG evidence and MP4V writing. Model setup/warmup and H.264/clip export are reported separately. Not LinQ measurements."
+    },
+    "events": []
+  }
+]

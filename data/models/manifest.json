@@ -1,0 +1,7 @@
+{
+  "file": "yolov8n-pose.pt",
+  "sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212",
+  "source": "https://github.com/ultralytics/assets/releases",
+  "license": "AGPL-3.0 (Ultralytics)",
+  "purpose": "Pretrained COCO person/keypoint model; no custom training"
+}

@@ -1,0 +1,27 @@
+{
+  "input": [
+    1,
+    3,
+    640,
+    640
+  ],
+  "output": [
+    1,
+    56,
+    8400
+  ],
+  "opset": 12,
+  "frames": [
+    {
+      "frame": 0,
+      "detections": 1,
+      "max_absolute_box_error_px": 0.0
+    },
+    {
+      "frame": 30,
+      "detections": 1,
+      "max_absolute_box_error_px": 3.0517578125e-05
+    }
+  ],
+  "scope": "Two RGB frames with nonempty detections. Smoke parity only; no dataset accuracy claim and no LinQ compatibility claim."
+}
