@@ -148,3 +148,52 @@ def test_platform_context_and_suspend(system):
     assert c.patch('/api/platform/organizations/'+org,json={'status':'suspended','reason':'Access paused'}).status_code==200
     sign_in(c,'enterprise-a');assert c.get('/api/events').status_code==403
     assert c.get('/api/auth/me').json()['organization']['status']=='suspended'
+
+
+def test_platform_staff_management_is_explicit_scoped_and_does_not_switch_workspace(system):
+    c=system;a=enterprise(c,'enterprise-a');activate(c,a);b=enterprise(c,'enterprise-b');activate(c,b)
+    seed(a,'job-a','Line A');seed(b,'job-b','Line B')
+    base=f'/api/platform/organizations/{a}/members'
+    before=c.get('/api/auth/me').json();assert before['organization_id'] is None
+    data=c.get(base).json()
+    assert data['counts']=={'active':1,'inactive':0,'total':1}
+    assert data['cameras']==[{'name':'Line A'}]
+    created=c.post(base,json={'login':'scoped-operator','name':'Scoped operator','password':PASS,'role':'operator'})
+    assert created.status_code==200,created.text
+    key=created.json()['id']
+    assert c.get('/api/auth/me').json()['organization_id'] is None
+    assert c.get('/api/jobs').status_code==403
+    assert c.get(base).json()['counts']=={'active':2,'inactive':0,'total':2}
+    companies={o['id']:o for o in c.get('/api/platform/organizations').json()}
+    assert companies[a]['members']==2 and companies[a]['members_total']==2 and companies[b]['members']==1
+    assert c.post('/api/platform/context',json={'organization_id':b}).status_code==200
+    # Being in B must not affect an explicitly selected A in the cabinet's API.
+    invalid=c.post(base,json={'login':'wrong-camera','name':'Wrong camera','password':PASS,'role':'foreman','cameras':['Line B']})
+    assert invalid.status_code==422
+    assert c.post(base,json={'login':'foreman-a','name':'Foreman A','password':PASS,'role':'foreman','cameras':['Line A']}).status_code==200
+    assert c.get('/api/auth/me').json()['organization_id']==b
+    assert c.patch(f'/api/platform/organizations/{b}/members/{key}',json={'name':'Cross-tenant edit','role':'operator','active':False}).status_code==404
+    assert c.patch(base+'/'+key,json={'name':'Scoped operator','role':'operator','active':False}).status_code==200
+    assert c.get(base).json()['counts']=={'active':2,'inactive':1,'total':3}
+    companies={o['id']:o for o in c.get('/api/platform/organizations').json()}
+    assert companies[a]['members_inactive']==1 and companies[a]['members_total']==3
+    assert c.post(base+'/'+key+'/password',json={'password':'ReplacementPassword123!'}).status_code==200
+    assert c.patch(base+'/'+key,json={'name':'Scoped operator','role':'operator','active':True}).status_code==200
+    assert c.get(base).json()['counts']=={'active':3,'inactive':0,'total':3}
+    assert c.get('/api/auth/me').json()['organization_id']==b
+    assert [j['id'] for j in c.get('/api/jobs').json()]==['job-b']
+    assert c.post('/api/platform/context',json={'organization_id':None}).status_code==200
+    assert c.get('/api/auth/me').json()['organization_id'] is None
+
+
+def test_platform_staff_api_rejects_local_admin_and_preserves_last_admin(system):
+    c=system;org=enterprise(c,'enterprise-a');activate(c,org);base=f'/api/platform/organizations/{org}/members'
+    data=c.get(base).json();local_admin=data['members'][0]
+    assert c.patch(base+'/'+local_admin['id'],json={'name':local_admin['name'],'role':'operator','active':True}).status_code==409
+    assert c.patch(base+'/root',json={'name':'Root','role':'operator','active':False}).status_code==404
+    assert c.get('/api/platform/organizations/nonexistent/members').status_code==404
+    sign_in(c,'enterprise-a')
+    assert c.get(base).status_code==403
+    assert c.post(base,json={'login':'forbidden','name':'Forbidden','password':PASS,'role':'operator'}).status_code==403
+    assert c.patch(base+'/'+local_admin['id'],json={'name':'Escalated','role':'enterprise_admin','active':False}).status_code==403
+    assert c.get('/api/members').status_code==200

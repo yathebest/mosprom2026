@@ -1,5 +1,5 @@
 // Permissions mirror the server catalog; hiding a control never grants access.
-window.A={user:null,workspace:false,roles:[],members:[],organizations:[]};
+window.A={user:null,workspace:false,roles:[],members:[],organizations:[],teamOrgId:null,teamCameras:[],teamRenderId:0};
 function can(permission){return Boolean(A.user?.permissions.includes(permission))}
 const nativeFetch=window.fetch.bind(window);
 window.fetch=(input,options={})=>{
@@ -9,17 +9,17 @@ window.fetch=(input,options={})=>{
   }
   return nativeFetch(input,options);
 };
-const accessPages={live:'live.read',overview:'analysis.run',journal:'events.read',clips:'evidence.read',triage:'events.review',analytics:'analytics.read',team:'members.manage',audit:'audit.read'};
 const ordinaryShowPage=showPage;
 showPage=function(page){
-  if(accessPages[page]&&!can(accessPages[page])&&!(page==='audit'&&A.user?.platform_admin))return;
-  if(page==='platform'&&!A.user?.platform_admin)return;
+  if(!WorkspaceAccess.canOpen(A.user,page,A.teamOrgId))return;
+  if(page==='platform')A.teamOrgId=null;
   ordinaryShowPage(page);
+  applyPermissions();
   if(['platform','team','audit','account'].includes(page))renderSecurityPage(page).catch(e=>toast(e.message));
 };
 function addPage(id,title,icon){
   titles[id]=title;const section=document.createElement('section');section.id=id;section.className='page';
-  section.innerHTML=`<div class="heading"><div><p class="eyebrow">УПРАВЛЕНИЕ ДОСТУПОМ</p><h1>${title}</h1></div></div><div id="${id}-content"></div>`;
+  section.innerHTML=`<div class="heading"><div><p class="eyebrow">${id==='platform'?'КАБИНЕТ АДМИНИСТРАТОРА':id==='team'?'КОМАНДА ПРЕДПРИЯТИЯ':id==='audit'?'ИСТОРИЯ ДЕЙСТВИЙ':'ЛИЧНЫЙ АККАУНТ'}</p><h1>${title}</h1></div></div><div id="${id}-content"></div>`;
   document.querySelector('main footer').before(section);
   const button=document.createElement('button');button.dataset.page=id;button.innerHTML=`<i>${icon}</i>${title}`;button.onclick=()=>showPage(id);document.querySelector('nav').append(button);
 }
@@ -33,12 +33,13 @@ function authScreen(register=false,message=''){
   api('/api/auth/status').then(s=>{if($('auth-bootstrap'))$('auth-bootstrap').hidden=s.initialized}).catch(()=>{});
 }
 function applyPermissions(){
-  document.querySelectorAll('[data-page]').forEach(el=>{const page=el.dataset.page;el.hidden=page==='platform'?!A.user?.platform_admin:page==='audit'?!(can('audit.read')||A.user?.platform_admin):page==='safety'?A.user?.role!=='worker':['quality','help'].includes(page)?!A.workspace||A.user?.role==='worker':accessPages[page]?!can(accessPages[page]):false});
+  document.querySelectorAll('[data-page]').forEach(el=>el.hidden=!WorkspaceAccess.visible(A.user,el.dataset.page));
+  if(S.page==='team'&&WorkspaceAccess.inCabinet(A.user))document.querySelector('nav [data-page="platform"]').classList.add('on');
   document.querySelectorAll('[data-review]').forEach(el=>el.disabled=!can('events.review'));
   document.querySelectorAll('a[href^="/api/export"],a[href^="/api/review-dataset"],a[href$="/report"]').forEach(el=>el.hidden=!can('export'));
   document.querySelectorAll('.live-controls').forEach(el=>el.hidden=!can('live.manage'));
   ['live-new','live-stop','live-start','live-preview','live-disconnect'].forEach(id=>{if($(id)&&!can('live.manage'))$(id).hidden=true});
-  document.querySelector('.mode-switch').hidden=!can('analysis.run')&&!can('live.read');
+  document.querySelector('.mode-switch').hidden=!A.workspace||['platform','team','audit','account','safety'].includes(S.page)||(!can('analysis.run')&&!can('live.read'));
   document.body.classList.toggle('can-manage-live',can('live.manage'));
   $('live-idle').querySelector('p').textContent=can('live.manage')?'Подключите источник и нажмите «Начать эфир».':'Активных эфиров пока нет. Подключить источник может администратор или специалист по охране труда.';
 }
@@ -51,17 +52,13 @@ async function renderSecurityPage(page){
   if(page==='platform'){
     A.organizations=await api('/api/platform/organizations');
     const pending=A.organizations.filter(o=>o.status==='pending').length;
-    target.innerHTML=`${kpis([['Заявки',pending,'ожидают решения'],['Активные',A.organizations.filter(o=>o.status==='active').length,'предприятия'],['Всего',A.organizations.length,'рабочие пространства']])}<div class="security-note">Администратор платформы рассматривает заявки. Для работы с данными выберите конкретное предприятие: переход сохраняется в журнале действий.</div><br><div class="security-list">${A.organizations.map(o=>`<article class="security-card"><span class="security-status ${esc(o.status)}">${esc(orgStatuses[o.status])}</span><h2>${esc(o.name)}</h2><p class="security-muted">${esc(o.created)} · Активных сотрудников: ${o.members}</p><p>${esc(o.note)}</p>${o.reason?`<p class="security-note">Причина: ${esc(o.reason)}</p>`:''}<div class="actions">${o.status==='pending'?`<button class="btn primary" data-decision="${o.id}" data-status="active">Принять заявку</button><button class="btn ghost" data-decision="${o.id}" data-status="rejected">Отклонить</button>`:o.status==='active'?`<button class="btn primary" data-context="${o.id}">Открыть пространство →</button><button class="btn ghost" data-decision="${o.id}" data-status="suspended">Приостановить доступ</button>`:o.status==='suspended'?`<button class="btn primary" data-decision="${o.id}" data-status="active">Возобновить доступ</button>`:''}</div></article>`).join('')}</div>`;
-    target.querySelectorAll('[data-context]').forEach(el=>el.onclick=async()=>{try{await post('/api/platform/context',{organization_id:el.dataset.context});location.reload()}catch(e){toast(e.message)}});
+    target.innerHTML=`${kpis([['Заявки',pending,'ожидают решения'],['Активные',A.organizations.filter(o=>o.status==='active').length,'предприятия'],['Всего',A.organizations.length,'рабочие пространства']])}<div class="security-note">Администратор платформы рассматривает заявки. Для работы с данными выберите конкретное предприятие: переход сохраняется в журнале действий.</div><br><div class="security-list">${A.organizations.map(o=>`<article class="security-card"><span class="security-status ${esc(o.status)}">${esc(orgStatuses[o.status])}</span><h2>${esc(o.name)}</h2><p class="security-muted">${esc(o.created)} · Сотрудников: ${o.members} активных / ${o.members_total??o.members} всего${o.members_inactive?' · отключено: '+o.members_inactive:''}</p><p>${esc(o.note)}</p>${o.reason?`<p class="security-note">Причина: ${esc(o.reason)}</p>`:''}<div class="actions"><button class="btn ghost" data-members="${o.id}">Сотрудники · ${o.members_total??o.members}</button>${o.status==='pending'?`<button class="btn primary" data-decision="${o.id}" data-status="active">Принять заявку</button><button class="btn ghost" data-decision="${o.id}" data-status="rejected">Отклонить</button>`:o.status==='active'?`<button class="btn primary" data-context="${o.id}">Открыть пространство →</button><button class="btn ghost" data-decision="${o.id}" data-status="suspended">Приостановить доступ</button>`:o.status==='suspended'?`<button class="btn primary" data-decision="${o.id}" data-status="active">Возобновить доступ</button>`:''}</div></article>`).join('')}</div>`;
+    target.querySelectorAll('[data-context]').forEach(el=>el.onclick=()=>changeEnterpriseContext(el.dataset.context));
+    target.querySelectorAll('[data-members]').forEach(el=>el.onclick=()=>openEnterpriseTeam(el.dataset.members));
     target.querySelectorAll('[data-decision]').forEach(el=>el.onclick=()=>decisionForm(el.dataset.decision,el.dataset.status));
     await renderInvitationsPanel(target);
   }else if(page==='team'){
-    [A.members,S.cameras]=await Promise.all([api('/api/members'),api('/api/cameras')]);
-    target.innerHTML=`<div class="security-layout"><div><article class="security-card"><h2>Команда предприятия</h2><p class="security-muted">Изменения ролей и отключение доступа завершают сессии сотрудника. История его событий сохраняется.</p><div class="security-list">${A.members.map(m=>`<div class="security-member"><strong>${esc(m.name)} ${m.active?'':'· доступ отключён'}</strong><small>${esc(m.login)} · ${esc(roleName(m.role))}<br>${m.camera_scope===null?'Все камеры предприятия':'Камеры: '+esc(JSON.parse(m.camera_scope).join(', ')||'не назначены')}</small><div class="actions"><button class="btn ghost small" data-edit-member="${m.id}">Роль и доступ</button>${m.id!==A.user.id?`<button class="btn ghost small" data-reset-member="${m.id}">Сбросить пароль</button><button class="btn ghost small" data-toggle-member="${m.id}">${m.active?'Удалить из команды':'Восстановить'}</button>`:''}</div></div>`).join('')}</div></article></div><div><article class="security-card"><h2>Добавить сотрудника</h2><div id="member-form"></div></article><article class="security-card"><h2>Кто за что отвечает</h2>${A.roles.map(r=>`<div class="security-role"><strong>${esc(r.name)}</strong><small>${esc(r.permissions.map(p=>permissionNames[p]).join(' · ')||'Памятка по безопасности; без доступа к видеозаписям')}</small></div>`).join('')}</article></div></div>`;
-    memberForm($('member-form'));
-    target.querySelectorAll('[data-edit-member]').forEach(el=>el.onclick=()=>{const m=A.members.find(m=>m.id===el.dataset.editMember);$('modal-title').textContent='Роль и доступ сотрудника';$('modal-body').innerHTML='<div class="security-card" id="edit-member-form"></div>';memberForm($('edit-member-form'),m);$('modal').showModal()});
-    target.querySelectorAll('[data-toggle-member]').forEach(el=>el.onclick=async()=>{const m=A.members.find(m=>m.id===el.dataset.toggleMember);try{await api('/api/members/'+m.id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:m.name,role:m.role,cameras:m.camera_scope===null?null:JSON.parse(m.camera_scope),active:!m.active})});await renderSecurityPage('team');toast(m.active?'Сотрудник удалён из команды. Сессии отозваны.':'Доступ восстановлен.')}catch(e){toast(e.message)}});
-    target.querySelectorAll('[data-reset-member]').forEach(el=>el.onclick=()=>resetMemberForm(el.dataset.resetMember));
+    await renderTeam(target);
   }else if(page==='audit'){
     const rows=await api('/api/audit');target.innerHTML=`<article class="security-card"><p class="security-muted">Последние 300 действий. Смена прав, решения по заявкам и результаты проверки событий сохраняются с автором и временем.</p><div class="security-table"><table class="security-audit"><thead><tr><th>Время UTC</th><th>Сотрудник</th><th>Действие</th><th>Подробности</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.created)}</td><td>${esc(r.actor_name||'Система')}</td><td>${esc(auditAction(r.action))}</td><td>${esc(r.target)}<br>${esc(r.details)}</td></tr>`).join('')}</tbody></table></div></article>`;
   }else if(page==='account'){
@@ -78,27 +75,32 @@ function decisionForm(id,status){
   $('modal-body').innerHTML=`<div class="security-card"><h2>${esc(org.name)}</h2><form id="decision-form" class="security-form"><label>Комментарий ${status==='active'?'(необязательно)':'и причина решения'}<textarea name="reason" maxlength="1000" ${status==='active'?'':'required'}></textarea></label><div id="decision-error" class="auth-error" hidden></div><button class="btn primary">Сохранить решение</button></form></div>`;$('modal').showModal();
   $('decision-form').onsubmit=async e=>{e.preventDefault();try{await api('/api/platform/organizations/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status,reason:new FormData(e.currentTarget).get('reason')})});$('modal').close();await renderSecurityPage('platform')}catch(error){$('decision-error').textContent=error.message;$('decision-error').hidden=false}};
 }
-function memberForm(target,member=null){
-  const chosen=member?.camera_scope?JSON.parse(member.camera_scope):[];
-  target.innerHTML=`<form class="security-form"><label>Имя<input name="name" required minlength="2" maxlength="120" value="${esc(member?.name||'')}"></label>${member?'':`<label>Логин или email<input name="login" required minlength="3" maxlength="120" autocomplete="off"></label><label>Временный пароль, от 12 символов<input name="password" type="password" required minlength="12" maxlength="256" autocomplete="new-password"></label>`}<label>Роль<select name="role">${A.roles.map(r=>`<option value="${r.key}" ${(member?.role||'operator')===r.key?'selected':''}>${esc(r.name)}</option>`).join('')}</select></label><label>Доступ к камерам<select name="scope"><option value="all" ${member?.camera_scope===null||!member?'selected':''}>Все камеры предприятия</option><option value="selected" ${member?.camera_scope!==null&&member?'selected':''}>Только выбранные камеры</option></select></label><div class="security-camera-list">${S.cameras.map(c=>`<label><input type="checkbox" name="camera" value="${esc(c.name)}" ${chosen.includes(c.name)?'checked':''}>${esc(c.name)}</label>`).join('')||'<p class="security-muted">Сначала сохраните камеру и её правила.</p>'}</div><p class="security-muted">Мастеру обязательно назначаются камеры участка. Сотрудник не сможет открыть чужой клип по прямой ссылке. Работник и менеджмент не получают доступа к видео независимо от выбранных камер.</p><div class="auth-error" hidden></div><button class="btn primary" type="submit">${member?'Сохранить изменения':'Добавить сотрудника'}</button></form>`;
-  const form=target.querySelector('form');const sync=()=>{const role=form.elements.role.value;if(role==='foreman')form.elements.scope.value='selected';if(['enterprise_admin','safety_specialist'].includes(role))form.elements.scope.value='all';form.elements.scope.disabled=['foreman','enterprise_admin','safety_specialist'].includes(role);target.querySelector('.security-camera-list').hidden=form.elements.scope.value==='all'};form.elements.role.onchange=sync;form.elements.scope.onchange=sync;sync();
-  form.onsubmit=async e=>{e.preventDefault();const fields=new FormData(form),errorBox=target.querySelector('.auth-error');const data={name:fields.get('name'),role:fields.get('role'),cameras:form.elements.scope.value==='all'?null:fields.getAll('camera')};const button=form.querySelector('button[type=submit]');button.disabled=true;errorBox.hidden=true;try{if(member){await api('/api/members/'+member.id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,active:Boolean(member.active)})});if(member.id===A.user.id)return location.reload();$('modal').close()}else await post('/api/members',{...data,login:fields.get('login'),password:fields.get('password')});toast(member?'Роль и доступ обновлены.':'Сотрудник добавлен. Передайте временный пароль лично.');await renderSecurityPage('team')}catch(error){errorBox.textContent=error.message;errorBox.hidden=false;button.disabled=false}};
+async function changeEnterpriseContext(orgId){
+  try{stopWebcam();await post('/api/platform/context',{organization_id:orgId});location.replace('/')}
+  catch(error){toast(error.message)}
 }
-function resetMemberForm(id){
-  const m=A.members.find(m=>m.id===id);$('modal-title').textContent='Новый временный пароль';$('modal-body').innerHTML=`<div class="security-card"><h2>${esc(m.name)}</h2><form id="reset-form" class="security-form"><label>Временный пароль<input name="password" type="password" required minlength="12" maxlength="256" autocomplete="new-password"></label><p>Текущие сессии сотрудника будут завершены. При следующем входе потребуется сменить пароль.</p><div id="reset-error" class="auth-error" hidden></div><button class="btn primary">Сбросить пароль</button></form></div>`;$('modal').showModal();$('reset-form').onsubmit=async e=>{e.preventDefault();try{await post('/api/members/'+id+'/password',{password:new FormData(e.currentTarget).get('password')});$('modal').close();toast('Пароль сброшен. Передайте новый пароль сотруднику лично.')}catch(error){$('reset-error').textContent=error.message;$('reset-error').hidden=false}};
+function renderWorkspacePanel(){
+  const panel=document.createElement('div');panel.className='workspace-panel';panel.id='workspace-panel';
+  const cabinet=WorkspaceAccess.inCabinet(A.user);
+  panel.innerHTML=`<small>${cabinet?'ПЛАТФОРМА':'ТЕКУЩЕЕ ПРЕДПРИЯТИЕ'}</small><strong>${esc(cabinet?'Кабинет администратора':A.user.organization?.name||'Аккаунт')}</strong>${A.user.platform_admin&&A.user.organization_id?'<button id="open-admin-cabinet">← Кабинет администратора</button>':''}`;
+  document.querySelector('aside .brand').after(panel);
+  document.querySelector('.nav-caption').textContent=cabinet?'УПРАВЛЕНИЕ ПЛАТФОРМОЙ':'РАБОЧЕЕ ПРОСТРАНСТВО';
+  if($('open-admin-cabinet'))$('open-admin-cabinet').onclick=()=>changeEnterpriseContext(null);
+  document.querySelector('.brand').onclick=e=>{e.preventDefault();showPage(WorkspaceAccess.home(A.user))};
 }
 async function startAccount(){
   if(location.hash.startsWith('#invite=')){await showInvitationRegistration(location.hash.slice(8));return}
   try{A.user=await api('/api/auth/me')}catch(e){authScreen(false,e.message==='Войдите в аккаунт'?'':e.message);return}
-  A.workspace=Boolean(A.user.organization?.status==='active'&&!A.user.must_change);
+  A.workspace=WorkspaceAccess.inEnterprise(A.user);
   if(!A.user.must_change)A.roles=await api('/api/roles');
   authRoot.innerHTML='<div class="auth-card"><h2>Открываем рабочее пространство…</h2><p>Проверяем права доступа и загружаем данные предприятия.</p></div>';
   const chip=document.createElement('div');chip.className='account-chip';chip.innerHTML=`<b>${esc(A.user.name)}</b><span>${A.user.platform_admin?'Администратор платформы':esc(roleName(A.user.role))}</span><span>${esc(A.user.organization?.name||'Управление платформой')}</span><button id="open-account" class="quiet">Аккаунт и выход →</button>`;document.querySelector('aside nav').after(chip);$('open-account').onclick=()=>showPage('account');
+  renderWorkspacePanel();
   $('safety-content').innerHTML='<article class="security-card"><h2>Безопасность начинается до работы</h2><p>Используйте обязательные СИЗ для своего участка: каску, сигнальный жилет и другие средства защиты по инструкции предприятия. Соблюдайте ограждения и маршруты техники, не проходите под грузом или конвейером.</p><p>Сообщайте мастеру об опасности и неисправностях. При происшествии действуйте по утверждённому плану предприятия.</p><div class="security-note">Это общая памятка. Инструктаж и локальные правила предприятия имеют приоритет. Индивидуальные видеозаписи и журнал происшествий этой роли недоступны.</div></article>';
   applyPermissions();
   if(A.workspace)await init();
   document.body.classList.add('authenticated');authRoot.hidden=true;
-  const home=A.user.must_change?'account':A.user.platform_admin?'platform':!A.workspace?'account':A.user.role==='worker'?'safety':can('live.read')?'live':can('analytics.read')?'analytics':can('events.read')?'journal':'account';
+  const home=WorkspaceAccess.home(A.user);
   showPage(home);if(A.workspace&&can('live.read'))pollLive();
   const signature=JSON.stringify([A.user.role,A.user.permissions,A.user.organization,A.user.cameras,A.user.must_change]);
   setInterval(async()=>{try{const user=await api('/api/auth/me');if(signature!==JSON.stringify([user.role,user.permissions,user.organization,user.cameras,user.must_change])){stopWebcam();location.reload()}}catch(e){}},15000);

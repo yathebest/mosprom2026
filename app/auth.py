@@ -8,6 +8,7 @@ import secrets
 import sqlite3
 import time
 import uuid
+from contextlib import contextmanager
 from urllib.parse import urlsplit
 
 from fastapi import APIRouter, HTTPException, Request
@@ -239,7 +240,9 @@ def organizations(request: Request):
     require(request,platform=True)
     with db.connection() as c:
         return [dict(r) for r in c.execute('''SELECT organizations.*,
-            (SELECT count(*) FROM users WHERE users.organization_id=organizations.id AND active=1) AS members
+            (SELECT count(*) FROM users WHERE users.organization_id=organizations.id AND platform_admin=0 AND active=1) AS members,
+            (SELECT count(*) FROM users WHERE users.organization_id=organizations.id AND platform_admin=0) AS members_total,
+            (SELECT count(*) FROM users WHERE users.organization_id=organizations.id AND platform_admin=0 AND active=0) AS members_inactive
             FROM organizations ORDER BY created DESC,rowid DESC''')]
 
 
@@ -299,6 +302,10 @@ def reapply(request: Request):
 @router.get('/api/members')
 def members(request: Request):
     user=require(request,'members.manage')
+    return members_for(user)
+
+
+def members_for(user):
     with db.connection() as c:
         return [dict(r) for r in c.execute('SELECT id,login,name,role,camera_scope,active,must_change,created FROM users WHERE organization_id=? AND platform_admin=0 ORDER BY active DESC,name',(user['organization_id'],))]
 
@@ -330,7 +337,11 @@ def validate_member(body,c):
 
 @router.post('/api/members')
 def add_member(body: Member,request: Request):
-    user=require(request,'members.manage');login=normalize(body.login);encoded=password_hash(body.password);key=uuid.uuid4().hex
+    return create_member(body,require(request,'members.manage'))
+
+
+def create_member(body,user):
+    login=normalize(body.login);encoded=password_hash(body.password);key=uuid.uuid4().hex
     try:
         with db.connection() as c:
             cameras=validate_member(body,c)
@@ -342,7 +353,10 @@ def add_member(body: Member,request: Request):
 
 @router.patch('/api/members/{member_id}')
 def update_member(member_id: str,body: MemberUpdate,request: Request):
-    user=require(request,'members.manage')
+    return change_member(member_id,body,require(request,'members.manage'))
+
+
+def change_member(member_id,body,user):
     with db.connection() as c:
         c.execute('BEGIN IMMEDIATE');cameras=validate_member(body,c)
         target=c.execute('SELECT * FROM users WHERE id=? AND organization_id=? AND platform_admin=0',(member_id,user['organization_id'])).fetchone()
@@ -362,7 +376,10 @@ class Reset(StrictModel):
 
 @router.post('/api/members/{member_id}/password')
 def reset_password(member_id: str,body: Reset,request: Request):
-    user=require(request,'members.manage')
+    return change_member_password(member_id,body,require(request,'members.manage'))
+
+
+def change_member_password(member_id,body,user):
     if member_id==user['id']:raise HTTPException(409,'Свой пароль изменяйте в разделе «Аккаунт»')
     encoded=password_hash(body.password)
     with db.connection() as c:
@@ -371,6 +388,44 @@ def reset_password(member_id: str,body: Reset,request: Request):
         c.execute('DELETE FROM sessions WHERE user_id=?',(member_id,))
         audit(user,'member.password_reset',member_id,conn=c)
     return {'ok':True}
+
+
+@contextmanager
+def manage_organization(request,org_id):
+    user=require(request,platform=True)
+    with db.connection() as c:
+        row=c.execute('SELECT id,name,status FROM organizations WHERE id=?',(org_id,)).fetchone()
+        if not row:raise HTTPException(404,'Предприятие не найдено')
+        org=dict(row)
+    # This request's explicit scope never changes the administrator's session context.
+    token=current_scope.set(Scope(org_id))
+    try:yield {**user,'organization_id':org_id},org
+    finally:current_scope.reset(token)
+
+
+@router.get('/api/platform/organizations/{org_id}/members')
+def platform_members(org_id: str,request: Request):
+    with manage_organization(request,org_id) as (user,org):
+        records=members_for(user)
+        active=sum(bool(m['active']) for m in records)
+        return {'organization':org,'members':records,
+                'counts':{'active':active,'inactive':len(records)-active,'total':len(records)},
+                'cameras':[{'name':camera['name']} for camera in db.cameras()]}
+
+
+@router.post('/api/platform/organizations/{org_id}/members')
+def platform_add_member(org_id: str,body: Member,request: Request):
+    with manage_organization(request,org_id) as (user,org):return create_member(body,user)
+
+
+@router.patch('/api/platform/organizations/{org_id}/members/{member_id}')
+def platform_update_member(org_id: str,member_id: str,body: MemberUpdate,request: Request):
+    with manage_organization(request,org_id) as (user,org):return change_member(member_id,body,user)
+
+
+@router.post('/api/platform/organizations/{org_id}/members/{member_id}/password')
+def platform_reset_password(org_id: str,member_id: str,body: Reset,request: Request):
+    with manage_organization(request,org_id) as (user,org):return change_member_password(member_id,body,user)
 
 
 @router.get('/api/audit')
