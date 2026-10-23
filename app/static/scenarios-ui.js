@@ -13,7 +13,7 @@ const scenarioOptions=[
 ];
 const extraLabels={no_helmet:'Без каски',no_vest:'Без сигнального жилета',no_mask:'Без защиты лица',no_harness_at_height:'Без привязи в зоне высоты',equipment_proximity:'Опасное сближение с техникой',possible_phone_use:'Возможное использование телефона',fire:'Открытый огонь',smoke:'Дым',possible_smoking:'Возможное курение',barrier_crossing:'Вход за ограждение',under_load:'Человек под грузом',under_conveyor:'Человек под конвейером',unsafe_load_posture:'Наклон при переноске · эксперимент'};
 Object.assign(labels,extraLabels);
-const zoneKinds={danger_zone:'Опасная зона',barrier:'За ограждением',under_load:'Под подвешенным грузом',under_conveyor:'Под конвейером',height:'Работа на высоте',equipment:'Работающее оборудование',smoking_allowed:'Курение разрешено',fire_allowed:'Огонь разрешён'};
+const zoneKinds={danger_zone:'Опасная зона',barrier:'За ограждением',under_load:'Под подвешенным грузом',under_conveyor:'Под конвейером',height:'Работа на высоте',equipment:'Работающее оборудование',smoking_allowed:'Курение разрешено',fire_allowed:'Огонь разрешён',reflection:'Зеркало · исключить отражение по положению ног'};
 function extraScenarioSelected(prefix='extra'){return scenarioOptions.some(([key])=>$(prefix+'-'+key)?.checked)}
 function scenarioValues(prefix){const c={};for(const [key] of scenarioOptions)c[key+'_detection']=$(prefix+'-'+key).checked;for(const [key] of scenarioParams)c[key]=Number($(prefix+'-'+key).value);return c}
 function setScenarioValues(prefix,c={}){for(const [key] of scenarioOptions)$(prefix+'-'+key).checked=Boolean(c[key+'_detection']);for(const [key,,value] of scenarioParams)$(prefix+'-'+key).value=c[key]??value}
@@ -34,9 +34,17 @@ renderReview=function(){baseReview();const enabled=scenarioOptions.filter(([key]
 const baseTemplateChange=$('live-template').onchange;
 $('live-template').onchange=()=>{baseTemplateChange();setScenarioValues('live-extra',S.cameras.find(c=>c.name===$('live-template').value)?.config||{})};
 const baseLiveNew=$('live-new').onclick;
-$('live-new').onclick=()=>{const before=L.current?.id;baseLiveNew();if(L.current?.id!==before||L.drafting)setScenarioValues('live-extra')};
+$('live-new').onclick=()=>{const before=L.current?.id;baseLiveNew();if(L.current?.id!==before||L.drafting){setScenarioValues('live-extra');renderPpeAssessments('live-ppe-assessments',[])}};
 const baseLiveStatus=renderLiveStatus;
-renderLiveStatus=function(){baseLiveStatus();if(!L.current)return;const active=['starting','running','stopping'].includes(L.current.state);for(const el of document.querySelectorAll('#live .scenario-extension input, #live-zone-kind'))el.disabled=active;if(active)setScenarioValues('live-extra',L.current.config||S.jobs.find(j=>j.id===L.current.job_id)?.config||{})};
+renderLiveStatus=function(){baseLiveStatus();renderPpeAssessments('live-ppe-assessments',L.current?.assessments);if(!L.current)return;const active=['starting','running','stopping'].includes(L.current.state);for(const el of document.querySelectorAll('#live .scenario-extension input, #live-zone-kind'))el.disabled=active;if(active)setScenarioValues('live-extra',L.current.config||S.jobs.find(j=>j.id===L.current.job_id)?.config||{})};
+
+for(const [parent,id] of [['live-sessions','live-ppe-assessments'],['result-events','result-ppe-assessments']])$(parent).insertAdjacentHTML('beforebegin',`<section id="${id}" class="callout compact" hidden></section>`);
+const ppeTitles={helmet:'Каска',vest:'Жилет',mask:'Защита лица',harness:'Привязь'};
+const ppeStates={worn:'Обнаружено',missing:'Отсутствует',unknown:'Не определено'};
+const ppeReasons={measured:'Свежее наблюдение',stronger_evidence:'Выбран более уверенный признак',conflicting_models:'Признаки противоречат друг другу',no_reliable_evidence:'Нет надёжного признака: проверьте видимость и размер области',recent_observation:'Последний результат; новое подтверждение не получено'};
+function renderPpeAssessments(id,rows=[]){const el=$(id);el.hidden=!rows?.length;if(el.hidden)return;el.innerHTML='<b>Люди и СИЗ · последний обработанный кадр</b><small>Синяя рамка — слабое наблюдение или краткий пропуск. Она не подтверждает новую тревогу.</small>'+rows.map(row=>`<div><strong>Человек #${Number(row.track_id)}</strong> · ${row.tracking==='predicted'?'Краткий пропуск · рамка сохранена':row.tracking==='weak'?'Слабое наблюдение':'Измеренная рамка'}${Object.entries(row.ppe||{}).map(([key,value])=>`<p><b>${esc(ppeTitles[key]||key)}: ${esc(ppeStates[value.state]||value.state)}</b> · ${esc(ppeReasons[value.reason]||value.reason)}${value.observed_at_s!=null?' · '+timestamp(value.observed_at_s):''}</p>`).join('')}</div>`).join('')}
+const basePpeResult=renderResult;
+renderResult=function(){basePpeResult();renderPpeAssessments('result-ppe-assessments',S.current?.stats?.latest_assessments)};
 const baseSetStep=setStep;
 setStep=function(step){baseSetStep(step);if(step===2)$('drawing-help').textContent='Если выбранный сценарий требует контекста, отметьте область и её назначение. Для каски и огня зоны необязательны. Разрешённые области исключают тревоги огня или курения.'};
 const baseHelp=renderHelp;

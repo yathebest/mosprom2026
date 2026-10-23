@@ -1,0 +1,101 @@
+absl-py==2.5.1
+annotated-doc==0.0.5
+anyio==4.15.1
+astunparse==1.6.3
+attrs==26.1.0
+bitstruct==8.24.0
+certifi==2026.10.23
+charset-normalizer==3.5.2
+click==8.5.0
+dictdiffer==0.10.0
+dnn_quant_bin @ file:///sdk/packets/dnn_quant_bin-2026.9.98-cp312-cp312-linux_x86_64.whl#sha256=c8bd8e5b2dfee00a740f3e777ee939e11dbbf0cc1a46c60ec0cf97a8508fd083
+filelock==3.32.3
+flatbuffers==25.12.19
+fp19_exp @ file:///sdk/packets/fp19_exp-2.1-py3-none-any.whl#sha256=cb7cfeb6ee3d18d366de93223dc6b1bab48eace1e10cc88d4b07989ec407298d
+frozendict==2.4.7
+fsspec==2026.7.0
+gast==0.7.0
+gmpy2==2.3.2
+google-pasta==0.2.0
+grpcio==1.84.1
+h11==0.16.0
+h5py==3.16.0
+hf-xet==1.7.0
+httpcore2==2.16.0
+httpx2==2.16.0
+huggingface_hub==2.3.0
+humanize==4.16.0
+hw-conv @ file:///sdk/packets/hw_conv-1.0-py3-none-any.whl#sha256=d9aab3d17e29c678ff033e3aed2083fd63a83712b3f209c10afa93883ecbb120
+idna==3.20
+importlib_resources==7.1.0
+iniconfig==2.3.1
+Jinja2==3.1.6
+keras==3.14.0
+libclang==18.1.1
+Markdown==3.11.2
+markdown-it-py==4.2.0
+MarkupSafe==3.0.3
+mdurl==0.1.2
+ml_dtypes==0.5.4
+mpmath==1.3.0
+namex==0.1.0
+networkx==3.6.1
+numpy==1.26.4
+onnx==1.16.2
+onnx-ir==1.1.0
+onnx_direct_bin @ file:///sdk/packets/onnx_direct_bin-2026.8.23-cp312-cp312-linux_x86_64.whl#sha256=138ac45554a39d2235f91909d1c52e9c75e6e36e1710b6ac25199d9475a37a8e
+onnx_graphsurgeon==0.6.1
+onnxoptimizer==0.4.2
+onnxruntime==1.29.0
+onnxruntime_extensions==0.15.2
+onnxscript==0.5.7
+onnxsim==0.6.5
+opt_einsum==3.4.0
+optimize_onnx_bin @ file:///sdk/packets/optimize_onnx_bin-0.0.6-cp312-cp312-linux_x86_64.whl#sha256=d9b5a8722a769c9945f36dfda910886ca9760107dc41e3ce22af26ce9e37a3c3
+optree==0.20.0
+ordered-set==4.1.0
+packaging==26.3
+parse==1.22.4
+pillow==12.3.0
+pluggy==1.7.0
+protobuf==7.36.2
+py-spy==0.4.2
+Pygments==2.21.0
+pytest==9.1.1
+PyYAML==6.0.3
+regex==2026.9.29
+requests==2.34.2
+rich==15.0.0
+safetensors==0.8.0
+scipy==1.17.1
+setuptools==78.1.0
+shellingham==1.5.4
+simpy==4.1.2
+six==1.17.0
+sympy==1.14.0
+tabulate==0.10.0
+tensorboard==2.20.0
+tensorboard-data-server==0.7.2
+tensorflow==2.20.0
+termcolor==3.3.0
+tf_keras==2.20.1
+tokenizers==0.23.3
+torch==2.9.1+cpu
+torchvision==0.24.1+cpu
+tpu-headers-v1 @ file:///sdk/packets/tpu_headers_v1-1.0.0.26-py3-none-any.whl#sha256=7b47468192152837d05d28ad0de510dc3f7b1a9fe84a8cf428a20ce336b1698e
+tpu-headers-v2 @ file:///sdk/packets/tpu_headers_v2-2.15.14.19-py3-none-any.whl#sha256=26e30c2be5402a907bbcac6018fa5a8eb226ee0d2a9e0235c8984927a7fc9fc9
+tpu-hw-is_bin @ file:///sdk/packets/tpu_hw_is_bin-2026.8.42-cp312-cp312-linux_x86_64.whl#sha256=fe7f78d9ff0d996e0a009f1e577a713f0ea16460f3f8b9ca09515c219a84f790
+tpu-tlm_bin @ file:///sdk/packets/tpu_tlm_bin-2026.8.42-cp312-cp312-linux_x86_64.whl#sha256=0d7795a001b3b1a0f8a2db1cae00d690e4196dba0b691c1d0498b643ee867d80
+tpu_compiler_bin @ file:///sdk/packets/tpu_compiler_bin-2026.9.493-cp312-cp312-linux_x86_64.whl#sha256=7aefd7488e63ec30920fe25ebb8951bd925bc3d41eec9041e2cd9658cab8a3db
+tpu_framework_bin @ file:///sdk/packets/tpu_framework_bin-2026.9.45-cp312-cp312-linux_x86_64.whl#sha256=e7c2965acfcc45dc7eb65dbd13ad23d5c20100a32c727109b240990987c0947d
+tpu_io_bin @ file:///sdk/packets/tpu_io_bin-1.0.44-cp312-cp312-linux_x86_64.whl#sha256=9589251a1c76a75e9cf1c8f1e4868d0e46c587d2b87508ee2aec6aaf35d320ba
+tpu_tlm_is_bin @ file:///sdk/packets/tpu_tlm_is_bin-2026.8.42-cp312-cp312-linux_x86_64.whl#sha256=30bd7d4cf636a4e20abadec0beeb07b0b109ddb1b4efae6dda766d7f316a2696
+tqdm==4.70.1
+transformers==5.20.2
+truststore==0.10.5
+typer==0.27.3
+typing_extensions==4.16.0
+urllib3==2.8.0
+Werkzeug==3.1.9
+wheel==0.48.0
+wrapt==2.5.1

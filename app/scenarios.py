@@ -28,6 +28,11 @@ def point_box_distance(point,box):
 
 
 def person_for(observation,people,region='body'):
+    if observation.owner_box is not None:
+        owners=sorted(((iou(observation.owner_box,p.box),p.track_id) for p in people),reverse=True)
+        if not owners or owners[0][0]<.5:return None
+        if len(owners)>1 and owners[0][0]-owners[1][0]<.12:return None
+        return owners[0][1]
     matches=[]
     a=np.asarray(observation.box,np.float32);area=max(1,(a[2]-a[0])*(a[3]-a[1]))
     for person in people:
@@ -50,6 +55,7 @@ class ScenarioRules:
     def __init__(self,config):
         self.config=config;self.gates={};self.outside=set();self.last_seen={}
         self.equipment={};self.next_equipment_id=1;self.ppe_status={}
+        self.ppe_details={};self.ppe_memory={}
 
     def update_equipment(self,objects,now):
         used=set();result=[]
@@ -70,8 +76,12 @@ class ScenarioRules:
 
     def step(self,people,objects,now,width,height,base_details=None):
         cfg=self.config;base_details=base_details or {};events=[];active={}
+        predicted={p.track_id for p in people if not p.observed}
+        for key,gate in self.gates.items():
+            if key[0] in predicted:gate.since=None
         objects=[o for o in objects if o.confidence>=cfg.object_confidence]
-        people=[p for p in people if p.track_id>0]
+        people=[p for p in people if p.track_id>0 and p.observed]
+        eligible={p.track_id for p in people if p.alert_eligible}
         assigned={}
         for key,(positive,negative,_,_) in PPE.items():
             assigned[key]={}
@@ -80,9 +90,10 @@ class ScenarioRules:
                 tid=person_for(obj,people,'head' if key in ('helmet','mask') else 'body')
                 if tid is not None:assigned[key].setdefault(tid,[]).append(obj)
         self.ppe_status={p.track_id:{} for p in people}
+        self.ppe_details={p.track_id:{} for p in people}
         def emit(tid,kind,zone,condition,hold,score,reason,obj=None,extra=None):
             gate=self.gates.setdefault((tid,kind,zone),Gate())
-            fired=gate.update(now,bool(condition),hold,cfg.release_hold,cfg.observation_gap)
+            fired=gate.update(now,bool(condition) and (tid==0 or tid in eligible),hold,cfg.release_hold,cfg.observation_gap)
             if gate.active:active.setdefault(tid,[]).append(kind)
             if fired:
                 start,sequence=fired
@@ -104,15 +115,30 @@ class ScenarioRules:
                 if not getattr(cfg,key+'_detection'):continue
                 matches=assigned[key].get(tid,[])
                 worn=[o for o in matches if o.label in positive];missing=[o for o in matches if o.label in negative]
-                # Direct contradictory evidence stays conservative: visible worn PPE wins.
+                best_worn=max(worn,key=lambda o:o.confidence,default=None)
+                best_missing=max(missing,key=lambda o:o.confidence,default=None)
                 state='worn' if worn else 'missing' if missing else 'unknown'
+                reason_code='measured' if matches else 'no_reliable_evidence'
+                if worn and missing:
+                    difference=best_worn.confidence-best_missing.confidence
+                    state=('worn' if difference>0 else 'missing') if abs(difference)>=cfg.ppe_conflict_margin else 'unknown'
+                    reason_code='conflicting_models' if state=='unknown' else 'stronger_evidence'
+                fresh=state!='unknown'
+                memory_key=(tid,key)
+                if fresh:self.ppe_memory[memory_key]=(now,state)
+                previous=self.ppe_memory.get(memory_key)
+                if not matches and previous and now-previous[0]<=cfg.ppe_memory_s:
+                    state=previous[1];reason_code='recent_observation'
                 self.ppe_status[tid][key]=state
+                self.ppe_details[tid][key]={'state':state,'reason':reason_code,'fresh':fresh,
+                                          'observed_at_s':now if fresh else previous[0] if previous else None}
                 region=next((z.name for z in zones if z.kind=='height'),'') if key=='harness' else ''
-                condition=state=='missing' and (bool(region) if key=='harness' else True)
+                condition=state=='missing' and fresh and (bool(region) if key=='harness' else True)
                 obj=max(missing,key=lambda o:o.confidence,default=None)
                 reason=(f'{title}: модель явно обнаружила отсутствие экипировки; подтверждение {cfg.ppe_hold:g} с.'+
                         (' Человек находится в размеченной зоне работы на высоте.' if key=='harness' else ''))
-                emit(tid,kind,region,condition,cfg.ppe_hold,obj.confidence if obj else 0,reason,obj)
+                emit(tid,kind,region,condition,cfg.ppe_hold,obj.confidence if obj else 0,reason,obj,
+                     {'ppe_assessment':dict(self.ppe_details[tid][key])})
             for zone in cfg.zones:
                 if zone.kind not in ('barrier','under_load','under_conveyor'):continue
                 inside=zone in zones;key=(tid,zone.name)
@@ -181,6 +207,7 @@ class ScenarioRules:
         self.last_seen={tid:t for tid,t in self.last_seen.items() if tid not in expired}
         self.outside={key for key in self.outside if key[0] not in expired}
         self.gates={key:gate for key,gate in self.gates.items() if key[0] not in expired}
+        self.ppe_memory={key:value for key,value in self.ppe_memory.items() if now-value[0]<=max(2,cfg.ppe_memory_s)}
         return events,active
 
 
@@ -188,7 +215,12 @@ def base_config(config):
     return config.model_copy(update={'zones':[z for z in config.zones if z.kind=='danger_zone']})
 
 
-def annotate_objects(frame,objects,ppe_status,people):
+def assessment_rows(people,details):
+    return [{'track_id':int(p.track_id),'tracking':'predicted' if not p.observed else 'measured' if p.alert_eligible else 'weak',
+             'ppe':details.get(p.track_id,{})} for p in people[:32]]
+
+
+def annotate_objects(frame,objects,ppe_status,people,ppe_details=None):
     for obj in objects:
         if obj.label in ('person','fall_detected'):continue
         color=(65,65,240) if obj.label.startswith('no_') or obj.label in ('fire','smoke','smooking','smoking') else (60,205,220)
@@ -197,7 +229,7 @@ def annotate_objects(frame,objects,ppe_status,people):
         cv2.putText(frame,f'{obj.label} {obj.confidence:.2f}',(max(0,x1),max(16,y1-5)),cv2.FONT_HERSHEY_SIMPLEX,.45,color,1,cv2.LINE_AA)
     for person in people:
         status=ppe_status.get(person.track_id,{})
-        known=[f'{key}:{value}' for key,value in status.items()]
+        known=[f'{key}:{value}'+(' (recent)' if (ppe_details or {}).get(person.track_id,{}).get(key,{}).get('reason')=='recent_observation' else '') for key,value in status.items()]
         if known:
             x,y=map(int,person.box[:2]);cv2.putText(frame,' '.join(known),(max(0,x),max(32,y+17)),cv2.FONT_HERSHEY_SIMPLEX,.4,(80,235,230),1,cv2.LINE_AA)
     return frame

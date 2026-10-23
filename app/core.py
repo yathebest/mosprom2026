@@ -26,7 +26,7 @@ class Zone(BaseModel):
     name: str = Field(default="Опасная зона", min_length=1, max_length=80)
     points: list[tuple[float, float]] = Field(min_length=3, max_length=32)
     priority: Literal['low','medium','high'] = 'medium'
-    kind: Literal['danger_zone','barrier','under_load','under_conveyor','height','equipment','smoking_allowed','fire_allowed'] = 'danger_zone'
+    kind: Literal['danger_zone','barrier','under_load','under_conveyor','height','equipment','smoking_allowed','fire_allowed','reflection'] = 'danger_zone'
 
     @model_validator(mode="after")
     def valid_polygon(self):
@@ -83,6 +83,10 @@ class RunConfig(BaseModel):
     ppe_hold: float = Field(default=1.5,ge=.3,le=15)
     object_hold: float = Field(default=1.0,ge=.3,le=15)
     object_confidence: float = Field(default=.5,ge=.15,le=.95)
+    ppe_crops: bool = True
+    ppe_max_people: int = Field(default=8,ge=1,le=32)
+    ppe_memory_s: float = Field(default=.5,ge=0,le=2)
+    ppe_conflict_margin: float = Field(default=.15,ge=.05,le=.5)
     proximity_heights: float = Field(default=.6,ge=.1,le=5)
     proximity_m: float = Field(default=3.0,ge=.3,le=15)
 
@@ -105,6 +109,8 @@ class Person:
     confidence: float
     keypoints: np.ndarray | None = None
     track_id: int = -1
+    observed: bool = True
+    alert_eligible: bool = True
 
     @property
     def height(self):
@@ -195,6 +201,12 @@ class Rules:
             tid = person.track_id
             if tid < 0:
                 continue
+            if not person.observed:
+                for key,gate in self.gates.items():
+                    if key[0]==tid:gate.since=None
+                details[tid] = {"speed":0, "speed_m_s":None, "posture":"unknown",
+                                "active":[], "tracking":"predicted"}
+                continue
             state = self.tracks.setdefault(tid, TrackState())
             if state.history and now-state.last_seen > cfg.observation_gap:
                 state.history.clear()
@@ -245,7 +257,7 @@ class Rules:
             for kind,zone,condition,hold in conditions:
                 key = (tid,kind,zone)
                 gate = self.gates.setdefault(key,Gate())
-                fired = gate.update(now,condition,hold,cfg.release_hold,cfg.observation_gap)
+                fired = gate.update(now,condition and person.alert_eligible,hold,cfg.release_hold,cfg.observation_gap)
                 if gate.active:
                     active.append(kind)
                 if fired:
@@ -257,7 +269,8 @@ class Rules:
                                    "reason":(f"Нахождение в зоне «{zone}» не менее {hold:g} с" if kind=="danger_zone" else
                                               f"Условие «{kind}» устойчиво не менее {hold:g} с"),
                                    "confirmation_s":round(now-started,3),"source":"person_tracking"})
-            details[tid] = {"speed":speed,"speed_m_s":speed_m_s,"posture":pose,"active":active}
+            details[tid] = {"speed":speed,"speed_m_s":speed_m_s,"posture":pose,"active":active,
+                            "tracking":"measured" if person.alert_eligible else "weak"}
         # Absent tracks cannot accumulate confirmation time, and memory is bounded.
         for tid,state in list(self.tracks.items()):
             if now-state.last_seen > max(15,cfg.release_hold+cfg.observation_gap):

@@ -25,9 +25,10 @@ def test_direct_no_helmet_requires_confirmation_and_emits_once():
     assert len(events)==1 and events[0]['kind']=='no_helmet' and events[0]['alert_s']==1.5
 
 
-def test_visible_helmet_suppresses_contradictory_missing_label():
+def test_equally_strong_contradictory_ppe_requires_review():
     events,rules=execute(RunConfig(helmet_detection=True),[person()],[obj('hardhat'),obj('no_hardhat')])
-    assert events==[] and rules.ppe_status[1]['helmet']=='worn'
+    assert events==[] and rules.ppe_status[1]['helmet']=='unknown'
+    assert rules.ppe_details[1]['helmet']['reason']=='conflicting_models'
 
 
 def test_ppe_is_attached_to_correct_worker():

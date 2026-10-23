@@ -1,0 +1,34 @@
+{
+  "purpose": "Real-model integration on previously used public still fixtures; no independent accuracy claim",
+  "known_failure": "The no_hardhat fixture shows ordinary blue clothing, not a safety vest. Its reported vest=worn is a false positive; the new PPE classifiers still require training and independent evaluation.",
+  "samples": [
+    {
+      "sample": "no_hardhat",
+      "people": 1,
+      "events": [
+        "no_helmet"
+      ],
+      "ppe_status": {
+        "1": {
+          "helmet": "missing",
+          "vest": "worn"
+        }
+      },
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + yolo12m.pt + ONNX CPU scenarios",
+      "wall_s": 43.04
+    },
+    {
+      "sample": "hardhat",
+      "people": 1,
+      "events": [],
+      "ppe_status": {
+        "1": {
+          "helmet": "worn",
+          "vest": "worn"
+        }
+      },
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + yolo12m.pt + ONNX CPU scenarios",
+      "wall_s": 19.83
+    }
+  ]
+}

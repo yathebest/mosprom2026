@@ -1,0 +1,462 @@
+{
+  "review_date_local": "2026-10-23",
+  "timezone": "Europe/Moscow",
+  "sdk_release": "2026.9.45",
+  "source": {
+    "file": "Framework.zip",
+    "sha256": "84aab196df27caf7a74154b3923e1739bea788b2365cda674ae9a3bc4bf446d1",
+    "nested_archive": "Framework/tpu_framework_2026.9.45.zip",
+    "outer_bytes": 505123610
+  },
+  "scope": {
+    "archive_file_count_excluding_directories": 18,
+    "wheel_count": 13,
+    "pdf_physical_pages": 56,
+    "pdf_read_all_pages": true,
+    "models_printed_pages": [
+      35,
+      36
+    ],
+    "models_physical_pages": [
+      39,
+      40
+    ],
+    "model_list_and_footnotes_visually_verified": true,
+    "source_index": {
+      "python_files": 1410,
+      "empty_python_files": 91,
+      "parse_failures": [],
+      "functions": 2656,
+      "classes": 289,
+      "test_functions": 700
+    },
+    "wheel_file_types": {
+      "<none>": 42,
+      ".py": 1410,
+      ".so": 1714,
+      ".ipynb": 1,
+      ".rst": 27,
+      ".json": 275,
+      ".txt": 17,
+      ".in": 1,
+      ".typed": 9,
+      ".h": 328
+    },
+    "binary_source_available": false,
+    "sdk_imported": true,
+    "sdk_tests_executed": false,
+    "models_compiled": true,
+    "execution_update_date_local": "2026-10-24",
+    "compiled_model": "COCO YOLO12m, static 640, TPU_H1M/O1, 8 train calibration images",
+    "compilation_report": "docs/yolo12m-compatibility.json",
+    "hardware_inference_executed": false
+  },
+  "top_level_files": [
+    "README.txt",
+    "compile.py",
+    "packets/dnn_quant_bin-2026.9.98-cp312-cp312-linux_x86_64.whl",
+    "packets/fp19_exp-2.1-py3-none-any.whl",
+    "packets/hw_conv-1.0-py3-none-any.whl",
+    "packets/onnx_direct_bin-2026.8.23-cp312-cp312-linux_x86_64.whl",
+    "packets/optimize_onnx_bin-0.0.6-cp312-cp312-linux_x86_64.whl",
+    "packets/requirements.txt",
+    "packets/tpu_compiler_bin-2026.9.493-cp312-cp312-linux_x86_64.whl",
+    "packets/tpu_framework_bin-2026.9.45-cp312-cp312-linux_x86_64.whl",
+    "packets/tpu_headers_v1-1.0.0.26-py3-none-any.whl",
+    "packets/tpu_headers_v2-2.15.14.19-py3-none-any.whl",
+    "packets/tpu_hw_is_bin-2026.8.42-cp312-cp312-linux_x86_64.whl",
+    "packets/tpu_io_bin-1.0.44-cp312-cp312-linux_x86_64.whl",
+    "packets/tpu_tlm_bin-2026.8.42-cp312-cp312-linux_x86_64.whl",
+    "packets/tpu_tlm_is_bin-2026.8.42-cp312-cp312-linux_x86_64.whl",
+    "torch_resnet50.onnx",
+    "tpu_framework.pdf"
+  ],
+  "pdf": {
+    "file": "tpu_framework.pdf",
+    "sha256": "4ec51fad70ebe70c849c67284036e2ebf9a85cd7756969fc3083375528534a0c",
+    "chapters": [
+      "Overview",
+      "System requirements",
+      "Inference",
+      "Python API",
+      "End-To-End Test",
+      "Supported models",
+      "Quick start",
+      "Sub model",
+      "Glossary of Terms"
+    ]
+  },
+  "supported_model_identifiers": [
+    "anti_spoof_mn3",
+    "densenet121",
+    "efficientnet_b0",
+    "efficientnet_b1",
+    "efficientnet_b2",
+    "efficientnet_b3",
+    "efficientnet_b4",
+    "fcn_8s",
+    "flownets",
+    "glint360k_r100_pfc",
+    "glint360k_r50_pfc",
+    "inception_v1",
+    "inception_v2",
+    "inception_v3",
+    "inception_v4",
+    "iresnet101",
+    "iresnet50",
+    "lenet5",
+    "mobilenet_v1",
+    "mobilenet_v2",
+    "nasnet_mobile",
+    "pnasnet_large",
+    "pnasnet_mobile",
+    "regnet_y_800mf",
+    "resnet152",
+    "resnet34",
+    "resnet50",
+    "resnet50_mlperf",
+    "resnet50_prelu",
+    "resnet50_v2",
+    "scrfd",
+    "seresnet50",
+    "squeezenet",
+    "ssd_mobilenet_v1",
+    "ssd_mobilenet_v2",
+    "ssdlite320_mobilenet_v3_large",
+    "tiny_yolo2",
+    "tiny_yolo3",
+    "torch_resnet50",
+    "vgg19",
+    "yolo11n_obb",
+    "yolo12m",
+    "yolo2",
+    "yolo3",
+    "yolo4",
+    "yolo5s",
+    "yolov8m_seg",
+    "yolov8n_pose"
+  ],
+  "cut_tensor_names": {
+    "yolo12m": [
+      "/model.21/Div_1_output_0",
+      "/model.21/Sub_1_output_0",
+      "/model.21/Sigmoid_output_0"
+    ],
+    "yolov8n_pose": [
+      "/model.22/Mul_6_output_0",
+      "/model.22/Concat_6_output_0",
+      "/model.22/Concat_5_output_0",
+      "/model.22/Sigmoid_1_output_0",
+      "/model.22/Concat_7_output_0",
+      "/model.22/Sigmoid_output_0",
+      "/model.22/dfl/conv/Conv_output_0"
+    ]
+  },
+  "cut_names_warning": "Names apply to the documented reference graph; validate exact topology, outputs and full=head+tail parity for every exported model.",
+  "yolo12m_recipe": {
+    "source": "dnn_quant_tests/zoo_networks_tests/_quant_cases/yolo12m.py",
+    "case_batch": 1,
+    "operation_cfg": {
+      "FW_LAYER_REDUCE_MAX": "FLOAT16",
+      "FW_LAYER_REDUCE_MEAN": "FLOAT16",
+      "FW_LAYER_REDUCE_SUM": "FLOAT16"
+    },
+    "swish_mode": "PIECEWISE_LUT",
+    "smoke_calibration_images": 4,
+    "smoke_test_is_not_accuracy_benchmark": true
+  },
+  "environment": {
+    "os": "GNU/Linux Ubuntu 18.04 LTS or newer per PDF; main binary wheels target linux_x86_64",
+    "python": "3.12.11",
+    "numpy": "1.26.4",
+    "onnx": "~=1.16.0",
+    "onnxruntime_from_requirements": "1.29.0",
+    "torch": "2.9.1",
+    "torchvision": "0.24.1",
+    "tensorflow": "2.20.0",
+    "keras": "3.14.0",
+    "separate_from_app_environment": true
+  },
+  "shipped_model": {
+    "file": "torch_resnet50.onnx",
+    "bytes": 102470371,
+    "onnx_checker": "passed",
+    "opset": 12,
+    "inputs": [
+      {
+        "name": "input.1",
+        "shape": [
+          1,
+          3,
+          224,
+          224
+        ],
+        "dtype": "float32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "495",
+        "shape": [
+          1,
+          1000
+        ]
+      }
+    ],
+    "purpose": "ImageNet classifier pipeline smoke reference, not a safety detector"
+  },
+  "known_issues": [
+    "README refers to compile_onnx.py but archive contains compile.py.",
+    "compile.py random calibration is a demonstration placeholder, not representative calibration.",
+    "No pytpu runtime package or remote service client found in the 13 supplied wheels; pytpu_packer is not pytpu.",
+    "Model zoo definitions depend on dnnhub and internal /auto paths not supplied as standalone resources.",
+    "hw_conv uses a py3-none-any wheel tag but contains a Linux .so.",
+    "Some RST/notebook examples use legacy APIs inconsistent with current public exports.",
+    "Full pose and specific YOLO26/RF-DETR/RT-DETR exports appear in known converter/runtime error lists; this is not a universal impossibility claim.",
+    "O5 can be slow or yield invalid programs; start with O1 and compare parity.",
+    "TLM-derived FPS is simulated, not measured hardware throughput.",
+    "SDK threshold fine-tuning changes activation thresholds, not supervised detector weights.",
+    "Several package license metadata fields are UNKNOWN; redistribution rights not established."
+  ],
+  "training_plan_status": "Documented in docs/plan.ru.md; no new training or dataset expansion performed during this review.",
+  "wheels": [
+    {
+      "file": "dnn_quant_bin-2026.9.98-cp312-cp312-linux_x86_64.whl",
+      "bytes": 88069950,
+      "sha256": "c8bd8e5b2dfee00a740f3e777ee939e11dbbf0cc1a46c60ec0cf97a8508fd083",
+      "name": "dnn_quant_bin",
+      "version": "2026.9.98",
+      "tags": [
+        "cp312-cp312-linux_x86_64"
+      ],
+      "base_dependencies": [
+        "onnx-direct-bin ==2026.8.23",
+        "tpu-io-bin ==1.0.44",
+        "scipy",
+        "dictdiffer",
+        "tensorflow ==2.20.0",
+        "keras ==3.14.0",
+        "tf-keras",
+        "click",
+        "tabulate",
+        "transformers",
+        "onnxscript",
+        "torch ==2.9.1",
+        "torchvision ==0.24.1"
+      ],
+      "license": null,
+      "native_libraries": 256
+    },
+    {
+      "file": "fp19_exp-2.1-py3-none-any.whl",
+      "bytes": 6324,
+      "sha256": "cb7cfeb6ee3d18d366de93223dc6b1bab48eace1e10cc88d4b07989ec407298d",
+      "name": "fp19_exp",
+      "version": "2.1",
+      "tags": [
+        "py3-none-any"
+      ],
+      "base_dependencies": [],
+      "license": null,
+      "native_libraries": 0
+    },
+    {
+      "file": "hw_conv-1.0-py3-none-any.whl",
+      "bytes": 8033,
+      "sha256": "d9aab3d17e29c678ff033e3aed2083fd63a83712b3f209c10afa93883ecbb120",
+      "name": "hw-conv",
+      "version": "1.0",
+      "tags": [
+        "py3-none-any"
+      ],
+      "base_dependencies": [],
+      "license": "UNKNOWN",
+      "native_libraries": 1
+    },
+    {
+      "file": "onnx_direct_bin-2026.8.23-cp312-cp312-linux_x86_64.whl",
+      "bytes": 24082808,
+      "sha256": "138ac45554a39d2235f91909d1c52e9c75e6e36e1710b6ac25199d9475a37a8e",
+      "name": "onnx_direct_bin",
+      "version": "2026.8.23",
+      "tags": [
+        "cp312-cp312-linux_x86_64"
+      ],
+      "base_dependencies": [
+        "numpy",
+        "onnx ~=1.16.0",
+        "onnxsim ==0.6.5",
+        "onnxscript",
+        "onnx-graphsurgeon",
+        "optimize-onnx-bin >=0.0.6",
+        "onnxruntime-extensions"
+      ],
+      "license": null,
+      "native_libraries": 92
+    },
+    {
+      "file": "optimize_onnx_bin-0.0.6-cp312-cp312-linux_x86_64.whl",
+      "bytes": 2988863,
+      "sha256": "d9b5a8722a769c9945f36dfda910886ca9760107dc41e3ce22af26ce9e37a3c3",
+      "name": "optimize_onnx_bin",
+      "version": "0.0.6",
+      "tags": [
+        "cp312-cp312-linux_x86_64"
+      ],
+      "base_dependencies": [
+        "numpy",
+        "onnx",
+        "onnxoptimizer",
+        "onnx-graphsurgeon",
+        "rich"
+      ],
+      "license": null,
+      "native_libraries": 8
+    },
+    {
+      "file": "tpu_compiler_bin-2026.9.493-cp312-cp312-linux_x86_64.whl",
+      "bytes": 131612136,
+      "sha256": "7aefd7488e63ec30920fe25ebb8951bd925bc3d41eec9041e2cd9658cab8a3db",
+      "name": "tpu_compiler_bin",
+      "version": "2026.9.493",
+      "tags": [
+        "cp312-cp312-linux_x86_64"
+      ],
+      "base_dependencies": [
+        "numpy",
+        "networkx",
+        "tabulate",
+        "ordered-set",
+        "frozendict",
+        "humanize",
+        "tpu-tlm-bin ==2026.8.42",
+        "tpu-tlm-is-bin ==2026.8.42",
+        "tpu-hw-is-bin ==2026.8.42",
+        "tpu-io-bin >=1.0.44,~=1.0"
+      ],
+      "license": null,
+      "native_libraries": 642
+    },
+    {
+      "file": "tpu_framework_bin-2026.9.45-cp312-cp312-linux_x86_64.whl",
+      "bytes": 8177049,
+      "sha256": "e7c2965acfcc45dc7eb65dbd13ad23d5c20100a32c727109b240990987c0947d",
+      "name": "tpu_framework_bin",
+      "version": "2026.9.45",
+      "tags": [
+        "cp312-cp312-linux_x86_64"
+      ],
+      "base_dependencies": [
+        "dnn-quant-bin ==2026.9.98",
+        "tpu-compiler-bin ==2026.9.493",
+        "onnx-direct-bin ==2026.8.23",
+        "tpu-tlm-bin ==2026.8.42",
+        "numpy"
+      ],
+      "license": null,
+      "native_libraries": 90
+    },
+    {
+      "file": "tpu_headers_v1-1.0.0.26-py3-none-any.whl",
+      "bytes": 538764,
+      "sha256": "7b47468192152837d05d28ad0de510dc3f7b1a9fe84a8cf428a20ce336b1698e",
+      "name": "tpu-headers-v1",
+      "version": "1.0.0.26",
+      "tags": [
+        "py3-none-any"
+      ],
+      "base_dependencies": [],
+      "license": "UNKNOWN",
+      "native_libraries": 0
+    },
+    {
+      "file": "tpu_headers_v2-2.15.14.19-py3-none-any.whl",
+      "bytes": 623694,
+      "sha256": "26e30c2be5402a907bbcac6018fa5a8eb226ee0d2a9e0235c8984927a7fc9fc9",
+      "name": "tpu-headers-v2",
+      "version": "2.15.14.19",
+      "tags": [
+        "py3-none-any"
+      ],
+      "base_dependencies": [],
+      "license": "UNKNOWN",
+      "native_libraries": 0
+    },
+    {
+      "file": "tpu_hw_is_bin-2026.8.42-cp312-cp312-linux_x86_64.whl",
+      "bytes": 14458085,
+      "sha256": "fe7f78d9ff0d996e0a009f1e577a713f0ea16460f3f8b9ca09515c219a84f790",
+      "name": "tpu-hw-is_bin",
+      "version": "2026.8.42",
+      "tags": [
+        "cp312-cp312-linux_x86_64"
+      ],
+      "base_dependencies": [
+        "tpu-tlm-is-bin ==2026.08.42",
+        "tpu-headers-v1 >=1.0.0.26",
+        "tpu-headers-v2 >=2.15.13.19"
+      ],
+      "license": null,
+      "native_libraries": 73
+    },
+    {
+      "file": "tpu_io_bin-1.0.44-cp312-cp312-linux_x86_64.whl",
+      "bytes": 1616353,
+      "sha256": "9589251a1c76a75e9cf1c8f1e4868d0e46c587d2b87508ee2aec6aaf35d320ba",
+      "name": "tpu_io_bin",
+      "version": "1.0.44",
+      "tags": [
+        "cp312-cp312-linux_x86_64"
+      ],
+      "base_dependencies": [
+        "numpy >=1.24.3,~=1.0",
+        "ml-dtypes",
+        "setuptools"
+      ],
+      "license": null,
+      "native_libraries": 7
+    },
+    {
+      "file": "tpu_tlm_bin-2026.8.42-cp312-cp312-linux_x86_64.whl",
+      "bytes": 130489173,
+      "sha256": "0d7795a001b3b1a0f8a2db1cae00d690e4196dba0b691c1d0498b643ee867d80",
+      "name": "tpu-tlm_bin",
+      "version": "2026.8.42",
+      "tags": [
+        "cp312-cp312-linux_x86_64"
+      ],
+      "base_dependencies": [
+        "simpy >=3.0.11",
+        "scipy",
+        "sympy",
+        "tpu-tlm-is-bin ==2026.08.42",
+        "tpu-hw-is-bin ==2026.08.42",
+        "hw-conv >=1.0",
+        "fp19-exp",
+        "importlib-resources"
+      ],
+      "license": null,
+      "native_libraries": 496
+    },
+    {
+      "file": "tpu_tlm_is_bin-2026.8.42-cp312-cp312-linux_x86_64.whl",
+      "bytes": 9064050,
+      "sha256": "30bd7d4cf636a4e20abadec0beeb07b0b109ddb1b4efae6dda766d7f316a2696",
+      "name": "tpu_tlm_is_bin",
+      "version": "2026.8.42",
+      "tags": [
+        "cp312-cp312-linux_x86_64"
+      ],
+      "base_dependencies": [
+        "numpy ==1.26.4",
+        "ml-dtypes",
+        "tpu-io-bin >=1.0.42",
+        "gmpy2",
+        "bitstruct",
+        "parse"
+      ],
+      "license": null,
+      "native_libraries": 49
+    }
+  ]
+}

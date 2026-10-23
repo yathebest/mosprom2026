@@ -1,0 +1,91 @@
+{
+  "raw_images": 33939,
+  "unique_images": 24288,
+  "duplicates_removed": 3998,
+  "excluded_incomplete_annotation_images": 5382,
+  "sources": {
+    "site_safety": 2801,
+    "construction": 1393,
+    "shwd": 6801,
+    "hardhat_vest": 13293
+  },
+  "splits": {
+    "test": 5286,
+    "val": 4315,
+    "train": 14687
+  },
+  "tasks": {
+    "people": {
+      "test": 610,
+      "val": 674,
+      "train": 2910
+    },
+    "head_ppe": {
+      "test": 2719,
+      "val": 1838,
+      "train": 6438
+    },
+    "vest_ppe": {
+      "test": 359,
+      "val": 422,
+      "train": 2020
+    }
+  },
+  "classification_crops": {
+    "head_ppe": {
+      "test:hardhat": 11087,
+      "test:no_hardhat": 12587,
+      "train:hardhat": 30462,
+      "train:no_hardhat": 24922,
+      "val:hardhat": 9504,
+      "val:no_hardhat": 6735
+    },
+    "vest_ppe": {
+      "test:no_vest": 395,
+      "test:vest": 1868,
+      "train:no_vest": 2402,
+      "train:vest": 6335,
+      "val:no_vest": 490,
+      "val:vest": 1629
+    }
+  },
+  "baseline_construction_train_images": 1132,
+  "upstream_claimed_train_images": 68253,
+  "upstream_4x_train_target": 273012,
+  "actual_unique_train_images": 14687,
+  "upstream_4x_reached": false,
+  "limitations": [
+    "Source group metadata may be incomplete; camera-disjoint independence is not established.",
+    "No unobservable-class crops are fabricated; manual visibility labels remain required.",
+    "Head and torso classifier crops need human label/geometry review before a full training run."
+  ],
+  "classifier_quality_gate": {
+    "min_side": 24,
+    "min_pixels": 1024,
+    "aspect_range": [
+      0.2,
+      4
+    ],
+    "laplacian_variance_min": 15,
+    "quarantined": {
+      "head_ppe": {
+        "too_small": 48784,
+        "extreme_aspect": 259,
+        "blurred": 600
+      },
+      "vest_ppe": {
+        "extreme_aspect": 225,
+        "too_small": 757,
+        "blurred": 44
+      }
+    },
+    "warning": "Automatic clarity filtering does not establish label correctness or independent accuracy."
+  },
+  "unique_images_before_crop_filter": 24559,
+  "splits_before_crop_filter": {
+    "test": 5346,
+    "val": 4376,
+    "train": 14837
+  },
+  "excluded_images_without_usable_crops": 271
+}

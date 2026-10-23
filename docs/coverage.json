@@ -11,7 +11,7 @@
     {
       "requirement": "Распознавание нейросетями",
       "status": "local_verified",
-      "evidence": "YOLOv8n-pose + RGB ResNet18 + дополнительные ONNX-детекторы. Качество новых сценариев отдельно не измерено."
+      "evidence": "YOLO12m + YOLOv8n-pose + RGB ResNet18 + ONNX-детекторы; слабые наблюдения не подтверждают тревоги. Качество новых сценариев отдельно не измерено."
     },
     {
       "requirement": "Оперативные Web-оповещения",
@@ -31,7 +31,7 @@
     {
       "requirement": "Инференс на LinQ и замеры",
       "status": "pending_hardware",
-      "evidence": "ONNX готов; SDK/API/TPU-компиляция и бенчмарк ещё не выполнены."
+      "evidence": "COCO YOLO12m успешно скомпилирована SDK 2026.9.45 в TPU_H1M/O1; docs/yolo12m-compatibility.json. Реальный TPU runtime, качество после квантования и аппаратный бенчмарк ещё не проверены."
     }
   ],
   "desired": [

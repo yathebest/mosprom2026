@@ -1,0 +1,22 @@
+{
+  "purpose": "Tiny one-epoch training/export smoke, not an accuracy benchmark",
+  "detector": {
+    "model": "YOLO12m",
+    "train_images": 12,
+    "val_images": 4,
+    "test_images": 4,
+    "training_export_passed": true,
+    "onnx_split_passed": true,
+    "sdk_compiled": false
+  },
+  "classifier": {
+    "model": "ResNet50 head",
+    "crops_per_class_per_split": 16,
+    "training_export_passed": true,
+    "runtime_metadata_loaded": true,
+    "onnx_pytorch_max_abs_error": 1.7881393432617188e-07
+  },
+  "deployed": false,
+  "full_kaggle_training_executed": false,
+  "event_metrics": "not_evaluated"
+}

@@ -1,0 +1,66 @@
+{
+  "purpose": "Trace the eight-image SDK compilation smoke, not quality calibration",
+  "samples": [
+    {
+      "sample_index": 0,
+      "source_image": "image100.jpg",
+      "source_native_split": "train",
+      "image_sha256": "f90bb05e3d79d843b63fbdbb01841b8d58e934cd6575049ed9c9f5042230ec82",
+      "expanded_split": "train"
+    },
+    {
+      "sample_index": 1,
+      "source_image": "image1000.jpeg",
+      "source_native_split": "train",
+      "image_sha256": "d16cc2100b49135d7722063a23d24ff29a0e90ad6c9a4e757ca655a0d574ef66",
+      "expanded_split": "train"
+    },
+    {
+      "sample_index": 2,
+      "source_image": "image1001.jpg",
+      "source_native_split": "train",
+      "image_sha256": "343e0ff03dfcac5b17cdf5a79375773737bf1812fa782751d5a507bd5b067ca6",
+      "expanded_split": "train"
+    },
+    {
+      "sample_index": 3,
+      "source_image": "image1002.jpg",
+      "source_native_split": "train",
+      "image_sha256": "81b89f79a61244aa09ea58922934390cd5706e8e7a2ac0cf9a5235716b3ce06f",
+      "expanded_split": "train"
+    },
+    {
+      "sample_index": 4,
+      "source_image": "image1004.jpg",
+      "source_native_split": "train",
+      "image_sha256": "292b40524edcb6ea55d02265464a31f9b40f96e915947bc25b35b66458bc1ee8",
+      "expanded_split": "train"
+    },
+    {
+      "sample_index": 5,
+      "source_image": "image1005.jpeg",
+      "source_native_split": "train",
+      "image_sha256": "13370ec005b3c83571dfdcf4bc865d5db05b8f81d9139ab22c5c4f5e00837b29",
+      "expanded_split": "train"
+    },
+    {
+      "sample_index": 6,
+      "source_image": "image1006.jpg",
+      "source_native_split": "train",
+      "image_sha256": "0a23a6487f2e169b3ce0b92ffa705618d7b24fb540b6067de7538191595c968f",
+      "expanded_split": "train"
+    },
+    {
+      "sample_index": 7,
+      "source_image": "image1008.jpeg",
+      "source_native_split": "train",
+      "image_sha256": "25e10ae920bea4fdd8b2322b9a99ed1b5b9a79c70251355c582341aa9291dfed",
+      "expanded_split": "train"
+    }
+  ],
+  "all_source_native_train": true,
+  "expanded_split_counts": {
+    "train": 8
+  },
+  "warning": "Use fresh calibration from the final expanded train split before any quantized accuracy evaluation."
+}

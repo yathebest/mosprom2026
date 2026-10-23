@@ -1,0 +1,8 @@
+{
+  "checked_unique_images": 24288,
+  "exact_hash_split_leaks": 0,
+  "source_group_split_leaks": 0,
+  "task_file_counts_match": true,
+  "camera_disjoint_verified": false,
+  "classifiers_trained": false
+}

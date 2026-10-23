@@ -1,0 +1,20 @@
+{
+  "date_local": "2026-10-24",
+  "method": "Actual in-app-browser UI clicks; no API or URL manipulation for workflow steps",
+  "input": "Local HTTP MJPEG of a previously used public no_hardhat fixture; not a real camera or accuracy benchmark",
+  "video_job": "f4899fc3a0384df183679d79b7207070",
+  "live_job": "5b35ae6c725448dd9ffb63f904d101a6",
+  "steps_verified": ["preview", "enable helmet and vest", "start", "live alert", "stop", "ready incident clip", "open clip", "seek alert"],
+  "live_processed_frames": 157,
+  "live_elapsed_s": 36.0,
+  "live_inference_p95_ms": 271.23,
+  "live_events": 1,
+  "event": "no_helmet",
+  "event_start_s": 4.4,
+  "alert_s": 6.0,
+  "clip_start_s": 4.4,
+  "clip_end_s": 10.1,
+  "known_failure": "The original PPE model falsely reports the ordinary blue blazer as vest=worn on the still MJPEG fixture. New classifiers have not been fully trained or independently evaluated.",
+  "hardware": "Local NVIDIA RTX 4060 Laptop; not LinQ",
+  "independent_quality_measured": false
+}

@@ -1,0 +1,37 @@
+{
+  "model_sha256": "acf3c22eae190f75f06993bc1e0f6d72cbb0d6bd3a6418b75adcc7c9bd40e3c9",
+  "onnx_ir": 7,
+  "opsets": {
+    "": 12
+  },
+  "input_names": [
+    "images"
+  ],
+  "input_shapes": [
+    [
+      1,
+      3,
+      640,
+      640
+    ]
+  ],
+  "cut_tensors": [
+    "/model.21/Div_1_output_0",
+    "/model.21/Sub_1_output_0",
+    "/model.21/Sigmoid_output_0"
+  ],
+  "head_sha256": "5567b96c4cadb03d776368d0fc3ff27ba5457a40a2d0e33283a75769bb932b86",
+  "tail_sha256": "e812a154b4d0ea215463df592bd4c15457bd3a6b81dc48888dd6f7ffd384fad5",
+  "parity_max_abs_errors": [
+    0.0
+  ],
+  "parity_samples": 1,
+  "real_image_samples": 0,
+  "status": "compiled_unverified",
+  "sdk_compiled": true,
+  "hardware_verified": false,
+  "warning": "ONNX split parity is not SDK compilation, hardware parity or accuracy evaluation.",
+  "program_sha256": "39c72754b4d4597250a8e897c85e219f5e6dad33d5cca6fea8263d4ff1d6b2ae",
+  "calibration_samples": 8,
+  "calibration_sha256": "cefaafe99f1be054e11c0dfbd85037731b53e11dc3bcd2b4c95821161da2e256"
+}

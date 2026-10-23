@@ -27,3 +27,12 @@ node_modules/
 work/
 data/mail.local.json
 data/mail-preview/
+data/linq/
+data/models/yolo12m.*
+data/models/person-yolo12m.*
+data/models/ppe-head*
+data/models/ppe-vest*
+data/models/ppe-torso*
+training-output/
+smoke-output/
+linq-ppe-training-data.zip

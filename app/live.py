@@ -15,7 +15,7 @@ from .core import Rules
 from .inference import create_backend,PeopleTracker
 from .streams import open_capture
 from .video import MODEL,draw,transcode
-from .scenarios import ScenarioRules,base_config,annotate_objects
+from .scenarios import ScenarioRules,base_config,annotate_objects,assessment_rows
 
 SESSIONS={}
 LOCK=threading.Lock()
@@ -37,6 +37,7 @@ class LiveSession:
         self.processed=0;self.dropped=0;self.elapsed=0.;self.events=0;self.pending=[]
         self.ring=deque();self.latencies=[];self.clip_futures=[];self.backend=None
         self.created=time.monotonic()
+        self.assessments=[]
         db.add_job(self.id,'Прямой эфир · '+config.camera,
                    {'live':True,'mode':'live','source_type':source_type,'duration_s':0,
                     'fps':SAMPLE_FPS,'width':0,'height':0,'frames':0})
@@ -85,7 +86,7 @@ class LiveSession:
                 'inference_p95_ms':round(float(np.percentile(self.latencies,95)),2) if self.latencies else None,
                 'view_url':f'/api/live/{self.id}/view','clip_pre_s':PRE_SECONDS,'clip_post_s':POST_SECONDS,
                 'timing':'Server frame-arrival time; network/camera latency is not measured',
-                'model':getattr(self.backend,'name',None)}
+                'model':getattr(self.backend,'name',None),'assessments':self.assessments}
 
     def finalize_clip(self,clip):
         event_id=clip['id'];frames=clip['frames']
@@ -154,16 +155,17 @@ class LiveSession:
                 began=time.perf_counter();people=self.backend.predict(frame)
                 self.latencies.append((time.perf_counter()-began)*1000)
                 if len(self.latencies)>3000:self.latencies=self.latencies[-3000:]
-                people=tracker.update(people,frame.shape)
+                people=tracker.update(people,frame.shape,now)
                 events,details=rules.step(people,now,w,h,getattr(self.backend,'scene_state',None))
                 observations=getattr(self.backend,'objects_state',[])
                 extra_events,extra_active=scenario_rules.step(people,observations,now,w,h,details)
+                self.assessments=assessment_rows(people,scenario_rules.ppe_details)
                 events.extend(extra_events)
                 for tid,kinds in extra_active.items():
                     if tid in details:details[tid]['active'].extend(kinds)
                 scene_alerts=[key[1] for key,gate in rules.gates.items() if key[0]==0 and gate.active]
                 annotated=draw(frame,people,details,self.config,now,getattr(self.backend,'scene_state',None),scene_alerts)
-                annotated=annotate_objects(annotated,observations,scenario_rules.ppe_status,people)
+                annotated=annotate_objects(annotated,observations,scenario_rules.ppe_status,people,scenario_rules.ppe_details)
                 ok,encoded=cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,85])
                 original=encoded.tobytes()
                 self.ring.append((now,original))

@@ -1,5 +1,18 @@
 # Sources and third-party components
 
+## YOLO12m and expanded PPE training data
+
+| Component | Primary source | Notes |
+|---|---|---|
+| YOLO12m COCO weights | https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo12m.pt | Ultralytics AGPL-3.0; local downloaded checkpoint, SHA-256 in model manifest |
+| Construction Site Safety | https://www.kaggle.com/datasets/snehilsanyal/construction-site-safety-image-dataset-roboflow | Source README declares CC BY 4.0; retain upstream source list and attribution |
+| SHWD | https://github.com/njvisionpower/Safety-Helmet-Wearing-Dataset | MIT repository, includes SCUT-HEAD-derived imagery; preserve original notices. `person` means bare head |
+| HardHat-Vest v3 | https://www.kaggle.com/datasets/muhammetzahitaydn/hardhat-vest-dataset-v3 | Kaggle declares CC0 but aggregates several upstream corpora; this is not a blanket rights audit. Used locally for explicitly labelled positive crops only |
+| ResNet50/152 initialization | https://github.com/pytorch/vision | Official torchvision pretrained weights; trained classifier artifacts are not yet supplied |
+| Optional CUDA ONNX Runtime | https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html | MIT; isolated ORT GPU 1.20.2 CUDA 12 / cuDNN 9 profile |
+
+Raw archives and generated datasets remain outside Git. The private training ZIP retains source notices, provenance JSON and archive hashes. Exact duplicates/near duplicates and known source groups are handled conservatively; participant/camera independence is not established. LinQ Framework SDK was supplied privately by the user and is not redistributed in Git.
+
 ## Added scenario models and samples
 
 | Component | Primary source | Attribution / terms |

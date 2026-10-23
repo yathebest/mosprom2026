@@ -22,8 +22,18 @@ class YoloBackend:
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
         self.name = f"PyTorch / {self.device} / {model.name}"
         self.model = YOLO(str(model),task="pose")
+        preferred=model.parent/'person-yolo12m.pt'
+        if not preferred.exists():preferred=model.parent/'yolo12m.pt'
+        people_path=Path(os.getenv('SAFETY_PERSON_MODEL',str(preferred)))
+        if os.getenv('SAFETY_PERSON_MODEL') and not people_path.exists():
+            raise FileNotFoundError('Configured person model does not exist')
+        self.person_model=YOLO(str(people_path),task='detect') if people_path.exists() else None
+        if self.person_model:
+            self.name+=' + '+people_path.name
+        self.imgsz=int(os.getenv('SAFETY_IMAGE_SIZE','640'))
+        self.reflections=[z for z in config.zones if z.kind=='reflection'] if config else []
         self.confidence = confidence
-        self.model_id = model.stem
+        self.model_id = model.stem+('+'+people_path.stem if self.person_model else '')
         self.rotated_search = os.getenv("SAFETY_ROTATED_SEARCH","0")=="1"
         self.scene_state = None
         self.body = None
@@ -33,7 +43,8 @@ class YoloBackend:
             from .scenario_models import ScenarioModels
             self.objects=ScenarioModels(model.parent,config)
             if self.objects.models:
-                self.name+=' + ONNX CPU scenarios'
+                devices={m.provider.replace('ExecutionProvider','') for m in self.objects.models}
+                self.name+=' + ONNX '+('/'.join(sorted(devices)))+' scenarios'
                 self.model_id+='+'+'+'.join(m.name for m in self.objects.models)
         body_path=model.parent/'fall-resnet18.pt'
         if fall_detection and body_path.exists():
@@ -67,11 +78,28 @@ class YoloBackend:
                     points[:,:2] = inverse_rotation(points[:,:2],k,w,h)
                 candidates.append(Person(box,float(b[4]),points))
         candidates=suppress_duplicates(candidates)
+        if self.person_model:
+            from .scenario_models import iou
+            detected=self.person_model.predict(bgr,classes=[0],conf=.1,imgsz=self.imgsz,
+                                               device=self.device,verbose=False)[0]
+            strong=[]
+            for row in detected.boxes.data.cpu().numpy():
+                box=tuple(map(float,row[:4]));matches=[p for p in candidates if iou(p.box,box)>.3]
+                pose=max(matches,key=lambda p:iou(p.box,box)).keypoints if matches else None
+                strong.append(Person(box,float(row[4]),pose))
+            candidates=suppress_duplicates(strong+[p for p in candidates if not any(iou(p.box,s.box)>.3 for s in strong)])
+        if self.reflections:
+            from .scenarios import contains
+            # A bbox overlapping a mirror may belong to someone standing in
+            # front of it. Only the annotated reflection foot region is masked.
+            candidates=[p for p in candidates if not any(contains(z,p.foot,w,h) for z in self.reflections)]
         self.objects_state=self.objects.predict(bgr,candidates) if self.objects else []
         from .scenario_models import iou
         for obj in self.objects_state:
             if obj.label=='person' and not any(iou(p.box,obj.box)>.3 for p in candidates):
-                candidates.append(Person(obj.box,obj.confidence))
+                candidate=Person(obj.box,obj.confidence)
+                if not any(contains(z,candidate.foot,w,h) for z in self.reflections):
+                    candidates.append(candidate)
         return candidates
 
 
@@ -126,12 +154,14 @@ class StableTracks:
     def __init__(self,fps):
         self.fps=fps;self.frame=0;self.next_id=1;self.mapping={};self.recent={}
 
-    def update(self,people):
+    def update(self,people,now=None):
         self.frame+=1
+        now=self.frame/self.fps if now is None else float(now)
         occupied=set();pending=[]
         for p in sorted(people,key=lambda p:p.confidence,reverse=True):
             raw=p.track_id;canonical=self.mapping.get(raw)
-            if canonical in self.recent and canonical not in occupied:
+            if (canonical in self.recent and canonical not in occupied
+                    and now-self.recent[canonical][0] <= 1.2):
                 p.track_id=canonical;occupied.add(canonical)
             else:
                 pending.append((raw,p))
@@ -139,7 +169,7 @@ class StableTracks:
             matches=[]
             a=np.asarray(p.box)
             for canonical,(last,bbox) in self.recent.items():
-                if canonical in occupied or self.frame-last>max(1,round(self.fps*1.2)):
+                if canonical in occupied or now-last>1.2:
                     continue
                 b=np.asarray(bbox)
                 inter=np.maximum(0,np.minimum(a[2:],b[2:])-np.maximum(a[:2],b[:2])).prod()
@@ -153,9 +183,9 @@ class StableTracks:
                 canonical=self.next_id;self.next_id+=1
             self.mapping[raw]=canonical;p.track_id=canonical;occupied.add(canonical)
         for p in people:
-            self.recent[p.track_id]=(self.frame,p.box)
+            self.recent[p.track_id]=(now,p.box)
         for canonical,(last,_) in list(self.recent.items()):
-            if self.frame-last>self.fps*15:
+            if now-last>15:
                 del self.recent[canonical]
         self.mapping={k:v for k,v in self.mapping.items() if v in self.recent}
         return people
@@ -166,23 +196,39 @@ class PeopleTracker:
         from ultralytics.trackers.byte_tracker import BYTETracker
         self.tracker = BYTETracker(SimpleNamespace(
             track_high_thresh=confidence,track_low_thresh=.1,new_track_thresh=confidence,
-            track_buffer=max(5,round(fps*1.5)),match_thresh=.8,fuse_score=True))
+            track_buffer=max(5,round(fps*1.5)),match_thresh=.7,fuse_score=False))
+        # In the pinned Ultralytics release score fusion is also applied in
+        # ByteTrack's low-score stage (distance threshold .5). A .2-confidence
+        # box then cannot match even at perfect IoU. Spatial matching rescues
+        # existing IDs; the separate alert threshold remains unchanged.
         self.confidence = confidence
         self.stable=StableTracks(fps)
+        self.fps=fps;self.frame=0;self.recent={}
 
-    def update(self, people, shape):
+    def update(self, people, shape, now=None):
         from ultralytics.engine.results import Boxes
         array = np.asarray([(*p.box,p.confidence,0) for p in people],np.float32).reshape(-1,6)
         tracks = self.tracker.update(Boxes(array,shape[:2]))
+        self.frame+=1
+        now=self.frame/self.fps if now is None else float(now)
         output = []
         for row in tracks:
             index = int(row[-1])
             if not 0<=index<len(people):
                 continue
             p = people[index]
-            # Low-score observations help tracking but never confirm an alert.
-            if p.confidence < self.confidence:
-                continue
+            # ByteTrack already associates these with a confirmed track. Keep the
+            # measured box visible; alert rules use the separate eligibility flag.
+            p.alert_eligible=p.confidence >= self.confidence
             p.track_id = int(row[4])
             output.append(p)
-        return self.stable.update(output)
+        output=self.stable.update(output,now)
+        visible={p.track_id for p in output}
+        for p in output:
+            self.recent[p.track_id]=(now,tuple(p.box),p.confidence)
+        for tid,(last,box,score) in list(self.recent.items()):
+            if now-last > .5:
+                del self.recent[tid]
+            elif tid not in visible:
+                output.append(Person(box,score,track_id=tid,observed=False,alert_eligible=False))
+        return output

@@ -14,7 +14,7 @@ from . import storage as db
 from .core import Rules, RunConfig
 from .inference import PeopleTracker, create_backend
 from . import streams
-from .scenarios import ScenarioRules,base_config,annotate_objects
+from .scenarios import ScenarioRules,base_config,annotate_objects,assessment_rows
 
 MODEL = db.DATA / "models" / "yolov8n-pose.pt"
 CANCEL: dict[str,threading.Event] = {}
@@ -58,9 +58,10 @@ def draw(frame, people, details, config, now, scene_state=None, scene_alerts=())
     for p in people:
         d = details.get(p.track_id,{})
         color = (90,220,90) if not d.get("active") else (55,55,245)
+        if not p.alert_eligible:color=(190,160,80)
         x1,y1,x2,y2 = map(int,p.box)
         cv2.rectangle(output,(x1,y1),(x2,y2),color,2)
-        label = f"#{p.track_id} {d.get('speed',0):.2f} h/s {d.get('posture','')}"
+        label = f"#{p.track_id} {d.get('speed',0):.2f} h/s {d.get('posture','')} {d.get('tracking','')}"
         cv2.putText(output,label,(max(0,x1),max(20,y1-8)),cv2.FONT_HERSHEY_SIMPLEX,.5,color,1,cv2.LINE_AA)
         if p.keypoints is not None:
             for x,y,c in p.keypoints:
@@ -123,7 +124,7 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
         setup_seconds = time.perf_counter()-setup_started
         latencies,total_latencies = [],[]
         inference_events = []
-        brightness=[];sharpness=[];density=np.zeros((18,32),np.int32)
+        brightness=[];sharpness=[];density=np.zeros((18,32),np.int32);latest_assessments=[]
         processed,decoded,alerts = 0,0,0
         started = time.perf_counter()
         for index in range(count):
@@ -141,22 +142,24 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
             inference_start = time.perf_counter()
             people = backend.predict(frame)
             latencies.append((time.perf_counter()-inference_start)*1000)
-            people = tracker.update(people,frame.shape)
+            people = tracker.update(people,frame.shape,now)
             if processed%10==0:
                 gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
                 brightness.append(float(gray.mean()));sharpness.append(float(cv2.Laplacian(gray,cv2.CV_64F).var()))
             for person in people:
+                if not person.observed:continue
                 x,y=person.foot
                 density[min(17,max(0,int(y/h*18))),min(31,max(0,int(x/w*32)))]+=1
             events,details = rules.step(people,now,w,h,getattr(backend,"scene_state",None))
             observations=getattr(backend,'objects_state',[])
             extra_events,extra_active=scenario_rules.step(people,observations,now,w,h,details)
+            latest_assessments=assessment_rows(people,scenario_rules.ppe_details)
             events.extend(extra_events)
             for tid,kinds in extra_active.items():
                 if tid in details:details[tid]['active'].extend(kinds)
             scene_alerts=[key[1] for key,gate in rules.gates.items() if key[0]==0 and gate.active]
             annotated = draw(frame,people,details,config,now,getattr(backend,'scene_state',None),scene_alerts)
-            annotated=annotate_objects(annotated,observations,scenario_rules.ppe_status,people)
+            annotated=annotate_objects(annotated,observations,scenario_rules.ppe_status,people,scenario_rules.ppe_details)
             writer.write(annotated)
             if processed%3==0:
                 temp = folder/"latest.tmp.jpg"
@@ -180,7 +183,7 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
             processed += 1
             total_latencies.append((time.perf_counter()-frame_start)*1000)
             if processed%5==0:
-                db.update_job(job_id,progress=round(decoded/count,4))
+                db.update_job(job_id,progress=round(decoded/count,4),stats={'latest_assessments':latest_assessments})
         wall = time.perf_counter()-started
         cap.release();cap=None
         if source_writer is not None:
@@ -221,6 +224,7 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
                 db.patch_payload(event_id,{'clip_state':'failed'})
         truncated = decoded<count and not cancel.is_set()
         stats = {"backend":backend.name,"model":getattr(backend,"model_id","external-adapter"),"input_frames":count,
+                 "latest_assessments":latest_assessments,
                  "decoded_frames":decoded,"processed_frames":processed,"stride":stride,
                  "sample_fps":fps/stride,"inference_p50_ms":round(float(np.median(latencies)),2),
                  "live_source":live,"source_timing":"CFR frame_index / declared_fps",
