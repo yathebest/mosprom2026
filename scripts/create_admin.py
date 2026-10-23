@@ -9,7 +9,7 @@ from app import auth,storage as db
 
 
 def main():
-    db.init();auth.init()
+    db.init(mark_interrupted=False);auth.init()
     login=auth.normalize(input('Platform admin login: '))
     name=input('Display name: ').strip() or 'Администратор платформы'
     password=getpass.getpass('Password (12+ characters): ')

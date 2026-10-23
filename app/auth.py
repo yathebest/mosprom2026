@@ -54,6 +54,12 @@ def init():
           created TEXT DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')));
         CREATE TABLE IF NOT EXISTS auth_attempts (key TEXT PRIMARY KEY, count INTEGER NOT NULL, until REAL NOT NULL);
         CREATE INDEX IF NOT EXISTS audit_org ON audit(organization_id,id);
+        CREATE TABLE IF NOT EXISTS admin_invitations (
+          id TEXT PRIMARY KEY, organization_id TEXT NOT NULL REFERENCES organizations(id),
+          email TEXT NOT NULL, token_hash TEXT NOT NULL UNIQUE, expires REAL NOT NULL,
+          status TEXT NOT NULL, created_by TEXT NOT NULL, consumed_by TEXT,
+          created TEXT DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')));
+        CREATE INDEX IF NOT EXISTS invitations_target ON admin_invitations(organization_id,email);
         ''')
         c.execute("INSERT OR IGNORE INTO organizations(id,name,status,note) VALUES('legacy','Локальный проект','active','Данные до включения авторизации')")
         c.execute('DELETE FROM sessions WHERE expires<?',(time.time(),))
@@ -395,6 +401,8 @@ def endpoint_permission(path,method):
 
 def install(app):
     app.include_router(router)
+    from . import invitations
+    app.include_router(invitations.router)
 
     @app.middleware('http')
     async def access_middleware(request,call_next):
@@ -407,7 +415,8 @@ def install(app):
                     if origin and origin!=str(request.base_url).rstrip('/'):
                         raise HTTPException(403,'Запрос с другого сайта запрещён')
                     if request.headers.get('sec-fetch-site')=='cross-site':raise HTTPException(403,'Запрос с другого сайта запрещён')
-                public=path in ('/api/auth/login','/api/auth/register','/api/auth/status')
+                public=path in ('/api/auth/login','/api/auth/register','/api/auth/status',
+                               '/api/invitations/inspect','/api/invitations/accept')
                 if not public:
                     user=resolve(request.cookies.get(COOKIE));request.state.user=user
                     if not user:raise HTTPException(401,'Войдите в аккаунт')

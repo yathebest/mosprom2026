@@ -22,7 +22,7 @@ def connection():
         conn.close()
 
 
-def init():
+def init(mark_interrupted=True):
     with connection() as c:
         c.execute("PRAGMA journal_mode=WAL")
         c.executescript("""
@@ -53,7 +53,8 @@ def init():
             """)
         c.execute('CREATE INDEX IF NOT EXISTS jobs_org ON jobs(organization_id)')
         c.execute('CREATE INDEX IF NOT EXISTS events_job ON events(job_id)')
-        c.execute("UPDATE jobs SET status='interrupted',error='Сервер перезапущен во время обработки' WHERE status IN ('queued','running','exporting')")
+        if mark_interrupted:
+            c.execute("UPDATE jobs SET status='interrupted',error='Сервер перезапущен во время обработки' WHERE status IN ('queued','running','exporting')")
 
 
 def decode(row):

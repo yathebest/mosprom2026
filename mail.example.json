@@ -1,0 +1,10 @@
+{
+  "mode": "smtp",
+  "host": "smtp.example.com",
+  "port": 587,
+  "security": "starttls",
+  "username": "sender@example.com",
+  "password": "PUT_SMTP_APP_PASSWORD_HERE",
+  "from_address": "sender@example.com",
+  "public_url": "http://127.0.0.1:8765"
+}
