@@ -4,6 +4,8 @@ import pytest
 from fastapi.testclient import TestClient
 from app import storage as db
 from app.server import app
+from app import auth
+from app.access import Scope,current_scope
 
 
 @pytest.fixture
@@ -11,7 +13,13 @@ def client(tmp_path,monkeypatch):
     monkeypatch.setattr(db,'DATA',tmp_path)
     monkeypatch.setattr(db,'DB',tmp_path/'events.sqlite3')
     with TestClient(app) as client:
-        yield client
+        with db.connection() as c:
+            c.execute("INSERT INTO users(id,login,name,password_hash,organization_id,role) VALUES('test-admin','test-admin','Test administrator',?,'legacy','enterprise_admin')",(auth.password_hash('TestPassword123!'),))
+        assert client.post('/api/auth/login',json={'login':'test-admin','password':'TestPassword123!'}).status_code==200
+        client.headers['X-CSRF-Token']=client.get('/api/auth/me').json()['csrf']
+        token=current_scope.set(Scope('legacy'))
+        try:yield client
+        finally:current_scope.reset(token)
 
 
 def test_reject_corrupt_video_and_bad_extension(client):

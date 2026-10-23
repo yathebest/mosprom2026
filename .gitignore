@@ -24,3 +24,4 @@ app/static/index.html
 *.log
 node_modules/
 .DS_Store
+work/

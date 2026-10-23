@@ -25,6 +25,7 @@ from . import video
 from . import operations
 from . import streams
 from . import live
+from . import auth
 
 MAX_PARALLEL=max(1,min(4,int(os.getenv("SAFETY_MAX_PARALLEL","2"))))
 EXECUTOR = ThreadPoolExecutor(max_workers=MAX_PARALLEL,thread_name_prefix="video")
@@ -34,6 +35,7 @@ LOCK = threading.Lock()
 @asynccontextmanager
 async def lifespan(app):
     db.init()
+    auth.init()
     yield
     for event in list(video.CANCEL.values()):
         event.set()
@@ -41,6 +43,7 @@ async def lifespan(app):
 
 
 app = FastAPI(title="LinQ Safety",version="0.3.0",lifespan=lifespan)
+auth.install(app)
 app.mount("/static",StaticFiles(directory=Path(__file__).parent/"static"),name="static")
 
 
@@ -105,12 +108,12 @@ def start_live(body: LiveRequest):
 
 @app.get('/api/live')
 def list_live():
-    with live.LOCK:return [s.report() for s in live.SESSIONS.values()]
+    with live.LOCK:return [s.report() for s in live.SESSIONS.values() if db.job(s.id)]
 
 
 def get_live(session_id):
     session=live.SESSIONS.get(session_id)
-    if not session:raise HTTPException(404,'Сеанс не найден')
+    if not session or not db.job(session_id):raise HTTPException(404,'Сеанс не найден')
     return session
 
 
@@ -147,6 +150,9 @@ async def live_view(session_id: str,request: Request):
     async def generate():
         version=-1
         while not await request.is_disconnected():
+            user=auth.resolve(request.cookies.get(auth.COOKIE))
+            if not user or 'live.read' not in user['permissions']:break
+            if user['organization_id']!=request.state.user['organization_id'] or user['cameras']!=request.state.user['cameras']:break
             if session.jpeg and session.version!=version:
                 version=session.version
                 yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n'+session.jpeg+b'\r\n'
@@ -394,9 +400,12 @@ class Review(BaseModel):
 
 
 @app.patch("/api/events/{event_id}")
-def review(event_id: str,body: Review):
+def review(event_id: str,body: Review,request: Request):
     if not db.review(event_id,body.status):
         raise HTTPException(404,"Событие не найдено")
+    user=request.state.user
+    db.patch_payload(event_id,{'reviewed_by':user['name'],'reviewed_by_id':user['id']})
+    auth.audit(user,'event.reviewed',event_id,{'status':body.status})
     return {"ok":True}
 
 
@@ -423,4 +432,10 @@ def media(path: str):
         raise HTTPException(404,"Файл не найден")
     if target.suffix not in {".jpg",".mp4",".json"}:
         raise HTTPException(404,"Файл недоступен")
+    parts=target.relative_to(root).parts
+    if len(parts)<2 or not db.job(parts[0]):raise HTTPException(404,'Файл не найден')
+    # A scoped foreman must never download a whole run's unfiltered JSON report.
+    from .access import current_scope
+    scope=current_scope.get()
+    if scope and scope.cameras is not None and target.suffix=='.json':raise HTTPException(403,'Отчёт целиком недоступен для доступа по камерам')
     return FileResponse(target)
