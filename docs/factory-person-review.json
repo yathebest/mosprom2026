@@ -1,0 +1,15 @@
+{
+  "source": "https://data.mendeley.com/datasets/xjmtb22pff/1",
+  "reviewer": "assistant visual review before running this comparison; not expert ground truth",
+  "scope": "Eight middle frames; coarse visible-person rectangles. Includes partial bodies and a forklift driver. Ambiguous machine-shaped clutter is excluded; no claim of exhaustive hidden/occluded people. Coordinates refer to a 960x540 review image, original video is 1920x1080. DEBUG ONLY: after prediction review, two initially missed real workers were added (2_te1 background press and 7_te2 foreground machine). The first review was incomplete and this is not blind evaluation.",
+  "rows": [
+    {"clip":"0_te1","frame":186,"boxes":[[14,190,43,236],[156,192,187,253],[726,186,749,241],[741,195,775,268]]},
+    {"clip":"1_te1","frame":210,"boxes":[[15,194,45,235],[697,159,717,204]]},
+    {"clip":"2_te1","frame":46,"boxes":[[107,391,219,540],[489,297,572,529],[594,342,691,540],[847,118,899,253],[155,45,182,114]]},
+    {"clip":"3_te1","frame":125,"boxes":[[816,49,846,110]]},
+    {"clip":"4_te1","frame":86,"boxes":[[88,54,124,114],[435,302,538,540]]},
+    {"clip":"5_te1","frame":87,"boxes":[[106,47,142,114],[47,419,121,540],[107,404,193,540],[207,370,294,540]]},
+    {"clip":"6_te1","frame":65,"boxes":[[105,43,141,113],[188,44,221,106],[73,399,180,540],[173,483,285,540]]},
+    {"clip":"7_te2","frame":75,"boxes":[[378,138,433,241],[816,49,850,112],[779,208,823,316]]}
+  ]
+}

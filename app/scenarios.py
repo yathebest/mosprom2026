@@ -17,6 +17,63 @@ PPE={
 EQUIPMENT={'excavator','excavators','wheel_loader','dump_truck','truck','mini_van','vehicle','machinery','car','bus','motorcycle'}
 
 
+class EvidenceGate(Gate):
+    """Independent measurements confirm an episode; unknown is not clearance."""
+    def __init__(self):
+        super().__init__();self.samples=0;self.clear_since=None
+
+    def update(self,now,condition,confirm,release,gap):
+        if self.last_seen is not None and now<=self.last_seen:return None
+        previous_seen=self.last_seen
+        self.last_seen=now
+        if condition is None:
+            if self.last_true is not None and now-self.last_true>gap:
+                self.since=None;self.samples=0
+            self.clear_since=None
+            return None
+        if condition:
+            if self.last_true is not None and now-self.last_true>gap:
+                self.since=None;self.samples=0
+            if self.since is None:self.since=now;self.samples=0
+            self.samples+=1;self.last_true=now;self.clear_since=None
+            if not self.active and self.samples>=3 and now-self.since>=confirm-1e-8:
+                self.active=True;self.sequence+=1
+                return self.since,self.sequence
+        else:
+            self.since=None;self.samples=0
+            if self.clear_since is None or (previous_seen is not None and now-previous_seen>gap):self.clear_since=now
+            if now-self.clear_since>=release:self.active=False
+        return None
+
+
+def ppe_measurement(matches,positive,negative,threshold,margin):
+    # A specialist detector and independently trained proposal classifier can
+    # corroborate each other. Do not compare uncalibrated softmax and YOLO
+    # confidences as if they represented the same probability.
+    # A low-score box is a proposal, not independent evidence for its class.
+    # It must not veto a confident crop classifier as a "model conflict".
+    detectors=[o for o in matches if o.model.split(':')[0] in ('ppe-head','ppe-vest') and o.confidence>=threshold]
+    classifiers=[o for o in matches if o.model.endswith('-classifier') and o.confidence>=.8]
+    d=max(detectors,key=lambda o:o.confidence,default=None)
+    c=max(classifiers,key=lambda o:o.confidence,default=None)
+    if d and c:
+        if (d.label in negative)==(c.label in negative):
+            return ('missing' if c.label in negative else 'worn'),'specialist_consensus'
+        return 'unknown','conflicting_models'
+    reliable=[o for o in matches if o.confidence>=threshold]
+    assisted=[o for o in reliable if o.model.endswith(':pose_proposal')]
+    if assisted:
+        candidate=max(assisted,key=lambda o:o.confidence)
+        if any((o.label in negative)!=(candidate.label in negative) for o in reliable if o not in assisted):
+            return 'unknown','conflicting_models'
+    worn=[o for o in reliable if o.label in positive];missing=[o for o in reliable if o.label in negative]
+    if worn and missing:
+        delta=max(o.confidence for o in worn)-max(o.confidence for o in missing)
+        return (('worn' if delta>0 else 'missing'),'stronger_evidence') if abs(delta)>=margin else ('unknown','conflicting_models')
+    assisted_reason='pose_assisted_torso' if assisted and assisted[0].region=='torso' else 'pose_assisted_head'
+    return ('worn' if worn else 'missing' if missing else 'unknown'),(assisted_reason if assisted else 'measured' if reliable else 'no_reliable_evidence')
+
+
 def contains(zone,point,width,height):
     polygon=np.asarray(zone.points,np.float32)*[width,height]
     return cv2.pointPolygonTest(polygon.astype(np.float32),point,False)>=0
@@ -56,6 +113,7 @@ class ScenarioRules:
         self.config=config;self.gates={};self.outside=set();self.last_seen={}
         self.equipment={};self.next_equipment_id=1;self.ppe_status={}
         self.ppe_details={};self.ppe_memory={}
+        self.incidents=[];self.boxes={}
 
     def update_equipment(self,objects,now):
         used=set();result=[]
@@ -79,23 +137,42 @@ class ScenarioRules:
         predicted={p.track_id for p in people if not p.observed}
         for key,gate in self.gates.items():
             if key[0] in predicted:gate.since=None
-        objects=[o for o in objects if o.confidence>=cfg.object_confidence]
+        proposals=list(objects)
+        objects=[o for o in objects if o.confidence>=(cfg.phone_confidence if o.label=='cell_phone' else cfg.object_confidence)]
         people=[p for p in people if p.track_id>0 and p.observed]
         eligible={p.track_id for p in people if p.alert_eligible}
         assigned={}
         for key,(positive,negative,_,_) in PPE.items():
             assigned[key]={}
-            for obj in objects:
+            for obj in proposals:
                 if obj.label not in positive|negative:continue
+                if obj.confidence<cfg.object_confidence and not (obj.model.split(':')[0] in ('ppe-head','ppe-vest') and obj.confidence>=.25):continue
                 tid=person_for(obj,people,'head' if key in ('helmet','mask') else 'body')
                 if tid is not None:assigned[key].setdefault(tid,[]).append(obj)
         self.ppe_status={p.track_id:{} for p in people}
         self.ppe_details={p.track_id:{} for p in people}
+        visible={p.track_id for p in people}
+        for p in people:self.boxes[p.track_id]=tuple(p.box)
+        for item in self.incidents:
+            if item['tid'] in visible:item.update(last=now,box=self.boxes[item['tid']])
+        self.incidents=[x for x in self.incidents if now-x['last']<=15]
         def emit(tid,kind,zone,condition,hold,score,reason,obj=None,extra=None):
-            gate=self.gates.setdefault((tid,kind,zone),Gate())
-            fired=gate.update(now,bool(condition) and (tid==0 or tid in eligible),hold,cfg.release_hold,cfg.observation_gap)
+            evidence=kind in {'no_helmet','no_vest','no_mask','no_harness_at_height','possible_phone_use','possible_smoking'}
+            gate=self.gates.setdefault((tid,kind,zone),EvidenceGate() if evidence else Gate())
+            measured=condition if condition is None else bool(condition)
+            if tid and tid not in eligible:measured=False
+            release=max(3.,cfg.release_hold) if kind in {'possible_phone_use','possible_smoking'} else cfg.release_hold
+            fired=gate.update(now,measured,hold,release,cfg.observation_gap)
             if gate.active:active.setdefault(tid,[]).append(kind)
             if fired:
+                # An ID switch must not create a new incident for the same
+                # spatially continuous worker. Never merge visible neighbours.
+                duplicate=next((x for x in self.incidents if tid and x['tid'] not in visible
+                    and x['kind']==kind and x['zone']==zone and now-x['last']<=3
+                    and iou(x['box'],self.boxes[tid])>=.55),None)
+                if duplicate:
+                    duplicate.update(tid=tid,last=now,box=self.boxes[tid]);return
+                if tid:self.incidents.append({'tid':tid,'kind':kind,'zone':zone,'last':now,'box':self.boxes[tid]})
                 start,sequence=fired
                 event={'track_id':tid,'kind':kind,'zone':zone,'start_s':round(start,3),'alert_s':round(now,3),
                        'sequence':sequence,'score':round(float(score),4),'reason':reason,
@@ -117,12 +194,10 @@ class ScenarioRules:
                 worn=[o for o in matches if o.label in positive];missing=[o for o in matches if o.label in negative]
                 best_worn=max(worn,key=lambda o:o.confidence,default=None)
                 best_missing=max(missing,key=lambda o:o.confidence,default=None)
-                state='worn' if worn else 'missing' if missing else 'unknown'
-                reason_code='measured' if matches else 'no_reliable_evidence'
-                if worn and missing:
-                    difference=best_worn.confidence-best_missing.confidence
-                    state=('worn' if difference>0 else 'missing') if abs(difference)>=cfg.ppe_conflict_margin else 'unknown'
-                    reason_code='conflicting_models' if state=='unknown' else 'stronger_evidence'
+                state,reason_code=ppe_measurement(matches,positive,negative,cfg.object_confidence,cfg.ppe_conflict_margin)
+                head_pixels=round(min(person.box[2]-person.box[0],person.height*.22),1)
+                if key in ('helmet','mask') and head_pixels<12:
+                    state='unknown';reason_code='insufficient_pixels'
                 fresh=state!='unknown'
                 memory_key=(tid,key)
                 if fresh:self.ppe_memory[memory_key]=(now,state)
@@ -131,9 +206,10 @@ class ScenarioRules:
                     state=previous[1];reason_code='recent_observation'
                 self.ppe_status[tid][key]=state
                 self.ppe_details[tid][key]={'state':state,'reason':reason_code,'fresh':fresh,
+                                          'head_pixels_estimate':head_pixels,
                                           'observed_at_s':now if fresh else previous[0] if previous else None}
                 region=next((z.name for z in zones if z.kind=='height'),'') if key=='harness' else ''
-                condition=state=='missing' and fresh and (bool(region) if key=='harness' else True)
+                condition=(state=='missing' and (bool(region) if key=='harness' else True)) if fresh else None
                 obj=max(missing,key=lambda o:o.confidence,default=None)
                 reason=(f'{title}: модель явно обнаружила отсутствие экипировки; подтверждение {cfg.ppe_hold:g} с.'+
                         (' Человек находится в размеченной зоне работы на высоте.' if key=='harness' else ''))
@@ -151,16 +227,28 @@ class ScenarioRules:
                 emit(tid,kind,zone.name,condition,cfg.zone_hold,person.confidence,reason,
                      extra={'context_source':'operator_polygon','limitation':'Physical barrier/load/conveyor is defined by operator; not independently recognized.'})
             if cfg.phone_detection:
-                phones=[]
+                phones=[];wrists=[]
                 if person.keypoints is not None:
                     wrists=[k[:2] for k in person.keypoints[[9,10]] if k[2]>=.4]
                     phones=[o for o in objects if o.label=='cell_phone' and person_for(o,people)==tid
                             and max(o.box[2]-o.box[0],o.box[3]-o.box[1])<=person.height*.35
                             and any(point_box_distance(w,o.box)<=person.height*.18 for w in wrists)]
-                context=base_details.get(tid,{}).get('speed',0)>=.12 or any(z.kind=='equipment' for z in zones)
+                context=(not cfg.phone_work_context_only or base_details.get(tid,{}).get('speed',0)>=.12
+                         or any(z.kind=='equipment' for z in zones))
                 obj=max(phones,key=lambda o:o.confidence,default=None)
-                emit(tid,'possible_phone_use','',bool(obj) and context,cfg.object_hold,obj.confidence if obj else 0,
-                     'Телефон обнаружен рядом с рукой при движении или в размеченной рабочей зоне. Использование требует проверки по клипу.',obj)
+                emit(tid,'possible_phone_use','',(bool(obj) and context) if wrists else None,cfg.object_hold,obj.confidence if obj else 0,
+                     'Телефон устойчиво обнаружен рядом с измеренной рукой. Использование требует проверки по клипу.',obj)
+            if cfg.smoking_detection:
+                # Smoke/dust alone is not smoking. Require a localized smoking
+                # proposal near a sufficiently resolved person, not a distant
+                # scene-level label amplified from a few pixels.
+                smoking=[o for o in objects if o.label in ('smooking','smoking','cigarette')
+                         and person_for(o,people)==tid and person.height>=cfg.smoking_min_person_height
+                         and (o.box[1]+o.box[3])/2<=person.box[1]+person.height*.55
+                         and not any(z.kind=='smoking_allowed' for z in zones)]
+                obj=max(smoking,key=lambda o:o.confidence,default=None)
+                emit(tid,'possible_smoking','',bool(obj),cfg.object_hold,obj.confidence if obj else 0,
+                     'Повторно обнаружен визуальный признак курения рядом с человеком. Проверьте клип: жест сам по себе не доказывает курение.',obj)
             if cfg.load_posture_detection:
                 bent=False;carried=[]
                 k=person.keypoints
@@ -197,7 +285,7 @@ class ScenarioRules:
                       'context_source':'operator_polygon' if zone else 'detected_moving_equipment'})
         scene_specs=[('fire',cfg.fire_detection,{'fire','flame','flames'},'fire_allowed','Обнаружены признаки открытого огня вне разрешённой области.'),
                      ('smoke',cfg.smoke_detection,{'smoke'},'fire_allowed','Обнаружены признаки дыма. Пар/пыль могут давать ошибки.'),
-                     ('possible_smoking',cfg.smoking_detection,{'smooking','smoking','cigarette'},'smoking_allowed','Модель обнаружила признаки курения вне разрешённой области; проверьте клип.')]
+                     ]
         for kind,enabled,labels,allowed_kind,reason in scene_specs:
             if not enabled:continue
             candidates=[o for o in objects if o.label in labels and not any(z.kind==allowed_kind and contains(z,((o.box[0]+o.box[2])/2,(o.box[1]+o.box[3])/2),width,height) for z in cfg.zones)]
@@ -217,6 +305,7 @@ def base_config(config):
 
 def assessment_rows(people,details):
     return [{'track_id':int(p.track_id),'tracking':'predicted' if not p.observed else 'measured' if p.alert_eligible else 'weak',
+             'visibility':{'person_height_px':round(p.height,1),'small_objects':'limited' if p.height<120 else 'requires_review'},
              'ppe':details.get(p.track_id,{})} for p in people[:32]]
 
 

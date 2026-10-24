@@ -86,7 +86,7 @@ def transcode(source,target):
     if not executable:
         return False
     result = subprocess.run([executable,"-hide_banner","-loglevel","error","-y","-i",str(source),
-                             "-an","-c:v","libx264","-preset","veryfast","-crf","24","-pix_fmt","yuv420p",
+                             "-an","-c:v","libx264","-threads","2","-preset","veryfast","-crf","24","-pix_fmt","yuv420p",
                              "-movflags","+faststart",str(target)],capture_output=True,timeout=600)
     return result.returncode==0 and target.exists()
 

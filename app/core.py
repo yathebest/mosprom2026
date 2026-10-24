@@ -83,6 +83,10 @@ class RunConfig(BaseModel):
     ppe_hold: float = Field(default=1.5,ge=.3,le=15)
     object_hold: float = Field(default=1.0,ge=.3,le=15)
     object_confidence: float = Field(default=.5,ge=.15,le=.95)
+    phone_confidence: float = Field(default=.3,ge=.15,le=.95)
+    phone_work_context_only: bool = False
+    distant_people: bool = True
+    smoking_min_person_height: int = Field(default=120,ge=40,le=600)
     ppe_crops: bool = True
     ppe_max_people: int = Field(default=8,ge=1,le=32)
     ppe_memory_s: float = Field(default=.5,ge=0,le=2)

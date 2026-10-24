@@ -53,6 +53,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--root',required=True);p.add_argument('--handle',required=True)
     p.add_argument('--once',action='store_true');p.add_argument('--probe',action='store_true')
     p.add_argument('--interval',type=int,default=1800)
+    p.add_argument('--stop-file',type=Path)
     args=p.parse_args();root=Path(args.root);root.mkdir(parents=True,exist_ok=True)
     status=root/'remote-backup-status.json'
     if args.once:
@@ -68,6 +69,7 @@ def main():
         return
     seen=set();last_upload=0
     while True:
+        if args.stop_file and args.stop_file.exists():break
         checkpoints={str(p.relative_to(root)) for p in root.rglob('*.pt')
                      if p.name=='resume-last.pt' or p.name.endswith(('classifier-last.pt','temporal-last.pt'))}
         if not checkpoints or (not(checkpoints-seen) and time.monotonic()-last_upload<args.interval):

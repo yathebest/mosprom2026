@@ -25,7 +25,7 @@ def onnx_session(path,threads=4):
                 _DLL_HANDLES.append(os.add_dll_directory(str(Path(torch.__file__).parent/'lib')))
             providers=[('CUDAExecutionProvider',{'cudnn_conv_algo_search':'HEURISTIC',
                         'cudnn_conv_use_max_workspace':'0','gpu_mem_limit':1024**3}),*providers]
-    options=ort.SessionOptions();options.intra_op_num_threads=threads;options.inter_op_num_threads=1
+    options=ort.SessionOptions();options.intra_op_num_threads=min(threads,2);options.inter_op_num_threads=1
     return ort.InferenceSession(str(path),sess_options=options,providers=providers)
 
 
@@ -65,6 +65,33 @@ def person_regions(person,width,height):
 def normalized(label):
     value=re.sub(r'[^a-z0-9]+','_',str(label).lower()).strip('_')
     return 'cell_phone' if value in ('mobile_phone','phone') else value
+
+
+def pose_head_proposal(person,width,height):
+    """Neutral head proposal from measured facial landmarks, not a PPE label."""
+    k=person.keypoints
+    if k is None or k.shape!=(17,3) or not np.isfinite(k).all():return None
+    face=k[:5][k[:5,2]>=.5,:2]
+    if len(face)<3:return None
+    center=face.mean(0);span=max(float(np.ptp(face[:,0])),float(np.ptp(face[:,1])),person.height*.12)
+    box=np.clip((center[0]-.65*span,center[1]-.95*span,center[0]+.65*span,center[1]+.65*span),
+                [0,0,0,0],[width,height,width,height])
+    if min(box[2]-box[0],box[3]-box[1])<12:return None
+    return Observation(tuple(map(float,box)),1.,'head_proposal','measured_face_landmarks',tuple(person.box),'head')
+
+
+def pose_torso_proposal(person,width,height):
+    """A visible measured torso proposes a crop, never an absent-vest label."""
+    k=person.keypoints
+    if k is None or k.shape!=(17,3) or not np.isfinite(k).all() or person.height<90:return None
+    points=k[[5,6,11,12]]
+    if np.any(points[:,2]<.55):return None
+    left,right=float(points[:,0].min()),float(points[:,0].max())
+    top,bottom=float(points[:2,1].min()),float(points[2:,1].max())
+    bw,bh=right-left,bottom-top
+    if bw<12 or bh<20:return None
+    box=np.clip((left-.15*bw,top-.12*bh,right+.15*bw,bottom+.08*bh),[0,0,0,0],[width,height,width,height])
+    return Observation(tuple(map(float,box)),1.,'torso_proposal','measured_shoulders_hips',tuple(person.box),'torso')
 
 
 def iou(a,b):
@@ -121,7 +148,7 @@ class CropClassifier:
         self.mean=np.asarray(json.loads(meta['rgb_mean']),np.float32)[None,:,None,None]
         self.std=np.asarray(json.loads(meta['rgb_std']),np.float32)[None,:,None,None]
         inp=self.session.get_inputs()[0];self.input_name=inp.name;self.size=int(inp.shape[-1])
-        self.threshold=float(meta.get('abstain_threshold','.8'))
+        self.threshold=max(.8,float(meta.get('abstain_threshold','.8')))
         if meta.get('crop_policy')!='proposal_context_1.3':
             raise ValueError('PPE classifier must declare its training crop policy')
         if meta.get('resize_algorithm','pil_bilinear')!='pil_bilinear':
@@ -132,7 +159,7 @@ class CropClassifier:
     def predict(self,frame,person,proposals=()):
         # Training uses annotated PPE boxes with 30% context, not arbitrary
         # person-derived regions. Reproduce that geometry on detector proposals.
-        labels={'hardhat','helmet','no_hardhat','no_helmet'} if self.region=='head' else {'vest','safety_vest','no_vest','no_safety_vest'}
+        labels={'hardhat','helmet','no_hardhat','no_helmet','head_proposal'} if self.region=='head' else {'vest','safety_vest','no_vest','no_safety_vest','torso_proposal'}
         candidates=[o for o in proposals if o.label in labels]
         if not candidates:return None
         proposal=max(candidates,key=lambda o:o.confidence)
@@ -165,7 +192,10 @@ def required_models(config):
 
 class ScenarioModels:
     def __init__(self,folder,config):
+        self.person_confidence=config.confidence
         self.phone_crops=config.phone_detection
+        self.smoking_crops=config.smoking_detection
+        self.smoking_min_height=config.smoking_min_person_height
         self.ppe_crops=config.ppe_crops
         self.max_people=config.ppe_max_people
         self.ppe_labels={'head':set(),'torso':set()}
@@ -184,17 +214,29 @@ class ScenarioModels:
             'proximity':{'excavator','excavators','wheel_loader','dump_truck','truck','mini_van','vehicle','machinery','car','bus','motorcycle'},
         }.items():
             if getattr(config,flag+'_detection'):self.allowed.update(labels)
-        self.models=[OnnxDetector(folder/name,config.object_confidence) for name in required_models(config)]
+        self.models=[OnnxDetector(folder/name,config.phone_confidence if name=='phone-objects.onnx'
+                                 else config.object_confidence) for name in required_models(config)]
+        if config.fire_detection and (folder/'fire-dfire.onnx').exists():
+            self.models.append(OnnxDetector(folder/'fire-dfire.onnx',config.object_confidence))
         self.classifiers=[CropClassifier(folder/name,region) for name,region,enabled in [
             ('ppe-head-classifier.onnx','head',config.helmet_detection),
             ('ppe-torso-classifier.onnx','torso',config.vest_detection)] if enabled and (folder/name).exists()]
         for name,enabled in [('ppe-head.onnx',config.helmet_detection),('ppe-vest.onnx',config.vest_detection)]:
-            if enabled and (folder/name).exists():self.models.append(OnnxDetector(folder/name,config.object_confidence))
+            # Low-score proposals may be independently verified by the crop
+            # classifier. They cannot become violations on detector score alone.
+            if enabled and (folder/name).exists():self.models.append(OnnxDetector(folder/name,min(.25,config.object_confidence)))
 
     def predict(self,frame,people=()):
+        # Weak detections remain available to tracking, but must not occupy the
+        # bounded crop budget ahead of real workers or produce PPE alerts.
+        people=[p for p in people if p.observed and p.confidence>=getattr(self,'person_confidence',.4)]
+        specialized={m.name for m in self.models}
         result=[]
         for model in self.models:
-            result.extend(o for o in model.predict(frame) if o.label in self.allowed)
+            # D-Fire supplements flames only. Its new steam/dust false positives
+            # must not change the existing smoke operating point.
+            allowed={'fire'} if model.name=='fire-dfire' else self.allowed
+            result.extend(o for o in model.predict(frame) if o.label in allowed)
             if self.ppe_crops and model.name.startswith('ppe-'):
                 h,w=frame.shape[:2]
                 # Prioritize small visible people; bound inference work per frame.
@@ -203,12 +245,19 @@ class ScenarioModels:
                     # pixels in the 640px full-frame detector input. Repeating
                     # every PPE model on their crops adds live latency without
                     # rescuing a small object. Classifier proposal crops remain.
-                    if person.height>=h*.55:continue
                     for region,(x1,y1,x2,y2) in person_regions(person,w,h).items():
                         if model.name=='ppe-head' and region!='head':continue
                         if model.name=='ppe-vest' and region!='torso':continue
                         labels=self.ppe_labels[region]
-                        if not labels or x2-x1<20 or y2-y1<20:continue
+                        if model.name=='ppe-safetyvision':
+                            if region=='head' and 'ppe-head' in specialized:labels=labels-{'hardhat','helmet','no_hardhat','no_helmet','bare_head'}
+                            if region=='torso' and 'ppe-vest' in specialized:labels=labels-{'vest','safety_vest','no_vest','no_safety_vest'}
+                        if not labels or x2-x1<12 or y2-y1<12:continue
+                        from .scenarios import person_for
+                        # A confident full-frame proposal already covers this
+                        # region. Keep crop work for unresolved heads/torsos.
+                        if any(o.label in labels and o.confidence>=.8 and
+                               person_for(o,[replace(person,track_id=1)],region)==1 for o in result):continue
                         for obs in model.predict(frame[y1:y2,x1:x2]):
                             if obs.label not in labels:continue
                             box=(obs.box[0]+x1,obs.box[1]+y1,obs.box[2]+x1,obs.box[3]+y1)
@@ -224,12 +273,27 @@ class ScenarioModels:
                 for person in sorted(people,key=lambda p:p.height,reverse=True)[:4]:
                     a,b,c,d=person.box;pad=person.height*.12
                     x1,y1=max(0,int(a-pad)),max(0,int(b-pad));x2,y2=min(w,int(c+pad)),min(h,int(d+pad))
-                    if x2-x1<48 or y2-y1<80:continue
+                    if x2-x1<28 or y2-y1<60:continue
                     for obs in model.predict(frame[y1:y2,x1:x2]):
                         if obs.label!='cell_phone':continue
                         box=(obs.box[0]+x1,obs.box[1]+y1,obs.box[2]+x1,obs.box[3]+y1)
                         if not any(o.label=='cell_phone' and iou(o.box,box)>.45 for o in result):
                             result.append(Observation(box,obs.confidence,obs.label,obs.model+':person_crop'))
+            if getattr(self,'smoking_crops',False) and model.name=='smoking':
+                # Preserve native head/hand pixels instead of shrinking the
+                # entire factory scene to the smoking detector's input size.
+                h,w=frame.shape[:2]
+                for person in sorted(people,key=lambda p:p.height,reverse=True)[:4]:
+                    if person.height<self.smoking_min_height:continue
+                    a,b,c,d=person.box;pad=person.height*.1
+                    x1,y1=max(0,int(a-pad)),max(0,int(b-pad))
+                    x2,y2=min(w,int(c+pad)),min(h,int(b+person.height*.7))
+                    if x2-x1<28 or y2-y1<60:continue
+                    for obs in model.predict(frame[y1:y2,x1:x2]):
+                        if obs.label not in {'smooking','smoking','cigarette'}:continue
+                        box=(obs.box[0]+x1,obs.box[1]+y1,obs.box[2]+x1,obs.box[3]+y1)
+                        if any(o.label==obs.label and iou(o.box,box)>.45 for o in result):continue
+                        result.append(Observation(box,obs.confidence,obs.label,obs.model+':upper_body_crop',tuple(person.box),'upper_body'))
         # predict runs before tracking: incoming track_id values may all be 0.
         # Give this frame local unique IDs solely for spatial crop ownership.
         indexed_people=[replace(p,track_id=i+1) for i,p in enumerate(people)]
@@ -238,5 +302,14 @@ class ScenarioModels:
             for person in sorted(indexed_people,key=lambda p:p.height)[:self.max_people]:
                 proposals=[o for o in result if person_for(o,indexed_people,'head' if classifier.region=='head' else 'body')==person.track_id]
                 observation=classifier.predict(frame,person,proposals)
+                if observation is None:
+                    proposal_fn=pose_head_proposal if classifier.region=='head' else pose_torso_proposal
+                    proposal=proposal_fn(person,frame.shape[1],frame.shape[0])
+                    if proposal:
+                        candidate=classifier.predict(frame,person,[proposal])
+                        # This proposal source differs from annotated training
+                        # boxes. Abstain more often and report its provenance.
+                        if candidate is not None and candidate.confidence>=(.9 if classifier.region=='head' else .95):
+                            observation=replace(candidate,model=candidate.model+':pose_proposal')
                 if observation is not None:result.append(observation)
         return result

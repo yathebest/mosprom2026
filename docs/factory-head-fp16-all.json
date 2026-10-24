@@ -1,0 +1,1402 @@
+{
+  "annotation_scope": "Assistant visual review of 101 pose-proposal cards; not expert-certified annotation. Only crop class reviewed, not bbox ground truth.",
+  "rows": [
+    {
+      "id": "0003",
+      "source_video": "train/0_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/0_tr1-f00104.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 28.5,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 28.5,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0008",
+      "source_video": "train/0_tr152.mp4",
+      "source_split": "train",
+      "frame_file": "frames/0_tr152-f00089.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 45.3,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 45.3,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0032",
+      "source_video": "train/1_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/1_tr1-f00052.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 43.3,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 43.3,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0034",
+      "source_video": "train/1_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/1_tr1-f00052.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 22.9,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 22.9,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0035",
+      "source_video": "train/1_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/1_tr1-f00120.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 54.3,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 54.3,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0039",
+      "source_video": "train/1_tr39.mp4",
+      "source_split": "train",
+      "frame_file": "frames/1_tr39-f00081.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 85.4,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 85.4,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0048",
+      "source_video": "train/1_tr68.mp4",
+      "source_split": "train",
+      "frame_file": "frames/1_tr68-f00074.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 28.5,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 28.5,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0051",
+      "source_video": "train/1_tr68.mp4",
+      "source_split": "train",
+      "frame_file": "frames/1_tr68-f00173.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 28.3,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 28.3,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0060",
+      "source_video": "train/2_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr1-f00046.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 28.9,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 28.9,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0061",
+      "source_video": "train/2_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr1-f00108.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 47.5,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 47.5,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0064",
+      "source_video": "train/2_tr21.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr21-f00030.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 56.5,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 56.5,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0065",
+      "source_video": "train/2_tr21.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr21-f00030.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 64.9,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 64.9,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0067",
+      "source_video": "train/2_tr21.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr21-f00069.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 64.2,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 64.2,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0068",
+      "source_video": "train/2_tr21.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr21-f00069.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 73.0,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 73.0,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0069",
+      "source_video": "train/2_tr21.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr21-f00069.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 31.4,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 31.4,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0072",
+      "source_video": "train/2_tr6.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr6-f00026.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 28.9,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 28.9,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0074",
+      "source_video": "train/2_tr6.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr6-f00061.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 64.0,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 64.0,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0075",
+      "source_video": "train/2_tr6.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr6-f00061.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "conflicting_models",
+        "fresh": false,
+        "head_pixels_estimate": 28.7,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "conflicting_models",
+        "fresh": false,
+        "head_pixels_estimate": 28.7,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0078",
+      "source_video": "train/2_tr99.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr99-f00052.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 50.4,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 50.4,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0079",
+      "source_video": "train/2_tr99.mp4",
+      "source_split": "train",
+      "frame_file": "frames/2_tr99-f00122.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 52.6,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 52.6,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0095",
+      "source_video": "train/4_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr1-f00094.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 63.8,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 63.8,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0096",
+      "source_video": "train/4_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr1-f00094.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "conflicting_models",
+        "fresh": false,
+        "head_pixels_estimate": 17.1,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "conflicting_models",
+        "fresh": false,
+        "head_pixels_estimate": 17.1,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0099",
+      "source_video": "train/4_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr1-f00220.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 31.7,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 31.7,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0100",
+      "source_video": "train/4_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr1-f00220.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 60.9,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 60.9,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0101",
+      "source_video": "train/4_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr1-f00220.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "conflicting_models",
+        "fresh": false,
+        "head_pixels_estimate": 30.5,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "conflicting_models",
+        "fresh": false,
+        "head_pixels_estimate": 30.5,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0102",
+      "source_video": "train/4_tr24.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr24-f00066.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 48.4,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 48.4,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0106",
+      "source_video": "train/4_tr24.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr24-f00066.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 29.5,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 29.5,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0110",
+      "source_video": "train/4_tr24.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr24-f00154.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 31.0,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 31.0,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0112",
+      "source_video": "train/4_tr4.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr4-f00031.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 27.3,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 27.3,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0113",
+      "source_video": "train/4_tr4.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr4-f00031.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 49.7,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 49.7,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0115",
+      "source_video": "train/4_tr4.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr4-f00072.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 52.4,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 52.4,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0119",
+      "source_video": "train/4_tr9.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr9-f00052.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 82.5,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 82.5,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0120",
+      "source_video": "train/4_tr9.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr9-f00052.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 30.3,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 30.3,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0122",
+      "source_video": "train/4_tr9.mp4",
+      "source_split": "train",
+      "frame_file": "frames/4_tr9-f00120.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 84.3,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 84.3,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0125",
+      "source_video": "train/5_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/5_tr1-f00052.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 64.7,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 64.7,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0126",
+      "source_video": "train/5_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/5_tr1-f00052.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 58.5,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 58.5,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0129",
+      "source_video": "train/5_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/5_tr1-f00121.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 65.6,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 65.6,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0130",
+      "source_video": "train/5_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/5_tr1-f00121.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 54.8,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 54.8,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0135",
+      "source_video": "train/5_tr16.mp4",
+      "source_split": "train",
+      "frame_file": "frames/5_tr16-f00068.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 62.3,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 62.3,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0136",
+      "source_video": "train/5_tr16.mp4",
+      "source_split": "train",
+      "frame_file": "frames/5_tr16-f00068.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 64.2,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 64.2,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0139",
+      "source_video": "train/5_tr16.mp4",
+      "source_split": "train",
+      "frame_file": "frames/5_tr16-f00158.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 62.7,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 62.7,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0142",
+      "source_video": "train/5_tr9.mp4",
+      "source_split": "train",
+      "frame_file": "frames/5_tr9-f00060.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 58.5,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 58.5,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0146",
+      "source_video": "train/5_tr9.mp4",
+      "source_split": "train",
+      "frame_file": "frames/5_tr9-f00140.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 57.6,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 57.6,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0149",
+      "source_video": "train/6_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/6_tr1-f00045.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 75.7,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 75.7,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0154",
+      "source_video": "train/6_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/6_tr1-f00104.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 76.6,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 76.6,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0155",
+      "source_video": "train/6_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/6_tr1-f00104.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 28.4,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 28.4,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0156",
+      "source_video": "train/6_tr15.mp4",
+      "source_split": "train",
+      "frame_file": "frames/6_tr15-f00010.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 84.9,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 84.9,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0159",
+      "source_video": "train/6_tr15.mp4",
+      "source_split": "train",
+      "frame_file": "frames/6_tr15-f00024.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 86.2,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 86.2,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0166",
+      "source_video": "train/6_tr3.mp4",
+      "source_split": "train",
+      "frame_file": "frames/6_tr3-f00090.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 30.6,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 30.6,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0175",
+      "source_video": "train/7_tr1.mp4",
+      "source_split": "train",
+      "frame_file": "frames/7_tr1-f00177.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 36.1,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 36.1,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0192",
+      "source_video": "test/1_te9.mp4",
+      "source_split": "test",
+      "frame_file": "frames/1_te9-f00135.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 69.3,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 69.3,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0193",
+      "source_video": "test/1_te9.mp4",
+      "source_split": "test",
+      "frame_file": "frames/1_te9-f00135.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 28.1,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 28.1,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0195",
+      "source_video": "test/2_te1.mp4",
+      "source_split": "test",
+      "frame_file": "frames/2_te1-f00046.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 94.8,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 94.8,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0196",
+      "source_video": "test/2_te1.mp4",
+      "source_split": "test",
+      "frame_file": "frames/2_te1-f00046.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 86.5,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 86.5,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0197",
+      "source_video": "test/2_te1.mp4",
+      "source_split": "test",
+      "frame_file": "frames/2_te1-f00046.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 59.4,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 59.4,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0199",
+      "source_video": "test/2_te1.mp4",
+      "source_split": "test",
+      "frame_file": "frames/2_te1-f00046.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 27.6,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 27.6,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0202",
+      "source_video": "test/2_te9.mp4",
+      "source_split": "test",
+      "frame_file": "frames/2_te9-f00088.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 69.2,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 69.2,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0208",
+      "source_video": "test/4_te1.mp4",
+      "source_split": "test",
+      "frame_file": "frames/4_te1-f00086.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 84.7,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 84.7,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0214",
+      "source_video": "test/5_te1.mp4",
+      "source_split": "test",
+      "frame_file": "frames/5_te1-f00086.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 51.7,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 51.7,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0215",
+      "source_video": "test/5_te1.mp4",
+      "source_split": "test",
+      "frame_file": "frames/5_te1-f00086.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 62.9,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 62.9,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0216",
+      "source_video": "test/5_te1.mp4",
+      "source_split": "test",
+      "frame_file": "frames/5_te1-f00086.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 56.5,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 56.5,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0223",
+      "source_video": "test/6_te1.mp4",
+      "source_split": "test",
+      "frame_file": "frames/6_te1-f00064.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 57.4,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_head",
+        "fresh": true,
+        "head_pixels_estimate": 57.4,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0224",
+      "source_video": "test/6_te9.mp4",
+      "source_split": "test",
+      "frame_file": "frames/6_te9-f00037.jpg",
+      "truth": "missing",
+      "person_matched": true,
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 88.4,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 88.4,
+        "observed_at_s": 0
+      }
+    }
+  ],
+  "counts": {
+    "detector_only": {
+      "unknown": 22,
+      "missing": 41
+    },
+    "pose_fallback": {
+      "missing": 54,
+      "unknown": 9
+    }
+  },
+  "warning": "Reviewed head subset; not exhaustive person recall, not event metrics. Test source crops have been inspected; do not use as unseen deployment evidence."
+}

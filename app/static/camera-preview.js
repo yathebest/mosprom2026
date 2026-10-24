@@ -13,7 +13,7 @@
       try{
         const devices=getMediaDevices();
         if(!devices?.getUserMedia)throw Error('Браузер не предоставляет камеру. Откройте localhost в Chrome или Edge.');
-        const acquired=await devices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720},...(deviceId?{deviceId:{exact:deviceId}}:{})},audio:false});
+        const acquired=await devices.getUserMedia({video:{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:25},...(deviceId?{deviceId:{exact:deviceId}}:{})},audio:false});
         if(request!==generation){acquired.getTracks().forEach(track=>track.stop());return null}
         stream=acquired;video.srcObject=stream;notify();await video.play();
         if(request!==generation)return null;

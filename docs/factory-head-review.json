@@ -1,0 +1,3843 @@
+{
+  "method": "Assistant visual review of 101 pose-proposal cards; not expert-certified annotation. Only crop class reviewed, not bbox ground truth.",
+  "rows": [
+    {
+      "id": "0001",
+      "source_video": "train/0_tr1.mp4",
+      "source_sha256": "73085eee7e87c9d3c22d185d13443af88498360e4acc3096aeac599872b30381",
+      "source_split": "train",
+      "frame_index": 104,
+      "time_s": 4.18848167539267,
+      "frame_file": "frames/0_tr1-f00104.jpg",
+      "crop_file": "crops/0001.png",
+      "person_box": [
+        509.58673095703125,
+        435.61236572265625,
+        572.4313354492188,
+        528.8485717773438
+      ],
+      "person_confidence": 0.7964995503425598,
+      "head_box": [
+        548.1692504882812,
+        441.1893310546875,
+        562.7140502929688,
+        459.0906982421875
+      ],
+      "crop_box": [
+        545,
+        438,
+        564,
+        461
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0003",
+      "source_video": "train/0_tr1.mp4",
+      "source_sha256": "73085eee7e87c9d3c22d185d13443af88498360e4acc3096aeac599872b30381",
+      "source_split": "train",
+      "frame_index": 104,
+      "time_s": 4.18848167539267,
+      "frame_file": "frames/0_tr1-f00104.jpg",
+      "crop_file": "crops/0003.png",
+      "person_box": [
+        435.58538818359375,
+        401.38897705078125,
+        500.94305419921875,
+        530.7608032226562
+      ],
+      "person_confidence": 0.6385208368301392,
+      "head_box": [
+        449.22100830078125,
+        404.212646484375,
+        471.49072265625,
+        431.62152099609375
+      ],
+      "crop_box": [
+        445,
+        400,
+        474,
+        435
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0007",
+      "source_video": "train/0_tr152.mp4",
+      "source_sha256": "258d05c3a8c66769e5eeb42fb2d411d4dcf556c1fe7cbb0ff7726f7152b0f3d6",
+      "source_split": "train",
+      "frame_index": 89,
+      "time_s": 3.5843737414418047,
+      "frame_file": "frames/0_tr152-f00089.jpg",
+      "crop_file": "crops/0007.png",
+      "person_box": [
+        1592.19921875,
+        568.2567138671875,
+        1674.38671875,
+        794.1986083984375
+      ],
+      "person_confidence": 0.8779957294464111,
+      "head_box": [
+        1623.739501953125,
+        560.5806884765625,
+        1658.986328125,
+        603.9615478515625
+      ],
+      "crop_box": [
+        1618,
+        554,
+        1664,
+        610
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0008",
+      "source_video": "train/0_tr152.mp4",
+      "source_sha256": "258d05c3a8c66769e5eeb42fb2d411d4dcf556c1fe7cbb0ff7726f7152b0f3d6",
+      "source_split": "train",
+      "frame_index": 89,
+      "time_s": 3.5843737414418047,
+      "frame_file": "frames/0_tr152-f00089.jpg",
+      "crop_file": "crops/0008.png",
+      "person_box": [
+        1536.4310302734375,
+        511.8870849609375,
+        1605.9420166015625,
+        718.3836669921875
+      ],
+      "person_confidence": 0.8698447346687317,
+      "head_box": [
+        1561.5753173828125,
+        509.6070251464844,
+        1593.7886962890625,
+        549.25439453125
+      ],
+      "crop_box": [
+        1556,
+        503,
+        1598,
+        555
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0014",
+      "source_video": "train/0_tr152.mp4",
+      "source_sha256": "258d05c3a8c66769e5eeb42fb2d411d4dcf556c1fe7cbb0ff7726f7152b0f3d6",
+      "source_split": "train",
+      "frame_index": 207,
+      "time_s": 8.33668948852195,
+      "frame_file": "frames/0_tr152-f00207.jpg",
+      "crop_file": "crops/0014.png",
+      "person_box": [
+        1582.359619140625,
+        454.895263671875,
+        1644.4208984375,
+        617.38134765625
+      ],
+      "person_confidence": 0.8255331516265869,
+      "head_box": [
+        1603.3914794921875,
+        451.4367980957031,
+        1628.7393798828125,
+        482.6341247558594
+      ],
+      "crop_box": [
+        1599,
+        446,
+        1632,
+        487
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0022",
+      "source_video": "train/0_tr45.mp4",
+      "source_sha256": "2b12fb4398de118cd26129431a62326552c95937774562d51d79dcfb510df4ca",
+      "source_split": "train",
+      "frame_index": 51,
+      "time_s": 2.0564516129032255,
+      "frame_file": "frames/0_tr45-f00051.jpg",
+      "crop_file": "crops/0022.png",
+      "person_box": [
+        1497.06298828125,
+        324.0793151855469,
+        1529.78662109375,
+        408.3467712402344
+      ],
+      "person_confidence": 0.7340176701545715,
+      "head_box": [
+        1508.1566162109375,
+        326.2159423828125,
+        1521.3023681640625,
+        342.3952941894531
+      ],
+      "crop_box": [
+        1506,
+        323,
+        1523,
+        344
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0025",
+      "source_video": "train/0_tr45.mp4",
+      "source_sha256": "2b12fb4398de118cd26129431a62326552c95937774562d51d79dcfb510df4ca",
+      "source_split": "train",
+      "frame_index": 120,
+      "time_s": 4.838709677419355,
+      "frame_file": "frames/0_tr45-f00120.jpg",
+      "crop_file": "crops/0025.png",
+      "person_box": [
+        1475.6002197265625,
+        324.7823486328125,
+        1498.0816650390625,
+        402.23370361328125
+      ],
+      "person_confidence": 0.7087013125419617,
+      "head_box": [
+        1484.338623046875,
+        322.9340515136719,
+        1496.421142578125,
+        337.8047180175781
+      ],
+      "crop_box": [
+        1482,
+        320,
+        1498,
+        340
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0032",
+      "source_video": "train/1_tr1.mp4",
+      "source_sha256": "2155fbb4eeb51c340e9c6a8a4d8509030daa546f479ec9c9f4988d414359976c",
+      "source_split": "train",
+      "frame_index": 52,
+      "time_s": 2.096774193548387,
+      "frame_file": "frames/1_tr1-f00052.jpg",
+      "crop_file": "crops/0032.png",
+      "person_box": [
+        1551.091064453125,
+        499.92059326171875,
+        1627.642333984375,
+        697.2039184570312
+      ],
+      "person_confidence": 0.8785833716392517,
+      "head_box": [
+        1578.900390625,
+        497.110595703125,
+        1609.676513671875,
+        534.989013671875
+      ],
+      "crop_box": [
+        1574,
+        491,
+        1614,
+        540
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0034",
+      "source_video": "train/1_tr1.mp4",
+      "source_sha256": "2155fbb4eeb51c340e9c6a8a4d8509030daa546f479ec9c9f4988d414359976c",
+      "source_split": "train",
+      "frame_index": 52,
+      "time_s": 2.096774193548387,
+      "frame_file": "frames/1_tr1-f00052.jpg",
+      "crop_file": "crops/0034.png",
+      "person_box": [
+        685.2015380859375,
+        973.2567749023438,
+        781.5994873046875,
+        1077.7666015625
+      ],
+      "person_confidence": 0.5760324597358704,
+      "head_box": [
+        690.8687744140625,
+        986.1751098632812,
+        726.0838623046875,
+        1029.516845703125
+      ],
+      "crop_box": [
+        685,
+        979,
+        731,
+        1036
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0035",
+      "source_video": "train/1_tr1.mp4",
+      "source_sha256": "2155fbb4eeb51c340e9c6a8a4d8509030daa546f479ec9c9f4988d414359976c",
+      "source_split": "train",
+      "frame_index": 120,
+      "time_s": 4.838709677419355,
+      "frame_file": "frames/1_tr1-f00120.jpg",
+      "crop_file": "crops/0035.png",
+      "person_box": [
+        1551.783447265625,
+        598.02685546875,
+        1648.206298828125,
+        845.2540283203125
+      ],
+      "person_confidence": 0.8934357762336731,
+      "head_box": [
+        1601.935302734375,
+        595.0342407226562,
+        1640.502685546875,
+        642.5018310546875
+      ],
+      "crop_box": [
+        1596,
+        587,
+        1646,
+        649
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0036",
+      "source_video": "train/1_tr1.mp4",
+      "source_sha256": "2155fbb4eeb51c340e9c6a8a4d8509030daa546f479ec9c9f4988d414359976c",
+      "source_split": "train",
+      "frame_index": 120,
+      "time_s": 4.838709677419355,
+      "frame_file": "frames/1_tr1-f00120.jpg",
+      "crop_file": "crops/0036.png",
+      "person_box": [
+        1543.25732421875,
+        371.8612060546875,
+        1581.3251953125,
+        480.7845458984375
+      ],
+      "person_confidence": 0.8100278377532959,
+      "head_box": [
+        1551.117919921875,
+        370.4232177734375,
+        1568.10986328125,
+        391.3365173339844
+      ],
+      "crop_box": [
+        1548,
+        367,
+        1570,
+        394
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0037",
+      "source_video": "train/1_tr1.mp4",
+      "source_sha256": "2155fbb4eeb51c340e9c6a8a4d8509030daa546f479ec9c9f4988d414359976c",
+      "source_split": "train",
+      "frame_index": 120,
+      "time_s": 4.838709677419355,
+      "frame_file": "frames/1_tr1-f00120.jpg",
+      "crop_file": "crops/0037.png",
+      "person_box": [
+        871.7908935546875,
+        477.85040283203125,
+        943.0240478515625,
+        643.5922241210938
+      ],
+      "person_confidence": 0.44639936089515686,
+      "head_box": [
+        902.9848022460938,
+        475.65850830078125,
+        928.8405151367188,
+        507.4809265136719
+      ],
+      "crop_box": [
+        899,
+        470,
+        932,
+        512
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0039",
+      "source_video": "train/1_tr39.mp4",
+      "source_sha256": "1c24f565cb2ef4edabb059c9ef9fb14c1649c4ea6e63a633e609205691597a72",
+      "source_split": "train",
+      "frame_index": 81,
+      "time_s": 3.294021960146401,
+      "frame_file": "frames/1_tr39-f00081.jpg",
+      "crop_file": "crops/0039.png",
+      "person_box": [
+        1702.287109375,
+        477.52288818359375,
+        1885.427978515625,
+        865.3131713867188
+      ],
+      "person_confidence": 0.9026207327842712,
+      "head_box": [
+        1796.0150146484375,
+        471.3864440917969,
+        1856.5103759765625,
+        545.8421630859375
+      ],
+      "crop_box": [
+        1786,
+        460,
+        1865,
+        557
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0048",
+      "source_video": "train/1_tr68.mp4",
+      "source_sha256": "bd178f454f749508bccfaedadc5136ec08583a88155a3c3bd91e4234d7559c32",
+      "source_split": "train",
+      "frame_index": 74,
+      "time_s": 2.985074626865672,
+      "frame_file": "frames/1_tr68-f00074.jpg",
+      "crop_file": "crops/0048.png",
+      "person_box": [
+        350.1344909667969,
+        402.0853271484375,
+        394.2512512207031,
+        530.910888671875
+      ],
+      "person_confidence": 0.4169221818447113,
+      "head_box": [
+        362.6990966796875,
+        401.5694885253906,
+        382.7958984375,
+        426.30401611328125
+      ],
+      "crop_box": [
+        359,
+        397,
+        385,
+        430
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0051",
+      "source_video": "train/1_tr68.mp4",
+      "source_sha256": "bd178f454f749508bccfaedadc5136ec08583a88155a3c3bd91e4234d7559c32",
+      "source_split": "train",
+      "frame_index": 173,
+      "time_s": 6.978620411456233,
+      "frame_file": "frames/1_tr68-f00173.jpg",
+      "crop_file": "crops/0051.png",
+      "person_box": [
+        350.51116943359375,
+        403.4931640625,
+        392.75042724609375,
+        531.9300537109375
+      ],
+      "person_confidence": 0.35147225856781006,
+      "head_box": [
+        362.015869140625,
+        401.8619079589844,
+        382.052001953125,
+        426.52178955078125
+      ],
+      "crop_box": [
+        359,
+        398,
+        385,
+        430
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0052",
+      "source_video": "train/1_tr97.mp4",
+      "source_sha256": "9bb024df8e7d19b6cf4d81f7f4f81ab269e0c26cef3e8334cbc6086b3725013c",
+      "source_split": "train",
+      "frame_index": 52,
+      "time_s": 2.096774193548387,
+      "frame_file": "frames/1_tr97-f00052.jpg",
+      "crop_file": "crops/0052.png",
+      "person_box": [
+        1509.101806640625,
+        386.66009521484375,
+        1557.678466796875,
+        512.6295776367188
+      ],
+      "person_confidence": 0.8166276812553406,
+      "head_box": [
+        1530.9476318359375,
+        381.8146667480469,
+        1550.5987548828125,
+        406.0008239746094
+      ],
+      "crop_box": [
+        1527,
+        378,
+        1553,
+        409
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0053",
+      "source_video": "train/1_tr97.mp4",
+      "source_sha256": "9bb024df8e7d19b6cf4d81f7f4f81ab269e0c26cef3e8334cbc6086b3725013c",
+      "source_split": "train",
+      "frame_index": 52,
+      "time_s": 2.096774193548387,
+      "frame_file": "frames/1_tr97-f00052.jpg",
+      "crop_file": "crops/0053.png",
+      "person_box": [
+        761.4533081054688,
+        906.6798095703125,
+        893.7015991210938,
+        1078.80615234375
+      ],
+      "person_confidence": 0.6327013969421387,
+      "head_box": [
+        795.5775146484375,
+        933.6339721679688,
+        822.42919921875,
+        966.6821899414062
+      ],
+      "crop_box": [
+        791,
+        928,
+        826,
+        971
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0055",
+      "source_video": "train/1_tr97.mp4",
+      "source_sha256": "9bb024df8e7d19b6cf4d81f7f4f81ab269e0c26cef3e8334cbc6086b3725013c",
+      "source_split": "train",
+      "frame_index": 52,
+      "time_s": 2.096774193548387,
+      "frame_file": "frames/1_tr97-f00052.jpg",
+      "crop_file": "crops/0055.png",
+      "person_box": [
+        871.6272583007812,
+        483.04364013671875,
+        935.8582153320312,
+        646.1155395507812
+      ],
+      "person_confidence": 0.35735559463500977,
+      "head_box": [
+        893.6015014648438,
+        469.66912841796875,
+        919.0407104492188,
+        500.97894287109375
+      ],
+      "crop_box": [
+        889,
+        464,
+        922,
+        505
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0056",
+      "source_video": "train/1_tr97.mp4",
+      "source_sha256": "9bb024df8e7d19b6cf4d81f7f4f81ab269e0c26cef3e8334cbc6086b3725013c",
+      "source_split": "train",
+      "frame_index": 120,
+      "time_s": 4.838709677419355,
+      "frame_file": "frames/1_tr97-f00120.jpg",
+      "crop_file": "crops/0056.png",
+      "person_box": [
+        1523.6256103515625,
+        421.778564453125,
+        1579.5294189453125,
+        567.25048828125
+      ],
+      "person_confidence": 0.7997422814369202,
+      "head_box": [
+        1551.6307373046875,
+        418.7806091308594,
+        1574.3243408203125,
+        446.7112121582031
+      ],
+      "crop_box": [
+        1548,
+        414,
+        1577,
+        450
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0060",
+      "source_video": "train/2_tr1.mp4",
+      "source_sha256": "f6a044acb29d1a344527dd4ec82e283ba3a93916bfb6ef581a75ec0493766d2e",
+      "source_split": "train",
+      "frame_index": 46,
+      "time_s": 1.8333997608609007,
+      "frame_file": "frames/2_tr1-f00046.jpg",
+      "crop_file": "crops/0060.png",
+      "person_box": [
+        216.03302001953125,
+        95.7243423461914,
+        269.1514892578125,
+        226.93441772460938
+      ],
+      "person_confidence": 0.5823001861572266,
+      "head_box": [
+        238.35206604003906,
+        95.38143920898438,
+        258.8208312988281,
+        120.57376861572266
+      ],
+      "crop_box": [
+        235,
+        91,
+        261,
+        124
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0061",
+      "source_video": "train/2_tr1.mp4",
+      "source_sha256": "f6a044acb29d1a344527dd4ec82e283ba3a93916bfb6ef581a75ec0493766d2e",
+      "source_split": "train",
+      "frame_index": 108,
+      "time_s": 4.304503786369072,
+      "frame_file": "frames/2_tr1-f00108.jpg",
+      "crop_file": "crops/0061.png",
+      "person_box": [
+        95.11203002929688,
+        863.61865234375,
+        352.43048095703125,
+        1080.0
+      ],
+      "person_confidence": 0.6590947508811951,
+      "head_box": [
+        154.2853546142578,
+        870.375732421875,
+        219.8994903564453,
+        951.131591796875
+      ],
+      "crop_box": [
+        144,
+        858,
+        229,
+        963
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0063",
+      "source_video": "train/2_tr1.mp4",
+      "source_sha256": "f6a044acb29d1a344527dd4ec82e283ba3a93916bfb6ef581a75ec0493766d2e",
+      "source_split": "train",
+      "frame_index": 108,
+      "time_s": 4.304503786369072,
+      "frame_file": "frames/2_tr1-f00108.jpg",
+      "crop_file": "crops/0063.png",
+      "person_box": [
+        215.75323486328125,
+        95.27576446533203,
+        267.924560546875,
+        225.8099365234375
+      ],
+      "person_confidence": 0.438658744096756,
+      "head_box": [
+        242.09310913085938,
+        97.6865463256836,
+        262.4564514160156,
+        122.74910736083984
+      ],
+      "crop_box": [
+        239,
+        93,
+        265,
+        126
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0064",
+      "source_video": "train/2_tr21.mp4",
+      "source_sha256": "a87ea8e5b63818680e464cd260a5896a716d5ab272a6e54c30fcf69116684047",
+      "source_split": "train",
+      "frame_index": 30,
+      "time_s": 1.2,
+      "frame_file": "frames/2_tr21-f00030.jpg",
+      "crop_file": "crops/0064.png",
+      "person_box": [
+        1233.127197265625,
+        189.28546142578125,
+        1341.492919921875,
+        446.081298828125
+      ],
+      "person_confidence": 0.9130223989486694,
+      "head_box": [
+        1272.7923583984375,
+        179.15318298339844,
+        1312.8524169921875,
+        228.45797729492188
+      ],
+      "crop_box": [
+        1266,
+        171,
+        1318,
+        235
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0065",
+      "source_video": "train/2_tr21.mp4",
+      "source_sha256": "a87ea8e5b63818680e464cd260a5896a716d5ab272a6e54c30fcf69116684047",
+      "source_split": "train",
+      "frame_index": 30,
+      "time_s": 1.2,
+      "frame_file": "frames/2_tr21-f00030.jpg",
+      "crop_file": "crops/0065.png",
+      "person_box": [
+        1356.365966796875,
+        268.923583984375,
+        1476.419189453125,
+        564.2801513671875
+      ],
+      "person_confidence": 0.90433669090271,
+      "head_box": [
+        1399.7750244140625,
+        262.4379577636719,
+        1445.8507080078125,
+        319.14642333984375
+      ],
+      "crop_box": [
+        1392,
+        253,
+        1452,
+        327
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0067",
+      "source_video": "train/2_tr21.mp4",
+      "source_sha256": "a87ea8e5b63818680e464cd260a5896a716d5ab272a6e54c30fcf69116684047",
+      "source_split": "train",
+      "frame_index": 69,
+      "time_s": 2.76,
+      "frame_file": "frames/2_tr21-f00069.jpg",
+      "crop_file": "crops/0067.png",
+      "person_box": [
+        1210.5064697265625,
+        258.15008544921875,
+        1329.4447021484375,
+        550.2615966796875
+      ],
+      "person_confidence": 0.9111195802688599,
+      "head_box": [
+        1250.436767578125,
+        249.04141235351562,
+        1296.006103515625,
+        305.1268310546875
+      ],
+      "crop_box": [
+        1243,
+        240,
+        1302,
+        313
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0068",
+      "source_video": "train/2_tr21.mp4",
+      "source_sha256": "a87ea8e5b63818680e464cd260a5896a716d5ab272a6e54c30fcf69116684047",
+      "source_split": "train",
+      "frame_index": 69,
+      "time_s": 2.76,
+      "frame_file": "frames/2_tr21-f00069.jpg",
+      "crop_file": "crops/0068.png",
+      "person_box": [
+        1301.9013671875,
+        312.30194091796875,
+        1432.75537109375,
+        644.6089477539062
+      ],
+      "person_confidence": 0.908406674861908,
+      "head_box": [
+        1339.7060546875,
+        309.144775390625,
+        1391.5458984375,
+        372.9477233886719
+      ],
+      "crop_box": [
+        1331,
+        299,
+        1399,
+        382
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0069",
+      "source_video": "train/2_tr21.mp4",
+      "source_sha256": "a87ea8e5b63818680e464cd260a5896a716d5ab272a6e54c30fcf69116684047",
+      "source_split": "train",
+      "frame_index": 69,
+      "time_s": 2.76,
+      "frame_file": "frames/2_tr21-f00069.jpg",
+      "crop_file": "crops/0069.png",
+      "person_box": [
+        1287.162353515625,
+        34.10546875,
+        1339.922607421875,
+        176.609375
+      ],
+      "person_confidence": 0.7996917366981506,
+      "head_box": [
+        1300.9400634765625,
+        28.699935913085938,
+        1323.1707763671875,
+        56.06068420410156
+      ],
+      "crop_box": [
+        1297,
+        24,
+        1326,
+        60
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0070",
+      "source_video": "train/2_tr6.mp4",
+      "source_sha256": "2e9b0b354e963a03180331d1b6f0c981e34c3ce81144196f3c86a4fecfb3cbe4",
+      "source_split": "train",
+      "frame_index": 26,
+      "time_s": 1.0412494993992791,
+      "frame_file": "frames/2_tr6-f00026.jpg",
+      "crop_file": "crops/0070.png",
+      "person_box": [
+        704.1599731445312,
+        557.68115234375,
+        925.2549438476562,
+        966.283203125
+      ],
+      "person_confidence": 0.8616095185279846,
+      "head_box": [
+        781.304931640625,
+        555.6448364257812,
+        845.046875,
+        634.096435546875
+      ],
+      "crop_box": [
+        771,
+        543,
+        854,
+        645
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0072",
+      "source_video": "train/2_tr6.mp4",
+      "source_sha256": "2e9b0b354e963a03180331d1b6f0c981e34c3ce81144196f3c86a4fecfb3cbe4",
+      "source_split": "train",
+      "frame_index": 26,
+      "time_s": 1.0412494993992791,
+      "frame_file": "frames/2_tr6-f00026.jpg",
+      "crop_file": "crops/0072.png",
+      "person_box": [
+        229.27444458007812,
+        101.66370391845703,
+        273.1135559082031,
+        233.2703857421875
+      ],
+      "person_confidence": 0.6766040325164795,
+      "head_box": [
+        238.45895385742188,
+        98.47718048095703,
+        258.9895935058594,
+        123.74565887451172
+      ],
+      "crop_box": [
+        235,
+        94,
+        262,
+        127
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0074",
+      "source_video": "train/2_tr6.mp4",
+      "source_sha256": "2e9b0b354e963a03180331d1b6f0c981e34c3ce81144196f3c86a4fecfb3cbe4",
+      "source_split": "train",
+      "frame_index": 61,
+      "time_s": 2.442931517821386,
+      "frame_file": "frames/2_tr6-f00061.jpg",
+      "crop_file": "crops/0074.png",
+      "person_box": [
+        230.56683349609375,
+        787.1710205078125,
+        486.95513916015625,
+        1077.9517822265625
+      ],
+      "person_confidence": 0.8211882710456848,
+      "head_box": [
+        264.3725891113281,
+        774.3218994140625,
+        309.7344055175781,
+        830.1517944335938
+      ],
+      "crop_box": [
+        257,
+        765,
+        316,
+        838
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0075",
+      "source_video": "train/2_tr6.mp4",
+      "source_sha256": "2e9b0b354e963a03180331d1b6f0c981e34c3ce81144196f3c86a4fecfb3cbe4",
+      "source_split": "train",
+      "frame_index": 61,
+      "time_s": 2.442931517821386,
+      "frame_file": "frames/2_tr6-f00061.jpg",
+      "crop_file": "crops/0075.png",
+      "person_box": [
+        223.33419799804688,
+        101.2235336303711,
+        272.5999450683594,
+        231.76358032226562
+      ],
+      "person_confidence": 0.7205040454864502,
+      "head_box": [
+        235.55908203125,
+        100.34689331054688,
+        255.92333984375,
+        125.41057586669922
+      ],
+      "crop_box": [
+        232,
+        96,
+        258,
+        129
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0078",
+      "source_video": "train/2_tr99.mp4",
+      "source_sha256": "a3357a9533cb728304ff2295acf3d456afb09ec6cb2f8cc373c242750e403f5f",
+      "source_split": "train",
+      "frame_index": 52,
+      "time_s": 2.08,
+      "frame_file": "frames/2_tr99-f00052.jpg",
+      "crop_file": "crops/0078.png",
+      "person_box": [
+        582.7572021484375,
+        731.3060302734375,
+        844.926513671875,
+        960.1207275390625
+      ],
+      "person_confidence": 0.8084671497344971,
+      "head_box": [
+        714.7703247070312,
+        738.897705078125,
+        750.4653930664062,
+        782.8301391601562
+      ],
+      "crop_box": [
+        709,
+        732,
+        755,
+        789
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0079",
+      "source_video": "train/2_tr99.mp4",
+      "source_sha256": "a3357a9533cb728304ff2295acf3d456afb09ec6cb2f8cc373c242750e403f5f",
+      "source_split": "train",
+      "frame_index": 122,
+      "time_s": 4.88,
+      "frame_file": "frames/2_tr99-f00122.jpg",
+      "crop_file": "crops/0079.png",
+      "person_box": [
+        582.1124267578125,
+        715.5933227539062,
+        846.1571044921875,
+        954.4528198242188
+      ],
+      "person_confidence": 0.6409796476364136,
+      "head_box": [
+        712.949462890625,
+        725.92041015625,
+        760.6109619140625,
+        784.5807495117188
+      ],
+      "crop_box": [
+        705,
+        717,
+        767,
+        793
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0080",
+      "source_video": "train/3_tr24.mp4",
+      "source_sha256": "4ca9a2b10211db5d40f93fafc7bfac25bc5cd3171f047c798e1567bb0a9d82f3",
+      "source_split": "train",
+      "frame_index": 45,
+      "time_s": 1.8,
+      "frame_file": "frames/3_tr24-f00045.jpg",
+      "crop_file": "crops/0080.png",
+      "person_box": [
+        1536.564208984375,
+        430.043212890625,
+        1651.026611328125,
+        601.11376953125
+      ],
+      "person_confidence": 0.636300802230835,
+      "head_box": [
+        1614.8543701171875,
+        433.5729064941406,
+        1641.5413818359375,
+        466.41845703125
+      ],
+      "crop_box": [
+        1610,
+        428,
+        1645,
+        471
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0083",
+      "source_video": "train/3_tr24.mp4",
+      "source_sha256": "4ca9a2b10211db5d40f93fafc7bfac25bc5cd3171f047c798e1567bb0a9d82f3",
+      "source_split": "train",
+      "frame_index": 104,
+      "time_s": 4.16,
+      "frame_file": "frames/3_tr24-f00104.jpg",
+      "crop_file": "crops/0083.png",
+      "person_box": [
+        1536.965576171875,
+        429.1184387207031,
+        1670.97314453125,
+        600.72705078125
+      ],
+      "person_confidence": 0.385646253824234,
+      "head_box": [
+        1625.95166015625,
+        430.75518798828125,
+        1652.72265625,
+        463.70404052734375
+      ],
+      "crop_box": [
+        1621,
+        425,
+        1656,
+        468
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0084",
+      "source_video": "train/3_tr38.mp4",
+      "source_sha256": "846ebd111b4bfb69cf692c489023e40ddfe2e3b4e9fa100e6802beff9b16140a",
+      "source_split": "train",
+      "frame_index": 30,
+      "time_s": 1.2,
+      "frame_file": "frames/3_tr38-f00030.jpg",
+      "crop_file": "crops/0084.png",
+      "person_box": [
+        1551.38623046875,
+        427.7032470703125,
+        1669.50048828125,
+        586.1641845703125
+      ],
+      "person_confidence": 0.5210177302360535,
+      "head_box": [
+        1628.153564453125,
+        435.1224670410156,
+        1652.87353515625,
+        465.5469665527344
+      ],
+      "crop_box": [
+        1624,
+        430,
+        1656,
+        470
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0090",
+      "source_video": "train/3_tr9.mp4",
+      "source_sha256": "f395c5de1c62f55fb23c6c564d3ffb249aad5ffca9dc3a2dbff9a31c0b6ba789",
+      "source_split": "train",
+      "frame_index": 75,
+      "time_s": 3.0,
+      "frame_file": "frames/3_tr9-f00075.jpg",
+      "crop_file": "crops/0090.png",
+      "person_box": [
+        1769.3121337890625,
+        110.33342742919922,
+        1800.7952880859375,
+        196.92999267578125
+      ],
+      "person_confidence": 0.5251926183700562,
+      "head_box": [
+        1781.4747314453125,
+        111.9676513671875,
+        1794.9837646484375,
+        128.5941925048828
+      ],
+      "crop_box": [
+        1779,
+        109,
+        1797,
+        131
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0093",
+      "source_video": "train/3_tr9.mp4",
+      "source_sha256": "f395c5de1c62f55fb23c6c564d3ffb249aad5ffca9dc3a2dbff9a31c0b6ba789",
+      "source_split": "train",
+      "frame_index": 175,
+      "time_s": 7.0,
+      "frame_file": "frames/3_tr9-f00175.jpg",
+      "crop_file": "crops/0093.png",
+      "person_box": [
+        1769.5867919921875,
+        110.707275390625,
+        1801.2137451171875,
+        197.53640747070312
+      ],
+      "person_confidence": 0.5796836614608765,
+      "head_box": [
+        1780.6826171875,
+        111.3458480834961,
+        1794.22802734375,
+        128.0170440673828
+      ],
+      "crop_box": [
+        1778,
+        108,
+        1796,
+        130
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0095",
+      "source_video": "train/4_tr1.mp4",
+      "source_sha256": "d80a7143104dcce23c1c1c9cd6ec881cebcafd0c07173dd290945ef51a53d5eb",
+      "source_split": "train",
+      "frame_index": 94,
+      "time_s": 3.7615046018407363,
+      "frame_file": "frames/4_tr1-f00094.jpg",
+      "crop_file": "crops/0095.png",
+      "person_box": [
+        660.02099609375,
+        698.5496826171875,
+        854.92626953125,
+        988.9561767578125
+      ],
+      "person_confidence": 0.8573893904685974,
+      "head_box": [
+        674.9107666015625,
+        699.3788452148438,
+        720.2142333984375,
+        755.1369018554688
+      ],
+      "crop_box": [
+        668,
+        691,
+        727,
+        763
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0096",
+      "source_video": "train/4_tr1.mp4",
+      "source_sha256": "d80a7143104dcce23c1c1c9cd6ec881cebcafd0c07173dd290945ef51a53d5eb",
+      "source_split": "train",
+      "frame_index": 94,
+      "time_s": 3.7615046018407363,
+      "frame_file": "frames/4_tr1-f00094.jpg",
+      "crop_file": "crops/0096.png",
+      "person_box": [
+        179.19175720214844,
+        118.52727508544922,
+        234.3684539794922,
+        196.156494140625
+      ],
+      "person_confidence": 0.6125258803367615,
+      "head_box": [
+        195.40504455566406,
+        120.68632507324219,
+        210.9624481201172,
+        139.8339080810547
+      ],
+      "crop_box": [
+        193,
+        117,
+        213,
+        142
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0099",
+      "source_video": "train/4_tr1.mp4",
+      "source_sha256": "d80a7143104dcce23c1c1c9cd6ec881cebcafd0c07173dd290945ef51a53d5eb",
+      "source_split": "train",
+      "frame_index": 220,
+      "time_s": 8.803521408563427,
+      "frame_file": "frames/4_tr1-f00220.jpg",
+      "crop_file": "crops/0099.png",
+      "person_box": [
+        1504.01708984375,
+        75.55609130859375,
+        1563.38623046875,
+        219.4395751953125
+      ],
+      "person_confidence": 0.8226946592330933,
+      "head_box": [
+        1530.10400390625,
+        72.5932388305664,
+        1552.5498046875,
+        100.2188720703125
+      ],
+      "crop_box": [
+        1526,
+        68,
+        1555,
+        104
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0100",
+      "source_video": "train/4_tr1.mp4",
+      "source_sha256": "d80a7143104dcce23c1c1c9cd6ec881cebcafd0c07173dd290945ef51a53d5eb",
+      "source_split": "train",
+      "frame_index": 220,
+      "time_s": 8.803521408563427,
+      "frame_file": "frames/4_tr1-f00220.jpg",
+      "crop_file": "crops/0100.png",
+      "person_box": [
+        662.0479736328125,
+        699.4171142578125,
+        856.3375244140625,
+        976.4503173828125
+      ],
+      "person_confidence": 0.7308796048164368,
+      "head_box": [
+        670.3889770507812,
+        715.89501953125,
+        713.6061401367188,
+        769.0853881835938
+      ],
+      "crop_box": [
+        663,
+        707,
+        720,
+        777
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0101",
+      "source_video": "train/4_tr1.mp4",
+      "source_sha256": "d80a7143104dcce23c1c1c9cd6ec881cebcafd0c07173dd290945ef51a53d5eb",
+      "source_split": "train",
+      "frame_index": 220,
+      "time_s": 8.803521408563427,
+      "frame_file": "frames/4_tr1-f00220.jpg",
+      "crop_file": "crops/0101.png",
+      "person_box": [
+        179.38775634765625,
+        118.28909301757812,
+        258.10430908203125,
+        256.6265869140625
+      ],
+      "person_confidence": 0.4892894923686981,
+      "head_box": [
+        191.7841033935547,
+        115.9832763671875,
+        213.36476135253906,
+        142.54408264160156
+      ],
+      "crop_box": [
+        188,
+        111,
+        216,
+        146
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0102",
+      "source_video": "train/4_tr24.mp4",
+      "source_sha256": "0c6e4141d24b408a52735a40f908e866ac6e8765ddb2f4a403d93a69d1d2a330",
+      "source_split": "train",
+      "frame_index": 66,
+      "time_s": 2.65807490938381,
+      "frame_file": "frames/4_tr24-f00066.jpg",
+      "crop_file": "crops/0102.png",
+      "person_box": [
+        907.725830078125,
+        858.908203125,
+        1030.144775390625,
+        1078.7491455078125
+      ],
+      "person_confidence": 0.8297795057296753,
+      "head_box": [
+        936.9168090820312,
+        872.211669921875,
+        977.3440551757812,
+        921.96826171875
+      ],
+      "crop_box": [
+        930,
+        864,
+        983,
+        929
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0103",
+      "source_video": "train/4_tr24.mp4",
+      "source_sha256": "0c6e4141d24b408a52735a40f908e866ac6e8765ddb2f4a403d93a69d1d2a330",
+      "source_split": "train",
+      "frame_index": 66,
+      "time_s": 2.65807490938381,
+      "frame_file": "frames/4_tr24-f00066.jpg",
+      "crop_file": "crops/0103.png",
+      "person_box": [
+        1416.6240234375,
+        361.9295959472656,
+        1456.346435546875,
+        465.6684875488281
+      ],
+      "person_confidence": 0.8186435103416443,
+      "head_box": [
+        1429.633056640625,
+        358.9718322753906,
+        1445.81640625,
+        378.88970947265625
+      ],
+      "crop_box": [
+        1427,
+        355,
+        1448,
+        381
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0106",
+      "source_video": "train/4_tr24.mp4",
+      "source_sha256": "0c6e4141d24b408a52735a40f908e866ac6e8765ddb2f4a403d93a69d1d2a330",
+      "source_split": "train",
+      "frame_index": 66,
+      "time_s": 2.65807490938381,
+      "frame_file": "frames/4_tr24-f00066.jpg",
+      "crop_file": "crops/0106.png",
+      "person_box": [
+        328.2685852050781,
+        392.67864990234375,
+        376.9124450683594,
+        526.44873046875
+      ],
+      "person_confidence": 0.4868564009666443,
+      "head_box": [
+        355.2746887207031,
+        394.0480041503906,
+        376.1427917480469,
+        419.7318420410156
+      ],
+      "crop_box": [
+        352,
+        390,
+        379,
+        423
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0108",
+      "source_video": "train/4_tr24.mp4",
+      "source_sha256": "0c6e4141d24b408a52735a40f908e866ac6e8765ddb2f4a403d93a69d1d2a330",
+      "source_split": "train",
+      "frame_index": 154,
+      "time_s": 6.202174788562224,
+      "frame_file": "frames/4_tr24-f00154.jpg",
+      "crop_file": "crops/0108.png",
+      "person_box": [
+        1427.7838134765625,
+        397.14593505859375,
+        1480.9385986328125,
+        523.3499145507812
+      ],
+      "person_confidence": 0.8424707055091858,
+      "head_box": [
+        1452.1988525390625,
+        391.52899169921875,
+        1471.8865966796875,
+        415.7601623535156
+      ],
+      "crop_box": [
+        1449,
+        387,
+        1474,
+        419
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0110",
+      "source_video": "train/4_tr24.mp4",
+      "source_sha256": "0c6e4141d24b408a52735a40f908e866ac6e8765ddb2f4a403d93a69d1d2a330",
+      "source_split": "train",
+      "frame_index": 154,
+      "time_s": 6.202174788562224,
+      "frame_file": "frames/4_tr24-f00154.jpg",
+      "crop_file": "crops/0110.png",
+      "person_box": [
+        328.49420166015625,
+        389.391845703125,
+        377.44268798828125,
+        530.4471435546875
+      ],
+      "person_confidence": 0.4439440071582794,
+      "head_box": [
+        350.7372741699219,
+        387.2508544921875,
+        372.7419128417969,
+        414.3334655761719
+      ],
+      "crop_box": [
+        347,
+        383,
+        376,
+        418
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0112",
+      "source_video": "train/4_tr4.mp4",
+      "source_sha256": "2913e269518438e3eade1d0f9ce20e847ca4d13d0484f26121f2db2d43136bfc",
+      "source_split": "train",
+      "frame_index": 31,
+      "time_s": 1.244480128462465,
+      "frame_file": "frames/4_tr4-f00031.jpg",
+      "crop_file": "crops/0112.png",
+      "person_box": [
+        246.901123046875,
+        101.83061981201172,
+        285.74810791015625,
+        225.7423095703125
+      ],
+      "person_confidence": 0.5503801107406616,
+      "head_box": [
+        258.26580810546875,
+        102.94087982177734,
+        277.59600830078125,
+        126.73191833496094
+      ],
+      "crop_box": [
+        255,
+        99,
+        280,
+        130
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0113",
+      "source_video": "train/4_tr4.mp4",
+      "source_sha256": "2913e269518438e3eade1d0f9ce20e847ca4d13d0484f26121f2db2d43136bfc",
+      "source_split": "train",
+      "frame_index": 31,
+      "time_s": 1.244480128462465,
+      "frame_file": "frames/4_tr4-f00031.jpg",
+      "crop_file": "crops/0113.png",
+      "person_box": [
+        655.2376098632812,
+        709.3720703125,
+        846.4418334960938,
+        936.06640625
+      ],
+      "person_confidence": 0.5109938383102417,
+      "head_box": [
+        718.498291015625,
+        731.684814453125,
+        754.7020263671875,
+        776.2432250976562
+      ],
+      "crop_box": [
+        713,
+        725,
+        760,
+        782
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0115",
+      "source_video": "train/4_tr4.mp4",
+      "source_sha256": "2913e269518438e3eade1d0f9ce20e847ca4d13d0484f26121f2db2d43136bfc",
+      "source_split": "train",
+      "frame_index": 72,
+      "time_s": 2.8904054596547573,
+      "frame_file": "frames/4_tr4-f00072.jpg",
+      "crop_file": "crops/0115.png",
+      "person_box": [
+        652.605224609375,
+        709.5443115234375,
+        843.24365234375,
+        947.9732666015625
+      ],
+      "person_confidence": 0.7629927396774292,
+      "head_box": [
+        716.1901245117188,
+        727.8191528320312,
+        757.7557983398438,
+        778.9768676757812
+      ],
+      "crop_box": [
+        709,
+        720,
+        763,
+        786
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0119",
+      "source_video": "train/4_tr9.mp4",
+      "source_sha256": "bae0ef03f546ecc05bd9da76cd02b1787945c75922efdd71857adc4b83f1494a",
+      "source_split": "train",
+      "frame_index": 52,
+      "time_s": 2.0808323329331735,
+      "frame_file": "frames/4_tr9-f00052.jpg",
+      "crop_file": "crops/0119.png",
+      "person_box": [
+        624.0794677734375,
+        490.0272216796875,
+        753.2979736328125,
+        864.965576171875
+      ],
+      "person_confidence": 0.7960925102233887,
+      "head_box": [
+        624.2137451171875,
+        494.67205810546875,
+        682.7041015625,
+        566.6602172851562
+      ],
+      "crop_box": [
+        615,
+        483,
+        691,
+        577
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0120",
+      "source_video": "train/4_tr9.mp4",
+      "source_sha256": "bae0ef03f546ecc05bd9da76cd02b1787945c75922efdd71857adc4b83f1494a",
+      "source_split": "train",
+      "frame_index": 52,
+      "time_s": 2.0808323329331735,
+      "frame_file": "frames/4_tr9-f00052.jpg",
+      "crop_file": "crops/0120.png",
+      "person_box": [
+        180.32339477539062,
+        119.8773193359375,
+        264.5300598144531,
+        257.71063232421875
+      ],
+      "person_confidence": 0.5052564740180969,
+      "head_box": [
+        208.0034637451172,
+        118.53744506835938,
+        229.5054473876953,
+        145.00143432617188
+      ],
+      "crop_box": [
+        204,
+        114,
+        232,
+        148
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0121",
+      "source_video": "train/4_tr9.mp4",
+      "source_sha256": "bae0ef03f546ecc05bd9da76cd02b1787945c75922efdd71857adc4b83f1494a",
+      "source_split": "train",
+      "frame_index": 120,
+      "time_s": 4.8019207683073235,
+      "frame_file": "frames/4_tr9-f00120.jpg",
+      "crop_file": "crops/0121.png",
+      "person_box": [
+        1510.205322265625,
+        181.7537841796875,
+        1590.800537109375,
+        360.557861328125
+      ],
+      "person_confidence": 0.8466341495513916,
+      "head_box": [
+        1548.3988037109375,
+        180.04664611816406,
+        1576.2923583984375,
+        214.3770294189453
+      ],
+      "crop_box": [
+        1544,
+        174,
+        1580,
+        219
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0122",
+      "source_video": "train/4_tr9.mp4",
+      "source_sha256": "bae0ef03f546ecc05bd9da76cd02b1787945c75922efdd71857adc4b83f1494a",
+      "source_split": "train",
+      "frame_index": 120,
+      "time_s": 4.8019207683073235,
+      "frame_file": "frames/4_tr9-f00120.jpg",
+      "crop_file": "crops/0122.png",
+      "person_box": [
+        620.4275512695312,
+        490.3568420410156,
+        754.3009643554688,
+        872.7496337890625
+      ],
+      "person_confidence": 0.7342049479484558,
+      "head_box": [
+        623.8368530273438,
+        496.7080078125,
+        683.4901733398438,
+        570.12744140625
+      ],
+      "crop_box": [
+        614,
+        485,
+        692,
+        581
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0125",
+      "source_video": "train/5_tr1.mp4",
+      "source_sha256": "dc8d8071c14a9ca8652b6f692000871e0bcd508ca4d03338e18bf837cea3fbfe",
+      "source_split": "train",
+      "frame_index": 52,
+      "time_s": 2.0758483033932134,
+      "frame_file": "frames/5_tr1-f00052.jpg",
+      "crop_file": "crops/0125.png",
+      "person_box": [
+        445.50140380859375,
+        783.330322265625,
+        628.4705200195312,
+        1077.397705078125
+      ],
+      "person_confidence": 0.7155725359916687,
+      "head_box": [
+        456.7229309082031,
+        817.1983032226562,
+        502.5974426269531,
+        873.6592407226562
+      ],
+      "crop_box": [
+        449,
+        808,
+        509,
+        882
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0126",
+      "source_video": "train/5_tr1.mp4",
+      "source_sha256": "dc8d8071c14a9ca8652b6f692000871e0bcd508ca4d03338e18bf837cea3fbfe",
+      "source_split": "train",
+      "frame_index": 52,
+      "time_s": 2.0758483033932134,
+      "frame_file": "frames/5_tr1-f00052.jpg",
+      "crop_file": "crops/0126.png",
+      "person_box": [
+        60.720550537109375,
+        810.8704833984375,
+        209.3531494140625,
+        1076.5810546875
+      ],
+      "person_confidence": 0.5997005701065063,
+      "head_box": [
+        146.9063720703125,
+        835.343994140625,
+        188.35720825195312,
+        886.3604125976562
+      ],
+      "crop_box": [
+        140,
+        827,
+        194,
+        894
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0129",
+      "source_video": "train/5_tr1.mp4",
+      "source_sha256": "dc8d8071c14a9ca8652b6f692000871e0bcd508ca4d03338e18bf837cea3fbfe",
+      "source_split": "train",
+      "frame_index": 121,
+      "time_s": 4.830339321357285,
+      "frame_file": "frames/5_tr1-f00121.jpg",
+      "crop_file": "crops/0129.png",
+      "person_box": [
+        350.19549560546875,
+        779.78662109375,
+        546.8723754882812,
+        1077.8043212890625
+      ],
+      "person_confidence": 0.867810070514679,
+      "head_box": [
+        348.3902587890625,
+        801.9706420898438,
+        394.88104248046875,
+        859.1900024414062
+      ],
+      "crop_box": [
+        341,
+        793,
+        401,
+        867
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0130",
+      "source_video": "train/5_tr1.mp4",
+      "source_sha256": "dc8d8071c14a9ca8652b6f692000871e0bcd508ca4d03338e18bf837cea3fbfe",
+      "source_split": "train",
+      "frame_index": 121,
+      "time_s": 4.830339321357285,
+      "frame_file": "frames/5_tr1-f00121.jpg",
+      "crop_file": "crops/0130.png",
+      "person_box": [
+        85.4415283203125,
+        829.2474365234375,
+        230.45550537109375,
+        1078.3304443359375
+      ],
+      "person_confidence": 0.8302077054977417,
+      "head_box": [
+        167.8009033203125,
+        864.7908325195312,
+        206.6578369140625,
+        912.61474609375
+      ],
+      "crop_box": [
+        161,
+        857,
+        212,
+        919
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0134",
+      "source_video": "train/5_tr16.mp4",
+      "source_sha256": "ee10d7c38a5d07742b6eed9f1cc2d5d0c780f5cb234974fea0d17e0527c62441",
+      "source_split": "train",
+      "frame_index": 68,
+      "time_s": 2.729827378562826,
+      "frame_file": "frames/5_tr16-f00068.jpg",
+      "crop_file": "crops/0134.png",
+      "person_box": [
+        1352.937255859375,
+        14.36651611328125,
+        1404.152587890625,
+        136.51303100585938
+      ],
+      "person_confidence": 0.8375867605209351,
+      "head_box": [
+        1371.677734375,
+        9.720141410827637,
+        1390.732666015625,
+        33.172271728515625
+      ],
+      "crop_box": [
+        1368,
+        6,
+        1393,
+        36
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0135",
+      "source_video": "train/5_tr16.mp4",
+      "source_sha256": "ee10d7c38a5d07742b6eed9f1cc2d5d0c780f5cb234974fea0d17e0527c62441",
+      "source_split": "train",
+      "frame_index": 68,
+      "time_s": 2.729827378562826,
+      "frame_file": "frames/5_tr16-f00068.jpg",
+      "crop_file": "crops/0135.png",
+      "person_box": [
+        660.9493408203125,
+        703.4136962890625,
+        855.4923095703125,
+        987.4676513671875
+      ],
+      "person_confidence": 0.7695678472518921,
+      "head_box": [
+        680.7694091796875,
+        715.6328125,
+        725.081787109375,
+        770.171142578125
+      ],
+      "crop_box": [
+        674,
+        707,
+        731,
+        778
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0136",
+      "source_video": "train/5_tr16.mp4",
+      "source_sha256": "ee10d7c38a5d07742b6eed9f1cc2d5d0c780f5cb234974fea0d17e0527c62441",
+      "source_split": "train",
+      "frame_index": 68,
+      "time_s": 2.729827378562826,
+      "frame_file": "frames/5_tr16-f00068.jpg",
+      "crop_file": "crops/0136.png",
+      "person_box": [
+        216.8048095703125,
+        784.3011474609375,
+        458.7012939453125,
+        1077.166015625
+      ],
+      "person_confidence": 0.6921042799949646,
+      "head_box": [
+        262.9935607910156,
+        793.1163940429688,
+        315.2334899902344,
+        857.41162109375
+      ],
+      "crop_box": [
+        255,
+        783,
+        323,
+        867
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0139",
+      "source_video": "train/5_tr16.mp4",
+      "source_sha256": "ee10d7c38a5d07742b6eed9f1cc2d5d0c780f5cb234974fea0d17e0527c62441",
+      "source_split": "train",
+      "frame_index": 158,
+      "time_s": 6.3428342031312726,
+      "frame_file": "frames/5_tr16-f00158.jpg",
+      "crop_file": "crops/0139.png",
+      "person_box": [
+        667.0789794921875,
+        701.065185546875,
+        855.8101806640625,
+        986.300048828125
+      ],
+      "person_confidence": 0.8125981688499451,
+      "head_box": [
+        674.0614013671875,
+        710.62255859375,
+        728.15234375,
+        777.196044921875
+      ],
+      "crop_box": [
+        665,
+        700,
+        736,
+        787
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0142",
+      "source_video": "train/5_tr9.mp4",
+      "source_sha256": "7314373fd7f162ac4960dcc7de8fde15166feeea55434c7608b4dd7b3c70d0b1",
+      "source_split": "train",
+      "frame_index": 60,
+      "time_s": 2.3923444976076556,
+      "frame_file": "frames/5_tr9-f00060.jpg",
+      "crop_file": "crops/0142.png",
+      "person_box": [
+        288.6026611328125,
+        814.425537109375,
+        482.60400390625,
+        1080.0
+      ],
+      "person_confidence": 0.866731584072113,
+      "head_box": [
+        328.9822082519531,
+        835.4151000976562,
+        375.6170349121094,
+        892.8118286132812
+      ],
+      "crop_box": [
+        321,
+        826,
+        382,
+        901
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0146",
+      "source_video": "train/5_tr9.mp4",
+      "source_sha256": "7314373fd7f162ac4960dcc7de8fde15166feeea55434c7608b4dd7b3c70d0b1",
+      "source_split": "train",
+      "frame_index": 140,
+      "time_s": 5.58213716108453,
+      "frame_file": "frames/5_tr9-f00140.jpg",
+      "crop_file": "crops/0146.png",
+      "person_box": [
+        0.2024993896484375,
+        813.5594482421875,
+        99.5779800415039,
+        1075.7427978515625
+      ],
+      "person_confidence": 0.7635502219200134,
+      "head_box": [
+        18.959186553955078,
+        828.3602905273438,
+        59.85979080200195,
+        878.6995239257812
+      ],
+      "crop_box": [
+        12,
+        820,
+        65,
+        886
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0149",
+      "source_video": "train/6_tr1.mp4",
+      "source_sha256": "7540b01edad66702b46f1d728500bb119193dfae1c9ef9402ee8d2c19cfdccdc",
+      "source_split": "train",
+      "frame_index": 45,
+      "time_s": 1.8014411529223378,
+      "frame_file": "frames/6_tr1-f00045.jpg",
+      "crop_file": "crops/0149.png",
+      "person_box": [
+        848.9276123046875,
+        732.865966796875,
+        1028.2193603515625,
+        1076.8092041015625
+      ],
+      "person_confidence": 0.8651561737060547,
+      "head_box": [
+        930.4114990234375,
+        749.6879272460938,
+        984.066650390625,
+        815.7250366210938
+      ],
+      "crop_box": [
+        922,
+        739,
+        992,
+        825
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0151",
+      "source_video": "train/6_tr1.mp4",
+      "source_sha256": "7540b01edad66702b46f1d728500bb119193dfae1c9ef9402ee8d2c19cfdccdc",
+      "source_split": "train",
+      "frame_index": 45,
+      "time_s": 1.8014411529223378,
+      "frame_file": "frames/6_tr1-f00045.jpg",
+      "crop_file": "crops/0151.png",
+      "person_box": [
+        372.347412109375,
+        83.37062072753906,
+        424.4720458984375,
+        212.0850372314453
+      ],
+      "person_confidence": 0.40194937586784363,
+      "head_box": [
+        377.0295104980469,
+        82.82701873779297,
+        397.1089782714844,
+        107.54019165039062
+      ],
+      "crop_box": [
+        374,
+        79,
+        400,
+        111
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0154",
+      "source_video": "train/6_tr1.mp4",
+      "source_sha256": "7540b01edad66702b46f1d728500bb119193dfae1c9ef9402ee8d2c19cfdccdc",
+      "source_split": "train",
+      "frame_index": 104,
+      "time_s": 4.1633306645316255,
+      "frame_file": "frames/6_tr1-f00104.jpg",
+      "crop_file": "crops/0154.png",
+      "person_box": [
+        1069.561279296875,
+        388.376953125,
+        1205.648193359375,
+        736.7659912109375
+      ],
+      "person_confidence": 0.8602365851402283,
+      "head_box": [
+        1150.265869140625,
+        386.0826416015625,
+        1204.614501953125,
+        452.97332763671875
+      ],
+      "crop_box": [
+        1142,
+        376,
+        1212,
+        463
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0155",
+      "source_video": "train/6_tr1.mp4",
+      "source_sha256": "7540b01edad66702b46f1d728500bb119193dfae1c9ef9402ee8d2c19cfdccdc",
+      "source_split": "train",
+      "frame_index": 104,
+      "time_s": 4.1633306645316255,
+      "frame_file": "frames/6_tr1-f00104.jpg",
+      "crop_file": "crops/0155.png",
+      "person_box": [
+        332.40875244140625,
+        84.07563018798828,
+        388.47723388671875,
+        213.04730224609375
+      ],
+      "person_confidence": 0.7714177966117859,
+      "head_box": [
+        350.1031188964844,
+        84.94805145263672,
+        370.6398620605469,
+        110.22407531738281
+      ],
+      "crop_box": [
+        347,
+        81,
+        373,
+        114
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0156",
+      "source_video": "train/6_tr15.mp4",
+      "source_sha256": "dccf83f75e0caff79c3ecd2493288bd45f100ef29070ba844b73cbaf963da6ca",
+      "source_split": "train",
+      "frame_index": 10,
+      "time_s": 0.39824771007566706,
+      "frame_file": "frames/6_tr15-f00010.jpg",
+      "crop_file": "crops/0156.png",
+      "person_box": [
+        833.5098876953125,
+        689.8260498046875,
+        1009.797607421875,
+        1076.30224609375
+      ],
+      "person_confidence": 0.7459297180175781,
+      "head_box": [
+        922.580078125,
+        695.2012939453125,
+        986.34814453125,
+        773.68505859375
+      ],
+      "crop_box": [
+        913,
+        683,
+        995,
+        785
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0159",
+      "source_video": "train/6_tr15.mp4",
+      "source_sha256": "dccf83f75e0caff79c3ecd2493288bd45f100ef29070ba844b73cbaf963da6ca",
+      "source_split": "train",
+      "frame_index": 24,
+      "time_s": 0.955794504181601,
+      "frame_file": "frames/6_tr15-f00024.jpg",
+      "crop_file": "crops/0159.png",
+      "person_box": [
+        845.7086181640625,
+        684.5841064453125,
+        1019.9774169921875,
+        1076.2301025390625
+      ],
+      "person_confidence": 0.8348063826560974,
+      "head_box": [
+        936.588134765625,
+        695.5184326171875,
+        997.6849365234375,
+        770.7144775390625
+      ],
+      "crop_box": [
+        927,
+        684,
+        1006,
+        781
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0162",
+      "source_video": "train/6_tr3.mp4",
+      "source_sha256": "561e7dc1ff63b8b502afb475e5de0ab29e77041e3e8273f80e1bf43cbdd5f88d",
+      "source_split": "train",
+      "frame_index": 39,
+      "time_s": 1.5650080256821828,
+      "frame_file": "frames/6_tr3-f00039.jpg",
+      "crop_file": "crops/0162.png",
+      "person_box": [
+        386.9557800292969,
+        83.57986450195312,
+        441.1250915527344,
+        212.81903076171875
+      ],
+      "person_confidence": 0.7412606477737427,
+      "head_box": [
+        412.0501403808594,
+        81.65518188476562,
+        432.2114562988281,
+        106.46910858154297
+      ],
+      "crop_box": [
+        409,
+        77,
+        435,
+        110
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0165",
+      "source_video": "train/6_tr3.mp4",
+      "source_sha256": "561e7dc1ff63b8b502afb475e5de0ab29e77041e3e8273f80e1bf43cbdd5f88d",
+      "source_split": "train",
+      "frame_index": 90,
+      "time_s": 3.6115569823434988,
+      "frame_file": "frames/6_tr3-f00090.jpg",
+      "crop_file": "crops/0165.png",
+      "person_box": [
+        223.84933471679688,
+        89.46979522705078,
+        276.8327331542969,
+        227.07232666015625
+      ],
+      "person_confidence": 0.7225726842880249,
+      "head_box": [
+        249.58395385742188,
+        88.9303207397461,
+        271.0499572753906,
+        115.35000610351562
+      ],
+      "crop_box": [
+        246,
+        84,
+        274,
+        119
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0166",
+      "source_video": "train/6_tr3.mp4",
+      "source_sha256": "561e7dc1ff63b8b502afb475e5de0ab29e77041e3e8273f80e1bf43cbdd5f88d",
+      "source_split": "train",
+      "frame_index": 90,
+      "time_s": 3.6115569823434988,
+      "frame_file": "frames/6_tr3-f00090.jpg",
+      "crop_file": "crops/0166.png",
+      "person_box": [
+        125.81451416015625,
+        938.7890625,
+        329.7744445800781,
+        1078.52880859375
+      ],
+      "person_confidence": 0.6514772176742554,
+      "head_box": [
+        195.99676513671875,
+        966.2648315429688,
+        240.97079467773438,
+        1021.6174926757812
+      ],
+      "crop_box": [
+        189,
+        957,
+        247,
+        1029
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0167",
+      "source_video": "train/6_tr3.mp4",
+      "source_sha256": "561e7dc1ff63b8b502afb475e5de0ab29e77041e3e8273f80e1bf43cbdd5f88d",
+      "source_split": "train",
+      "frame_index": 90,
+      "time_s": 3.6115569823434988,
+      "frame_file": "frames/6_tr3-f00090.jpg",
+      "crop_file": "crops/0167.png",
+      "person_box": [
+        370.81842041015625,
+        79.91676330566406,
+        429.65960693359375,
+        210.09669494628906
+      ],
+      "person_confidence": 0.5951433181762695,
+      "head_box": [
+        391.3515930175781,
+        80.54280853271484,
+        411.6596374511719,
+        105.53736114501953
+      ],
+      "crop_box": [
+        388,
+        76,
+        414,
+        109
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0173",
+      "source_video": "train/7_tr1.mp4",
+      "source_sha256": "86f301485074d22fd1df5024ec53d1f293d40b2bcdc374fbeb20fbe38e468cb8",
+      "source_split": "train",
+      "frame_index": 76,
+      "time_s": 3.0307197342519685,
+      "frame_file": "frames/7_tr1-f00076.jpg",
+      "crop_file": "crops/0173.png",
+      "person_box": [
+        1565.6630859375,
+        427.08819580078125,
+        1670.310546875,
+        629.0117797851562
+      ],
+      "person_confidence": 0.6560178399085999,
+      "head_box": [
+        1612.0970458984375,
+        426.5977783203125,
+        1643.5970458984375,
+        465.3670959472656
+      ],
+      "crop_box": [
+        1607,
+        420,
+        1648,
+        471
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0175",
+      "source_video": "train/7_tr1.mp4",
+      "source_sha256": "86f301485074d22fd1df5024ec53d1f293d40b2bcdc374fbeb20fbe38e468cb8",
+      "source_split": "train",
+      "frame_index": 177,
+      "time_s": 7.058386749507874,
+      "frame_file": "frames/7_tr1-f00177.jpg",
+      "crop_file": "crops/0175.png",
+      "person_box": [
+        1681.489990234375,
+        214.03363037109375,
+        1742.326416015625,
+        378.0625
+      ],
+      "person_confidence": 0.6369959712028503,
+      "head_box": [
+        1709.4383544921875,
+        209.3660430908203,
+        1735.0269775390625,
+        240.85958862304688
+      ],
+      "crop_box": [
+        1705,
+        204,
+        1738,
+        245
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0176",
+      "source_video": "train/7_tr1.mp4",
+      "source_sha256": "86f301485074d22fd1df5024ec53d1f293d40b2bcdc374fbeb20fbe38e468cb8",
+      "source_split": "train",
+      "frame_index": 177,
+      "time_s": 7.058386749507874,
+      "frame_file": "frames/7_tr1-f00177.jpg",
+      "crop_file": "crops/0176.png",
+      "person_box": [
+        1529.87841796875,
+        425.21685791015625,
+        1637.87353515625,
+        608.5501098632812
+      ],
+      "person_confidence": 0.5012394189834595,
+      "head_box": [
+        1588.8077392578125,
+        428.228271484375,
+        1617.4078369140625,
+        463.4282531738281
+      ],
+      "crop_box": [
+        1584,
+        422,
+        1621,
+        468
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0178",
+      "source_video": "train/7_tr16.mp4",
+      "source_sha256": "e44d99b72d6cd89d7999ba7cc4ccb44286b6c03238cb70ab3d91bac387d6332d",
+      "source_split": "train",
+      "frame_index": 15,
+      "time_s": 0.6091721754807692,
+      "frame_file": "frames/7_tr16-f00015.jpg",
+      "crop_file": "crops/0178.png",
+      "person_box": [
+        1560.04248046875,
+        428.701416015625,
+        1649.9736328125,
+        633.8406982421875
+      ],
+      "person_confidence": 0.6357001066207886,
+      "head_box": [
+        1604.7603759765625,
+        428.67999267578125,
+        1636.7620849609375,
+        468.06671142578125
+      ],
+      "crop_box": [
+        1599,
+        422,
+        1641,
+        473
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0182",
+      "source_video": "train/7_tr22.mp4",
+      "source_sha256": "314a3c0430703aadeb448674682f4ee73b6cc8b974067dff38fccf2eee78bb3f",
+      "source_split": "train",
+      "frame_index": 81,
+      "time_s": 3.2296935317095588,
+      "frame_file": "frames/7_tr22-f00081.jpg",
+      "crop_file": "crops/0182.png",
+      "person_box": [
+        1560.507568359375,
+        422.6937255859375,
+        1644.085205078125,
+        626.047607421875
+      ],
+      "person_confidence": 0.4851992428302765,
+      "head_box": [
+        1607.892333984375,
+        425.66888427734375,
+        1639.615478515625,
+        464.71282958984375
+      ],
+      "crop_box": [
+        1603,
+        419,
+        1644,
+        470
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0184",
+      "source_video": "train/7_tr22.mp4",
+      "source_sha256": "314a3c0430703aadeb448674682f4ee73b6cc8b974067dff38fccf2eee78bb3f",
+      "source_split": "train",
+      "frame_index": 190,
+      "time_s": 7.575824333639706,
+      "frame_file": "frames/7_tr22-f00190.jpg",
+      "crop_file": "crops/0184.png",
+      "person_box": [
+        1548.76123046875,
+        433.77227783203125,
+        1667.5478515625,
+        633.2617797851562
+      ],
+      "person_confidence": 0.6616246700286865,
+      "head_box": [
+        1636.7835693359375,
+        427.084716796875,
+        1667.9039306640625,
+        465.3866882324219
+      ],
+      "crop_box": [
+        1632,
+        421,
+        1672,
+        471
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0186",
+      "source_video": "train/7_tr9.mp4",
+      "source_sha256": "f10c52fe41ede3ee5cc717ec5bab9acb227bfa895e881937fdef7ab6c2d8e657",
+      "source_split": "train",
+      "frame_index": 105,
+      "time_s": 4.214467346874109,
+      "frame_file": "frames/7_tr9-f00105.jpg",
+      "crop_file": "crops/0186.png",
+      "person_box": [
+        1555.288818359375,
+        426.0704345703125,
+        1669.423583984375,
+        625.200439453125
+      ],
+      "person_confidence": 0.7076928019523621,
+      "head_box": [
+        1620.7830810546875,
+        424.83990478515625,
+        1651.8472900390625,
+        463.0728454589844
+      ],
+      "crop_box": [
+        1616,
+        419,
+        1656,
+        468
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0187",
+      "source_video": "test/0_te1.mp4",
+      "source_sha256": "de9bee29b7c8d0f59f818e37c63f5f13db7e1b3d0da91a84aceea4a51266c37e",
+      "source_split": "test",
+      "frame_index": 186,
+      "time_s": 7.4909383809907375,
+      "frame_file": "frames/0_te1-f00186.jpg",
+      "crop_file": "crops/0187.png",
+      "person_box": [
+        1485.2734375,
+        394.68963623046875,
+        1541.3291015625,
+        530.737060546875
+      ],
+      "person_confidence": 0.8316516876220703,
+      "head_box": [
+        1502.5374755859375,
+        384.8675537109375,
+        1523.7608642578125,
+        410.9886474609375
+      ],
+      "crop_box": [
+        1499,
+        380,
+        1526,
+        414
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0188",
+      "source_video": "test/0_te1.mp4",
+      "source_sha256": "de9bee29b7c8d0f59f818e37c63f5f13db7e1b3d0da91a84aceea4a51266c37e",
+      "source_split": "test",
+      "frame_index": 186,
+      "time_s": 7.4909383809907375,
+      "frame_file": "frames/0_te1-f00186.jpg",
+      "crop_file": "crops/0188.png",
+      "person_box": [
+        1454.17919921875,
+        376.77496337890625,
+        1490.537109375,
+        479.41595458984375
+      ],
+      "person_confidence": 0.8040042519569397,
+      "head_box": [
+        1469.2413330078125,
+        376.6986083984375,
+        1485.2532958984375,
+        396.40570068359375
+      ],
+      "crop_box": [
+        1466,
+        373,
+        1487,
+        399
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0192",
+      "source_video": "test/1_te9.mp4",
+      "source_sha256": "e289f01d674658585e2310dde2540bbe1ccb57345a6e0a6e11100846b85b9489",
+      "source_split": "test",
+      "frame_index": 135,
+      "time_s": 5.490036600244002,
+      "frame_file": "frames/1_te9-f00135.jpg",
+      "crop_file": "crops/0192.png",
+      "person_box": [
+        291.0904541015625,
+        760.7296142578125,
+        513.3834228515625,
+        1076.4041748046875
+      ],
+      "person_confidence": 0.7923970818519592,
+      "head_box": [
+        322.89666748046875,
+        780.1729736328125,
+        372.14190673828125,
+        840.782470703125
+      ],
+      "crop_box": [
+        315,
+        771,
+        379,
+        849
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0193",
+      "source_video": "test/1_te9.mp4",
+      "source_sha256": "e289f01d674658585e2310dde2540bbe1ccb57345a6e0a6e11100846b85b9489",
+      "source_split": "test",
+      "frame_index": 135,
+      "time_s": 5.490036600244002,
+      "frame_file": "frames/1_te9-f00135.jpg",
+      "crop_file": "crops/0193.png",
+      "person_box": [
+        221.14697265625,
+        95.29605865478516,
+        270.4922790527344,
+        222.87271118164062
+      ],
+      "person_confidence": 0.7512840628623962,
+      "head_box": [
+        250.97178649902344,
+        93.78666687011719,
+        270.8737487792969,
+        118.28138732910156
+      ],
+      "crop_box": [
+        247,
+        90,
+        273,
+        121
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0195",
+      "source_video": "test/2_te1.mp4",
+      "source_sha256": "d415c9b21dc02d55daf352bfd0a3434fc59d5bef1d2647669f089f7374d91d6d",
+      "source_split": "test",
+      "frame_index": 46,
+      "time_s": 1.8363273453093811,
+      "frame_file": "frames/2_te1-f00046.jpg",
+      "crop_file": "crops/0195.png",
+      "person_box": [
+        979.4351806640625,
+        597.1339111328125,
+        1143.7625732421875,
+        1028.16943359375
+      ],
+      "person_confidence": 0.8906150460243225,
+      "head_box": [
+        1007.5133666992188,
+        591.6730346679688,
+        1074.7548828125,
+        674.431884765625
+      ],
+      "crop_box": [
+        997,
+        579,
+        1084,
+        686
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0196",
+      "source_video": "test/2_te1.mp4",
+      "source_sha256": "d415c9b21dc02d55daf352bfd0a3434fc59d5bef1d2647669f089f7374d91d6d",
+      "source_split": "test",
+      "frame_index": 46,
+      "time_s": 1.8363273453093811,
+      "frame_file": "frames/2_te1-f00046.jpg",
+      "crop_file": "crops/0196.png",
+      "person_box": [
+        1210.758056640625,
+        686.1348876953125,
+        1376.802978515625,
+        1078.7694091796875
+      ],
+      "person_confidence": 0.8824360370635986,
+      "head_box": [
+        1243.197021484375,
+        686.9865112304688,
+        1304.447998046875,
+        762.372314453125
+      ],
+      "crop_box": [
+        1234,
+        675,
+        1313,
+        773
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0197",
+      "source_video": "test/2_te1.mp4",
+      "source_sha256": "d415c9b21dc02d55daf352bfd0a3434fc59d5bef1d2647669f089f7374d91d6d",
+      "source_split": "test",
+      "frame_index": 46,
+      "time_s": 1.8363273453093811,
+      "frame_file": "frames/2_te1-f00046.jpg",
+      "crop_file": "crops/0197.png",
+      "person_box": [
+        1695.677490234375,
+        235.50303649902344,
+        1806.498291015625,
+        505.412353515625
+      ],
+      "person_confidence": 0.8732051849365234,
+      "head_box": [
+        1725.15869140625,
+        228.7472381591797,
+        1767.2646484375,
+        280.56982421875
+      ],
+      "crop_box": [
+        1718,
+        220,
+        1773,
+        288
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0199",
+      "source_video": "test/2_te1.mp4",
+      "source_sha256": "d415c9b21dc02d55daf352bfd0a3434fc59d5bef1d2647669f089f7374d91d6d",
+      "source_split": "test",
+      "frame_index": 46,
+      "time_s": 1.8363273453093811,
+      "frame_file": "frames/2_te1-f00046.jpg",
+      "crop_file": "crops/0199.png",
+      "person_box": [
+        312.85198974609375,
+        95.42251586914062,
+        361.764892578125,
+        220.7833251953125
+      ],
+      "person_confidence": 0.5431280732154846,
+      "head_box": [
+        314.9905090332031,
+        98.69202423095703,
+        334.5467834472656,
+        122.76129913330078
+      ],
+      "crop_box": [
+        312,
+        95,
+        337,
+        126
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0202",
+      "source_video": "test/2_te9.mp4",
+      "source_sha256": "48ca0f80a8564365574a4caed4739d714ca195f6276f6557fb472456386c0f90",
+      "source_split": "test",
+      "frame_index": 88,
+      "time_s": 3.5171862509992007,
+      "frame_file": "frames/2_te9-f00088.jpg",
+      "crop_file": "crops/0202.png",
+      "person_box": [
+        929.141845703125,
+        286.7635498046875,
+        1043.769287109375,
+        601.7091674804688
+      ],
+      "person_confidence": 0.8169576525688171,
+      "head_box": [
+        952.3478393554688,
+        279.07025146484375,
+        1001.4793090820312,
+        339.5398254394531
+      ],
+      "crop_box": [
+        944,
+        269,
+        1008,
+        348
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0205",
+      "source_video": "test/3_te8.mp4",
+      "source_sha256": "0f2dd18398bce85d48caa69fa2339129794110a82e83e060983860613be621ce",
+      "source_split": "test",
+      "frame_index": 37,
+      "time_s": 1.48,
+      "frame_file": "frames/3_te8-f00037.jpg",
+      "crop_file": "crops/0205.png",
+      "person_box": [
+        1770.3416748046875,
+        217.38720703125,
+        1827.3304443359375,
+        353.006103515625
+      ],
+      "person_confidence": 0.8496285080909729,
+      "head_box": [
+        1808.4525146484375,
+        216.16053771972656,
+        1829.6090087890625,
+        242.19937133789062
+      ],
+      "crop_box": [
+        1805,
+        212,
+        1832,
+        246
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0208",
+      "source_video": "test/4_te1.mp4",
+      "source_sha256": "11049609f60c52702b90541e6d50146f5ff56d951c9fbf748cd164accb21226a",
+      "source_split": "test",
+      "frame_index": 86,
+      "time_s": 3.44,
+      "frame_file": "frames/4_te1-f00086.jpg",
+      "crop_file": "crops/0208.png",
+      "person_box": [
+        866.3963623046875,
+        605.0748291015625,
+        1076.7862548828125,
+        990.18994140625
+      ],
+      "person_confidence": 0.8522186279296875,
+      "head_box": [
+        933.3162231445312,
+        613.0391235351562,
+        993.3942260742188,
+        686.9812622070312
+      ],
+      "crop_box": [
+        924,
+        601,
+        1002,
+        698
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0209",
+      "source_video": "test/4_te1.mp4",
+      "source_sha256": "11049609f60c52702b90541e6d50146f5ff56d951c9fbf748cd164accb21226a",
+      "source_split": "test",
+      "frame_index": 86,
+      "time_s": 3.44,
+      "frame_file": "frames/4_te1-f00086.jpg",
+      "crop_file": "crops/0209.png",
+      "person_box": [
+        179.8997802734375,
+        120.03496551513672,
+        236.3134765625,
+        197.3897705078125
+      ],
+      "person_confidence": 0.4294852614402771,
+      "head_box": [
+        199.21786499023438,
+        120.56462097167969,
+        211.28521728515625,
+        135.416748046875
+      ],
+      "crop_box": [
+        197,
+        118,
+        213,
+        137
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0214",
+      "source_video": "test/5_te1.mp4",
+      "source_sha256": "f0dcc960126cb82e2bd0f34b95694c36011362ce2d243a59f95c696cddf853ec",
+      "source_split": "test",
+      "frame_index": 86,
+      "time_s": 3.4331337325349303,
+      "frame_file": "frames/5_te1-f00086.jpg",
+      "crop_file": "crops/0214.png",
+      "person_box": [
+        93.89501953125,
+        843.7169189453125,
+        255.57550048828125,
+        1079.02783203125
+      ],
+      "person_confidence": 0.8768747448921204,
+      "head_box": [
+        162.74737548828125,
+        871.8902587890625,
+        210.09466552734375,
+        930.1638793945312
+      ],
+      "crop_box": [
+        155,
+        863,
+        217,
+        938
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0215",
+      "source_video": "test/5_te1.mp4",
+      "source_sha256": "f0dcc960126cb82e2bd0f34b95694c36011362ce2d243a59f95c696cddf853ec",
+      "source_split": "test",
+      "frame_index": 86,
+      "time_s": 3.4331337325349303,
+      "frame_file": "frames/5_te1-f00086.jpg",
+      "crop_file": "crops/0215.png",
+      "person_box": [
+        428.5829162597656,
+        792.120361328125,
+        602.0272216796875,
+        1078.294189453125
+      ],
+      "person_confidence": 0.805312991142273,
+      "head_box": [
+        439.8984069824219,
+        821.9482421875,
+        484.5415344238281,
+        876.8936157226562
+      ],
+      "crop_box": [
+        433,
+        813,
+        491,
+        885
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0216",
+      "source_video": "test/5_te1.mp4",
+      "source_sha256": "f0dcc960126cb82e2bd0f34b95694c36011362ce2d243a59f95c696cddf853ec",
+      "source_split": "test",
+      "frame_index": 86,
+      "time_s": 3.4331337325349303,
+      "frame_file": "frames/5_te1-f00086.jpg",
+      "crop_file": "crops/0216.png",
+      "person_box": [
+        226.59376525878906,
+        822.8623046875,
+        366.411865234375,
+        1080.0
+      ],
+      "person_confidence": 0.621861457824707,
+      "head_box": [
+        277.56976318359375,
+        845.56298828125,
+        325.39666748046875,
+        904.4268798828125
+      ],
+      "crop_box": [
+        270,
+        836,
+        332,
+        913
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0220",
+      "source_video": "test/6_te1.mp4",
+      "source_sha256": "059bdb43c38140d1015a2b46309c3bcf773edc33fde963b3fb762aea4331faf2",
+      "source_split": "test",
+      "frame_index": 64,
+      "time_s": 2.568218298555377,
+      "frame_file": "frames/6_te1-f00064.jpg",
+      "crop_file": "crops/0220.png",
+      "person_box": [
+        385.1810302734375,
+        81.01204681396484,
+        443.6988525390625,
+        212.69393920898438
+      ],
+      "person_confidence": 0.6337549686431885,
+      "head_box": [
+        410.94366455078125,
+        81.20658874511719,
+        431.48602294921875,
+        106.48950958251953
+      ],
+      "crop_box": [
+        407,
+        77,
+        434,
+        110
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    },
+    {
+      "id": "0223",
+      "source_video": "test/6_te1.mp4",
+      "source_sha256": "059bdb43c38140d1015a2b46309c3bcf773edc33fde963b3fb762aea4331faf2",
+      "source_split": "test",
+      "frame_index": 64,
+      "time_s": 2.568218298555377,
+      "frame_file": "frames/6_te1-f00064.jpg",
+      "crop_file": "crops/0223.png",
+      "person_box": [
+        126.91549682617188,
+        816.720947265625,
+        278.51995849609375,
+        1078.1856689453125
+      ],
+      "person_confidence": 0.37142977118492126,
+      "head_box": [
+        165.184814453125,
+        993.7922973632812,
+        214.18966674804688,
+        1054.10595703125
+      ],
+      "crop_box": [
+        157,
+        984,
+        221,
+        1063
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0224",
+      "source_video": "test/6_te9.mp4",
+      "source_sha256": "7434951bbc7f87ba144436863f7128e8780b14721191431aa30d7f3020ac0987",
+      "source_split": "test",
+      "frame_index": 37,
+      "time_s": 1.4735165272799682,
+      "frame_file": "frames/6_te9-f00037.jpg",
+      "crop_file": "crops/0224.png",
+      "person_box": [
+        866.6932373046875,
+        646.34033203125,
+        1032.4102783203125,
+        1048.127197265625
+      ],
+      "person_confidence": 0.8810227513313293,
+      "head_box": [
+        912.6075439453125,
+        653.6280517578125,
+        975.2862548828125,
+        730.7711181640625
+      ],
+      "crop_box": [
+        903,
+        642,
+        984,
+        742
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "no_hardhat",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Hair or uncovered scalp visible in crop/context"
+    },
+    {
+      "id": "0226",
+      "source_video": "test/7_te2.mp4",
+      "source_sha256": "b6daa8e4a2148be19e5fb4e4f9c06d98aa51659aa0265a2fd2d2dbe26a55f636",
+      "source_split": "test",
+      "frame_index": 75,
+      "time_s": 3.0162199917218544,
+      "frame_file": "frames/7_te2-f00075.jpg",
+      "crop_file": "crops/0226.png",
+      "person_box": [
+        1564.206787109375,
+        424.88043212890625,
+        1638.048583984375,
+        625.1525268554688
+      ],
+      "person_confidence": 0.7263171672821045,
+      "head_box": [
+        1594.996337890625,
+        422.7506103515625,
+        1626.23876953125,
+        461.2028503417969
+      ],
+      "crop_box": [
+        1590,
+        416,
+        1630,
+        466
+      ],
+      "proposal_source": "measured_face_landmarks",
+      "pose_available": true,
+      "review_state": "assistant_visual_review",
+      "label": "unknown",
+      "geometry_reviewed": false,
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "scope": "head crop only; not a complete frame/event annotation",
+      "crop_reviewed": true,
+      "notes": "Insufficient detail, possible cap, incomplete crown, or uncertain proposal; exclude from binary training"
+    }
+  ]
+}

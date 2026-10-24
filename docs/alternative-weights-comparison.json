@@ -1,0 +1,270 @@
+{
+  "archive": "linq-trained-models.zip",
+  "archive_mode": "smoke",
+  "archive_epochs": 1,
+  "recommendation": "Keep installed night-trained models. Archive contains a one-epoch smoke run, not release weights.",
+  "metrics_comparability": "Different evaluation set sizes; reported metrics alone are not a controlled benchmark.",
+  "models": [
+    {
+      "task": "people",
+      "archive_reported_mAP50": 0.47046175882433905,
+      "installed_reported_mAP50": 0.6248046313312574
+    },
+    {
+      "task": "head_ppe",
+      "archive_reported_mAP50": 0.023248467265368177,
+      "installed_reported_mAP50": 0.9313380182242645
+    },
+    {
+      "task": "vest_ppe",
+      "archive_reported_mAP50": 0.01303100067380402,
+      "installed_reported_mAP50": 0.7754360729987426
+    }
+  ],
+  "same_frame_probe": {
+    "frames_per_detector": 4,
+    "source": "Factory CCTV subset",
+    "threshold": 0.5,
+    "limitation": "Counts are detections, not ground-truth precision/recall.",
+    "results": [
+      {
+        "model": "ppe-head.onnx",
+        "file": "0_te9.mp4",
+        "outputs": {
+          "smoke": {
+            "detections": [],
+            "ms": 622.9551999995238
+          },
+          "night": {
+            "detections": [
+              {
+                "label": "hardhat",
+                "confidence": 0.5685800313949585,
+                "box": [
+                  1534.442138671875,
+                  516.8538208007812,
+                  1557.8935546875,
+                  544.5214233398438
+                ]
+              }
+            ],
+            "ms": 571.679700000459
+          }
+        }
+      },
+      {
+        "model": "ppe-head.onnx",
+        "file": "2_te12.mp4",
+        "outputs": {
+          "smoke": {
+            "detections": [],
+            "ms": 863.1580000001122
+          },
+          "night": {
+            "detections": [
+              {
+                "label": "no_hardhat",
+                "confidence": 0.6693430542945862,
+                "box": [
+                  275.77105712890625,
+                  1.9837646484375,
+                  317.6301574707031,
+                  51.1611328125
+                ]
+              },
+              {
+                "label": "hardhat",
+                "confidence": 0.5927165746688843,
+                "box": [
+                  189.2800750732422,
+                  112.88186645507812,
+                  214.5141143798828,
+                  142.40231323242188
+                ]
+              },
+              {
+                "label": "no_hardhat",
+                "confidence": 0.5596421360969543,
+                "box": [
+                  1101.802001953125,
+                  137.9127960205078,
+                  1133.1029052734375,
+                  174.85011291503906
+                ]
+              }
+            ],
+            "ms": 689.277000000402
+          }
+        }
+      },
+      {
+        "model": "ppe-head.onnx",
+        "file": "6_te4.mp4",
+        "outputs": {
+          "smoke": {
+            "detections": [],
+            "ms": 597.3503999994136
+          },
+          "night": {
+            "detections": [
+              {
+                "label": "no_hardhat",
+                "confidence": 0.7108529806137085,
+                "box": [
+                  427.80157470703125,
+                  945.0059204101562,
+                  513.8619384765625,
+                  1038.3739013671875
+                ]
+              },
+              {
+                "label": "no_hardhat",
+                "confidence": 0.643065333366394,
+                "box": [
+                  325.5980529785156,
+                  892.6954345703125,
+                  413.1833801269531,
+                  992.9231567382812
+                ]
+              },
+              {
+                "label": "no_hardhat",
+                "confidence": 0.6167387962341309,
+                "box": [
+                  275.5253601074219,
+                  1.57232666015625,
+                  317.87847900390625,
+                  49.78070068359375
+                ]
+              }
+            ],
+            "ms": 493.30840000038734
+          }
+        }
+      },
+      {
+        "model": "ppe-head.onnx",
+        "file": "7_te6.mp4",
+        "outputs": {
+          "smoke": {
+            "detections": [],
+            "ms": 495.05500000032043
+          },
+          "night": {
+            "detections": [
+              {
+                "label": "no_hardhat",
+                "confidence": 0.5940180420875549,
+                "box": [
+                  1499.227294921875,
+                  436.899169921875,
+                  1543.3333740234375,
+                  486.5943603515625
+                ]
+              },
+              {
+                "label": "no_hardhat",
+                "confidence": 0.5002853870391846,
+                "box": [
+                  1514.6260986328125,
+                  126.5372314453125,
+                  1550.7275390625,
+                  163.6893310546875
+                ]
+              }
+            ],
+            "ms": 399.4113999997353
+          }
+        }
+      },
+      {
+        "model": "ppe-vest.onnx",
+        "file": "0_te9.mp4",
+        "outputs": {
+          "smoke": {
+            "detections": [],
+            "ms": 523.6072999996395
+          },
+          "night": {
+            "detections": [],
+            "ms": 477.77619999942544
+          }
+        }
+      },
+      {
+        "model": "ppe-vest.onnx",
+        "file": "2_te12.mp4",
+        "outputs": {
+          "smoke": {
+            "detections": [],
+            "ms": 482.3545999997805
+          },
+          "night": {
+            "detections": [],
+            "ms": 486.7140999995172
+          }
+        }
+      },
+      {
+        "model": "ppe-vest.onnx",
+        "file": "6_te4.mp4",
+        "outputs": {
+          "smoke": {
+            "detections": [],
+            "ms": 543.0054999997083
+          },
+          "night": {
+            "detections": [],
+            "ms": 613.2567999993626
+          }
+        }
+      },
+      {
+        "model": "ppe-vest.onnx",
+        "file": "7_te6.mp4",
+        "outputs": {
+          "smoke": {
+            "detections": [],
+            "ms": 612.3290000005
+          },
+          "night": {
+            "detections": [],
+            "ms": 480.601299999762
+          }
+        }
+      }
+    ]
+  },
+  "hashes": [
+    {
+      "name": "person-yolo12m.onnx",
+      "archive_sha256": "25a8160ddd2f8908e5e30532659b685faaca7a1f1e60faa8b7f3f65d81e7f894",
+      "installed_sha256": "a7a027419a46770aa8c6d91e1293d7286e6bb84f94ae21f82f1ac2d2168acfa3",
+      "identical": false
+    },
+    {
+      "name": "ppe-head.onnx",
+      "archive_sha256": "ce25ee0a61b5ec9f07907cb6ea7dceeec5f3b22df39188545294af3973299047",
+      "installed_sha256": "7b823854a1fc2d4c50ff44a7becad93c2f82f860d9e806508c7067a7fb4a0fcc",
+      "identical": false
+    },
+    {
+      "name": "ppe-vest.onnx",
+      "archive_sha256": "89f9f2a51fd464e0e6c2a4751555d01f5db91bb3e61072cd13df398ab829860f",
+      "installed_sha256": "715bd7d536032c1dea7c31362bdc79d27c80dd3982074c5b1e50388cfa917dab",
+      "identical": false
+    },
+    {
+      "name": "ppe-head-classifier.onnx",
+      "archive_sha256": "eea4d700e84de748ff371176b2e00345455e1c56f982407c87cafdc87f588680",
+      "installed_sha256": "802ae6e545c9956ce2ce41d3f43adcd2020821a2603c7da80d0e36b7a43c5b73",
+      "identical": false
+    },
+    {
+      "name": "ppe-torso-classifier.onnx",
+      "archive_sha256": "3a40619d30148222d14780a510061c381c13644b2944c8ef83341eb57d1066fa",
+      "installed_sha256": "ce213c91fc02fe85a10f8d3bbd9d3b6c3e1288566ab8d049d6b16556c3ad046b",
+      "identical": false
+    }
+  ]
+}

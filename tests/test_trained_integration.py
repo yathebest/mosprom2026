@@ -62,7 +62,7 @@ def test_temporal_window_resamples_slow_camera_without_joining_outages():
     assert temporal.predict(np.zeros((30,30,3),np.uint8),.1) is None
 
 
-def test_ppe_refinement_skips_large_people_but_keeps_small_person_crops():
+def test_ppe_refinement_rescues_unresolved_regions_and_skips_confident_proposals():
     from app.core import Person
     from app.scenario_models import ScenarioModels
     class Detector:
@@ -75,7 +75,15 @@ def test_ppe_refinement_skips_large_people_but_keeps_small_person_crops():
     pipeline.ppe_labels={'head':{'hardhat','no_hardhat'},'torso':{'vest','no_vest'}}
     frame=np.zeros((200,100,3),np.uint8)
     pipeline.predict(frame,[Person((5,5,95,190),.9)])
-    assert detector.calls==1
+    assert detector.calls==2
     detector.calls=0
     pipeline.predict(frame,[Person((5,5,35,80),.9)])
     assert detector.calls==2
+    from app.scenario_models import Observation
+    detector.calls=0;pipeline.allowed={'hardhat'}
+    def confident(frame):
+        detector.calls+=1
+        return [Observation((6,6,32,30),.95,'hardhat','ppe-head')]
+    detector.predict=confident
+    assert pipeline.predict(frame,[Person((5,5,35,80),.9)])
+    assert detector.calls==1

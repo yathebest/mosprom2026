@@ -1,0 +1,13 @@
+{
+  "source": "https://github.com/pedbrgs/Fire-Detection",
+  "source_sha256": "7d3082bbe8c3aee97f6a9f31852fa093d181ff296fb737f4e4ab2d08422584e8",
+  "onnx_sha256": "d7ef51edd792f4ae3cc173b8994fcc201bc82566f9502e2246e153801f93019e",
+  "names": [
+    "smoke",
+    "fire"
+  ],
+  "status": "candidate_not_deployed",
+  "architecture": "YOLOv5s",
+  "restricted_weights_only_load": true,
+  "linq_hardware_verified": false
+}

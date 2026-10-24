@@ -1,0 +1,22 @@
+{
+  "source": "https://data.mendeley.com/datasets/6hyrr8typ7/1",
+  "weights": "data\\cache\\smoking-yolo12m\\training\\weights\\best.pt",
+  "validation": {
+    "metrics/precision(B)": 0.7351201203915283,
+    "metrics/recall(B)": 0.5301385993580686,
+    "metrics/mAP50(B)": 0.6118705272036208,
+    "metrics/mAP50-95(B)": 0.2714258442701071,
+    "fitness": 0.2714258442701071
+  },
+  "selection": "Ultralytics validation fitness only; test not used for epoch selection",
+  "status": "candidate_not_deployed",
+  "time_budget_minutes": 10.0,
+  "warning": "Requires original-vs-candidate test and non-smoking factory controls; not factory event metrics.",
+  "dataset_counts": {
+    "train": 356,
+    "val": 89,
+    "test": 111
+  },
+  "actual_history_rows": 7,
+  "validation_guard": "failed; runtime weights unchanged"
+}

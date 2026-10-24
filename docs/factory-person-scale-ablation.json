@@ -1,0 +1,1468 @@
+{
+  "source": "https://data.mendeley.com/datasets/xjmtb22pff/1",
+  "review": {
+    "source": "https://data.mendeley.com/datasets/xjmtb22pff/1",
+    "reviewer": "assistant visual review before running this comparison; not expert ground truth",
+    "scope": "Eight middle frames; coarse visible-person rectangles. Includes partial bodies and a forklift driver. Ambiguous machine-shaped clutter is excluded; no claim of exhaustive hidden/occluded people. Coordinates refer to a 960x540 review image, original video is 1920x1080.",
+    "rows": [
+      {
+        "clip": "0_te1",
+        "frame": 186,
+        "boxes": [
+          [
+            14,
+            190,
+            43,
+            236
+          ],
+          [
+            156,
+            192,
+            187,
+            253
+          ],
+          [
+            726,
+            186,
+            749,
+            241
+          ],
+          [
+            741,
+            195,
+            775,
+            268
+          ]
+        ]
+      },
+      {
+        "clip": "1_te1",
+        "frame": 210,
+        "boxes": [
+          [
+            15,
+            194,
+            45,
+            235
+          ],
+          [
+            697,
+            159,
+            717,
+            204
+          ]
+        ]
+      },
+      {
+        "clip": "2_te1",
+        "frame": 46,
+        "boxes": [
+          [
+            107,
+            391,
+            219,
+            540
+          ],
+          [
+            489,
+            297,
+            572,
+            529
+          ],
+          [
+            594,
+            342,
+            691,
+            540
+          ],
+          [
+            847,
+            118,
+            899,
+            253
+          ]
+        ]
+      },
+      {
+        "clip": "3_te1",
+        "frame": 125,
+        "boxes": [
+          [
+            816,
+            49,
+            846,
+            110
+          ]
+        ]
+      },
+      {
+        "clip": "4_te1",
+        "frame": 86,
+        "boxes": [
+          [
+            88,
+            54,
+            124,
+            114
+          ],
+          [
+            435,
+            302,
+            538,
+            540
+          ]
+        ]
+      },
+      {
+        "clip": "5_te1",
+        "frame": 87,
+        "boxes": [
+          [
+            106,
+            47,
+            142,
+            114
+          ],
+          [
+            47,
+            419,
+            121,
+            540
+          ],
+          [
+            107,
+            404,
+            193,
+            540
+          ],
+          [
+            207,
+            370,
+            294,
+            540
+          ]
+        ]
+      },
+      {
+        "clip": "6_te1",
+        "frame": 65,
+        "boxes": [
+          [
+            105,
+            43,
+            141,
+            113
+          ],
+          [
+            188,
+            44,
+            221,
+            106
+          ],
+          [
+            73,
+            399,
+            180,
+            540
+          ],
+          [
+            173,
+            483,
+            285,
+            540
+          ]
+        ]
+      },
+      {
+        "clip": "7_te2",
+        "frame": 75,
+        "boxes": [
+          [
+            378,
+            138,
+            433,
+            241
+          ],
+          [
+            816,
+            49,
+            850,
+            112
+          ]
+        ]
+      }
+    ]
+  },
+  "config": {
+    "camera": "\u041a\u0430\u043c\u0435\u0440\u0430 01",
+    "recorded_at": null,
+    "zones": [],
+    "zone_hold": 1.0,
+    "fast_motion": false,
+    "speed_threshold": 1.25,
+    "motion_hold": 1.0,
+    "fall_detection": false,
+    "fall_hold": 1.0,
+    "lying_hold": 5.0,
+    "release_hold": 2.0,
+    "observation_gap": 0.8,
+    "sample_fps": 10,
+    "confidence": 0.4,
+    "calibration": null,
+    "speed_threshold_m_s": 2.5,
+    "body_threshold": 0.9,
+    "body_hold": 0.5,
+    "body_transition_max_s": 1.0,
+    "helmet_detection": false,
+    "vest_detection": false,
+    "mask_detection": false,
+    "harness_detection": false,
+    "phone_detection": false,
+    "fire_detection": false,
+    "smoke_detection": false,
+    "smoking_detection": false,
+    "proximity_detection": false,
+    "load_posture_detection": false,
+    "ppe_hold": 1.5,
+    "object_hold": 1.0,
+    "object_confidence": 0.5,
+    "phone_confidence": 0.3,
+    "phone_work_context_only": false,
+    "distant_people": true,
+    "smoking_min_person_height": 120,
+    "ppe_crops": true,
+    "ppe_max_people": 8,
+    "ppe_memory_s": 0.5,
+    "ppe_conflict_margin": 0.15,
+    "proximity_heights": 0.6,
+    "proximity_m": 3.0
+  },
+  "models": {
+    "adapted_only_640": [
+      {
+        "clip": "0_te1",
+        "frame": 186,
+        "boxes": [
+          [
+            14,
+            190,
+            43,
+            236
+          ],
+          [
+            156,
+            192,
+            187,
+            253
+          ],
+          [
+            726,
+            186,
+            749,
+            241
+          ],
+          [
+            741,
+            195,
+            775,
+            268
+          ]
+        ],
+        "predictions": [],
+        "overlap": {
+          "0.3": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 4
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 4
+          }
+        }
+      },
+      {
+        "clip": "1_te1",
+        "frame": 210,
+        "boxes": [
+          [
+            15,
+            194,
+            45,
+            235
+          ],
+          [
+            697,
+            159,
+            717,
+            204
+          ]
+        ],
+        "predictions": [],
+        "overlap": {
+          "0.3": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          }
+        }
+      },
+      {
+        "clip": "2_te1",
+        "frame": 46,
+        "boxes": [
+          [
+            107,
+            391,
+            219,
+            540
+          ],
+          [
+            489,
+            297,
+            572,
+            529
+          ],
+          [
+            594,
+            342,
+            691,
+            540
+          ],
+          [
+            847,
+            118,
+            899,
+            253
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              980.8778686523438,
+              598.0799560546875,
+              1143.5146484375,
+              1025.5048828125
+            ],
+            "score": 0.8475688695907593
+          },
+          {
+            "box": [
+              214.2978515625,
+              736.22021484375,
+              499.8101806640625,
+              1078.72265625
+            ],
+            "score": 0.7997916340827942
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          }
+        }
+      },
+      {
+        "clip": "3_te1",
+        "frame": 125,
+        "boxes": [
+          [
+            816,
+            49,
+            846,
+            110
+          ]
+        ],
+        "predictions": [],
+        "overlap": {
+          "0.3": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          }
+        }
+      },
+      {
+        "clip": "4_te1",
+        "frame": 86,
+        "boxes": [
+          [
+            88,
+            54,
+            124,
+            114
+          ],
+          [
+            435,
+            302,
+            538,
+            540
+          ]
+        ],
+        "predictions": [],
+        "overlap": {
+          "0.3": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          }
+        }
+      },
+      {
+        "clip": "5_te1",
+        "frame": 87,
+        "boxes": [
+          [
+            106,
+            47,
+            142,
+            114
+          ],
+          [
+            47,
+            419,
+            121,
+            540
+          ],
+          [
+            107,
+            404,
+            193,
+            540
+          ],
+          [
+            207,
+            370,
+            294,
+            540
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              425.1796875,
+              792.9957275390625,
+              606.3356323242188,
+              1076.4100341796875
+            ],
+            "score": 0.6144832968711853
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 1,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 3
+          },
+          "0.5": {
+            "matched": 1,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 3
+          }
+        }
+      },
+      {
+        "clip": "6_te1",
+        "frame": 65,
+        "boxes": [
+          [
+            105,
+            43,
+            141,
+            113
+          ],
+          [
+            188,
+            44,
+            221,
+            106
+          ],
+          [
+            73,
+            399,
+            180,
+            540
+          ],
+          [
+            173,
+            483,
+            285,
+            540
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              129.03822326660156,
+              807.386474609375,
+              285.3140869140625,
+              1076.228515625
+            ],
+            "score": 0.6369062066078186
+          },
+          {
+            "box": [
+              342.7576904296875,
+              950.709228515625,
+              565.664306640625,
+              1080.0
+            ],
+            "score": 0.5890793800354004
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          }
+        }
+      },
+      {
+        "clip": "7_te2",
+        "frame": 75,
+        "boxes": [
+          [
+            378,
+            138,
+            433,
+            241
+          ],
+          [
+            816,
+            49,
+            850,
+            112
+          ]
+        ],
+        "predictions": [],
+        "overlap": {
+          "0.3": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          }
+        }
+      }
+    ],
+    "ensemble_640": [
+      {
+        "clip": "0_te1",
+        "frame": 186,
+        "boxes": [
+          [
+            14,
+            190,
+            43,
+            236
+          ],
+          [
+            156,
+            192,
+            187,
+            253
+          ],
+          [
+            726,
+            186,
+            749,
+            241
+          ],
+          [
+            741,
+            195,
+            775,
+            268
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              1484.105224609375,
+              393.3177795410156,
+              1541.486083984375,
+              531.484619140625
+            ],
+            "score": 0.8101008534431458
+          },
+          {
+            "box": [
+              1453.115966796875,
+              377.99798583984375,
+              1489.2779541015625,
+              480.81207275390625
+            ],
+            "score": 0.7474253177642822
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          }
+        }
+      },
+      {
+        "clip": "1_te1",
+        "frame": 210,
+        "boxes": [
+          [
+            15,
+            194,
+            45,
+            235
+          ],
+          [
+            697,
+            159,
+            717,
+            204
+          ]
+        ],
+        "predictions": [],
+        "overlap": {
+          "0.3": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          }
+        }
+      },
+      {
+        "clip": "2_te1",
+        "frame": 46,
+        "boxes": [
+          [
+            107,
+            391,
+            219,
+            540
+          ],
+          [
+            489,
+            297,
+            572,
+            529
+          ],
+          [
+            594,
+            342,
+            691,
+            540
+          ],
+          [
+            847,
+            118,
+            899,
+            253
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              978.837890625,
+              594.2689819335938,
+              1143.2369384765625,
+              1027.087646484375
+            ],
+            "score": 0.9076848030090332
+          },
+          {
+            "box": [
+              1207.1260986328125,
+              685.1559448242188,
+              1377.3497314453125,
+              1073.797119140625
+            ],
+            "score": 0.8781692981719971
+          },
+          {
+            "box": [
+              1696.4248046875,
+              235.3681182861328,
+              1804.2255859375,
+              503.865478515625
+            ],
+            "score": 0.863905131816864
+          },
+          {
+            "box": [
+              216.77169799804688,
+              733.0446166992188,
+              485.4870300292969,
+              1077.665283203125
+            ],
+            "score": 0.8390847444534302
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 4,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 0
+          },
+          "0.5": {
+            "matched": 4,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 0
+          }
+        }
+      },
+      {
+        "clip": "3_te1",
+        "frame": 125,
+        "boxes": [
+          [
+            816,
+            49,
+            846,
+            110
+          ]
+        ],
+        "predictions": [],
+        "overlap": {
+          "0.3": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          }
+        }
+      },
+      {
+        "clip": "4_te1",
+        "frame": 86,
+        "boxes": [
+          [
+            88,
+            54,
+            124,
+            114
+          ],
+          [
+            435,
+            302,
+            538,
+            540
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              865.81787109375,
+              605.7006225585938,
+              1073.8289794921875,
+              977.7614135742188
+            ],
+            "score": 0.8993002772331238
+          },
+          {
+            "box": [
+              179.3072509765625,
+              119.65570068359375,
+              236.8542938232422,
+              196.65257263183594
+            ],
+            "score": 0.5022234916687012
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 0
+          },
+          "0.5": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 0
+          }
+        }
+      },
+      {
+        "clip": "5_te1",
+        "frame": 87,
+        "boxes": [
+          [
+            106,
+            47,
+            142,
+            114
+          ],
+          [
+            47,
+            419,
+            121,
+            540
+          ],
+          [
+            107,
+            404,
+            193,
+            540
+          ],
+          [
+            207,
+            370,
+            294,
+            540
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              94.56275939941406,
+              843.0232543945312,
+              253.28152465820312,
+              1078.00390625
+            ],
+            "score": 0.8369902968406677
+          },
+          {
+            "box": [
+              429.31256103515625,
+              791.2728881835938,
+              604.1495361328125,
+              1077.002685546875
+            ],
+            "score": 0.8220297694206238
+          },
+          {
+            "box": [
+              226.8266143798828,
+              828.1631469726562,
+              396.025146484375,
+              1078.064697265625
+            ],
+            "score": 0.6975716948509216
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 3,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          },
+          "0.5": {
+            "matched": 3,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          }
+        }
+      },
+      {
+        "clip": "6_te1",
+        "frame": 65,
+        "boxes": [
+          [
+            105,
+            43,
+            141,
+            113
+          ],
+          [
+            188,
+            44,
+            221,
+            106
+          ],
+          [
+            73,
+            399,
+            180,
+            540
+          ],
+          [
+            173,
+            483,
+            285,
+            540
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              397.6628723144531,
+              963.0684814453125,
+              571.1778564453125,
+              1077.5009765625
+            ],
+            "score": 0.6466189026832581
+          },
+          {
+            "box": [
+              385.3656921386719,
+              82.17745971679688,
+              444.3443298339844,
+              213.64605712890625
+            ],
+            "score": 0.6349008083343506
+          },
+          {
+            "box": [
+              218.16156005859375,
+              88.98324584960938,
+              271.59283447265625,
+              224.96250915527344
+            ],
+            "score": 0.5260686278343201
+          },
+          {
+            "box": [
+              128.521240234375,
+              818.4027099609375,
+              305.2926940917969,
+              1077.4888916015625
+            ],
+            "score": 0.47946497797966003
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 4,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 0
+          },
+          "0.5": {
+            "matched": 4,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 0
+          }
+        }
+      },
+      {
+        "clip": "7_te2",
+        "frame": 75,
+        "boxes": [
+          [
+            378,
+            138,
+            433,
+            241
+          ],
+          [
+            816,
+            49,
+            850,
+            112
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              1563.5086669921875,
+              426.09619140625,
+              1639.141845703125,
+              626.9603271484375
+            ],
+            "score": 0.6208947896957397
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 0,
+            "unmatched_predictions": 1,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 1,
+            "missed_reviewed": 2
+          }
+        }
+      }
+    ],
+    "ensemble_distant_960": [
+      {
+        "clip": "0_te1",
+        "frame": 186,
+        "boxes": [
+          [
+            14,
+            190,
+            43,
+            236
+          ],
+          [
+            156,
+            192,
+            187,
+            253
+          ],
+          [
+            726,
+            186,
+            749,
+            241
+          ],
+          [
+            741,
+            195,
+            775,
+            268
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              1485.2734375,
+              394.68963623046875,
+              1541.3291015625,
+              530.737060546875
+            ],
+            "score": 0.8316516876220703
+          },
+          {
+            "box": [
+              1454.17919921875,
+              376.77496337890625,
+              1490.537109375,
+              479.41595458984375
+            ],
+            "score": 0.8040042519569397
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          }
+        }
+      },
+      {
+        "clip": "1_te1",
+        "frame": 210,
+        "boxes": [
+          [
+            15,
+            194,
+            45,
+            235
+          ],
+          [
+            697,
+            159,
+            717,
+            204
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              1412.47509765625,
+              322.75543212890625,
+              1435.43896484375,
+              404.75909423828125
+            ],
+            "score": 0.7039918899536133
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 1,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 1,
+            "missed_reviewed": 2
+          }
+        }
+      },
+      {
+        "clip": "2_te1",
+        "frame": 46,
+        "boxes": [
+          [
+            107,
+            391,
+            219,
+            540
+          ],
+          [
+            489,
+            297,
+            572,
+            529
+          ],
+          [
+            594,
+            342,
+            691,
+            540
+          ],
+          [
+            847,
+            118,
+            899,
+            253
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              979.4351806640625,
+              597.1339111328125,
+              1143.7625732421875,
+              1028.16943359375
+            ],
+            "score": 0.8906150460243225
+          },
+          {
+            "box": [
+              1210.758056640625,
+              686.1348876953125,
+              1376.802978515625,
+              1078.7694091796875
+            ],
+            "score": 0.8824360370635986
+          },
+          {
+            "box": [
+              1695.677490234375,
+              235.50303649902344,
+              1806.498291015625,
+              505.412353515625
+            ],
+            "score": 0.8732051849365234
+          },
+          {
+            "box": [
+              212.10874938964844,
+              730.359130859375,
+              500.6827392578125,
+              1079.11474609375
+            ],
+            "score": 0.8017264604568481
+          },
+          {
+            "box": [
+              312.85198974609375,
+              95.42251586914062,
+              361.764892578125,
+              220.7833251953125
+            ],
+            "score": 0.5431280732154846
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 4,
+            "unmatched_predictions": 1,
+            "missed_reviewed": 0
+          },
+          "0.5": {
+            "matched": 4,
+            "unmatched_predictions": 1,
+            "missed_reviewed": 0
+          }
+        }
+      },
+      {
+        "clip": "3_te1",
+        "frame": 125,
+        "boxes": [
+          [
+            816,
+            49,
+            846,
+            110
+          ]
+        ],
+        "predictions": [],
+        "overlap": {
+          "0.3": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          }
+        }
+      },
+      {
+        "clip": "4_te1",
+        "frame": 86,
+        "boxes": [
+          [
+            88,
+            54,
+            124,
+            114
+          ],
+          [
+            435,
+            302,
+            538,
+            540
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              866.3963623046875,
+              605.0748291015625,
+              1076.7862548828125,
+              990.18994140625
+            ],
+            "score": 0.8522186279296875
+          },
+          {
+            "box": [
+              179.8997802734375,
+              120.03496551513672,
+              236.3134765625,
+              197.3897705078125
+            ],
+            "score": 0.4294852614402771
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 0
+          },
+          "0.5": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 0
+          }
+        }
+      },
+      {
+        "clip": "5_te1",
+        "frame": 87,
+        "boxes": [
+          [
+            106,
+            47,
+            142,
+            114
+          ],
+          [
+            47,
+            419,
+            121,
+            540
+          ],
+          [
+            107,
+            404,
+            193,
+            540
+          ],
+          [
+            207,
+            370,
+            294,
+            540
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              93.19450378417969,
+              843.435302734375,
+              255.4912567138672,
+              1079.1131591796875
+            ],
+            "score": 0.8730517029762268
+          },
+          {
+            "box": [
+              428.42578125,
+              792.59228515625,
+              599.06787109375,
+              1077.7862548828125
+            ],
+            "score": 0.5715912580490112
+          },
+          {
+            "box": [
+              225.5709686279297,
+              826.9871826171875,
+              365.17266845703125,
+              1080.0
+            ],
+            "score": 0.46823176741600037
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 3,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          },
+          "0.5": {
+            "matched": 3,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 1
+          }
+        }
+      },
+      {
+        "clip": "6_te1",
+        "frame": 65,
+        "boxes": [
+          [
+            105,
+            43,
+            141,
+            113
+          ],
+          [
+            188,
+            44,
+            221,
+            106
+          ],
+          [
+            73,
+            399,
+            180,
+            540
+          ],
+          [
+            173,
+            483,
+            285,
+            540
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              385.6064147949219,
+              80.9610595703125,
+              443.9309997558594,
+              212.79861450195312
+            ],
+            "score": 0.6387364864349365
+          },
+          {
+            "box": [
+              217.00814819335938,
+              93.38593292236328,
+              271.7486877441406,
+              223.8916015625
+            ],
+            "score": 0.5186483263969421
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 2,
+            "unmatched_predictions": 0,
+            "missed_reviewed": 2
+          }
+        }
+      },
+      {
+        "clip": "7_te2",
+        "frame": 75,
+        "boxes": [
+          [
+            378,
+            138,
+            433,
+            241
+          ],
+          [
+            816,
+            49,
+            850,
+            112
+          ]
+        ],
+        "predictions": [
+          {
+            "box": [
+              1564.206787109375,
+              424.88043212890625,
+              1638.048583984375,
+              625.1525268554688
+            ],
+            "score": 0.7263171672821045
+          }
+        ],
+        "overlap": {
+          "0.3": {
+            "matched": 0,
+            "unmatched_predictions": 1,
+            "missed_reviewed": 2
+          },
+          "0.5": {
+            "matched": 0,
+            "unmatched_predictions": 1,
+            "missed_reviewed": 2
+          }
+        }
+      }
+    ]
+  },
+  "warning": "Coarse assistant-reviewed boxes, eight debug frames, not expert benchmark or a blind test. Unmatched predictions need manual review before being called false positives. Adapted-only is an ablation; COCO ensemble already existed before this upgrade."
+}

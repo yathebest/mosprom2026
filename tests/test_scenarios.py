@@ -83,10 +83,11 @@ def test_barrier_requires_observed_entry_not_person_already_inside():
     assert [e['kind'] for e in events]==['barrier_crossing']
 
 
-def test_phone_requires_hand_and_movement_or_working_area():
+def test_phone_requires_measured_hand_and_optional_work_context():
     k=np.zeros((17,3),np.float32);k[9]=[50,50,.95]
     cfg=RunConfig(phone_detection=True)
-    assert not execute(cfg,[person(keypoints=k)],[obj('cell_phone',(45,45,55,55))])[0]
+    assert execute(cfg,[person(keypoints=k)],[obj('cell_phone',(45,45,55,55))])[0][0]['kind']=='possible_phone_use'
+    assert not execute(cfg.model_copy(update={'phone_work_context_only':True}),[person(keypoints=k)],[obj('cell_phone',(45,45,55,55))])[0]
     events,_=execute(cfg,[person(keypoints=k)],[obj('cell_phone',(45,45,55,55))],{1:{'speed':1.0}})
     assert [e['kind'] for e in events]==['possible_phone_use']
     assert not execute(cfg,[person()],[obj('cell_phone',(45,45,55,55))],{1:{'speed':1}})[0]
@@ -102,9 +103,12 @@ def test_fire_is_deduplicated_and_allowed_zone_suppresses_it():
 
 
 def test_smoking_upstream_label_and_allowed_place():
-    smoking=obj('smooking',(40,30,60,60))
-    assert execute(RunConfig(smoking_detection=True),[],[smoking])[0][0]['kind']=='possible_smoking'
-    assert not execute(RunConfig(smoking_detection=True,zones=[zone('smoking_allowed')]),[],[smoking])[0]
+    smoking=obj('smooking',(44,20,55,30))
+    worker=person(box=(30,0,70,100))
+    assert execute(RunConfig(smoking_detection=True,smoking_min_person_height=80),[worker],[smoking])[0][0]['kind']=='possible_smoking'
+    assert not execute(RunConfig(smoking_detection=True,smoking_min_person_height=80,zones=[zone('smoking_allowed')]),[worker],[smoking])[0]
+    assert not execute(RunConfig(smoking_detection=True),[],[smoking])[0]
+    assert not execute(RunConfig(smoking_detection=True),[person()],[smoking])[0]
 
 
 def test_proximity_requires_moving_detected_equipment_or_explicit_machine_zone():

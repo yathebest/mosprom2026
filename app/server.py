@@ -140,7 +140,8 @@ async def live_frame(session_id: str,request: Request):
         raise HTTPException(409,'Сеанс не принимает кадры устройства')
     content=await request.body()
     if len(content)>3*1024*1024:raise HTTPException(413,'Кадр слишком большой')
-    frame=cv2.imdecode(np.frombuffer(content,np.uint8),cv2.IMREAD_COLOR)
+    # JPEG decoding must not block event polling or the MJPEG stream.
+    frame=await asyncio.to_thread(cv2.imdecode,np.frombuffer(content,np.uint8),cv2.IMREAD_COLOR)
     if frame is None or frame.shape[0]*frame.shape[1]>4096*2160:
         raise HTTPException(400,'Нужен JPEG-кадр не более 4K')
     session.ingest(frame)
@@ -160,7 +161,7 @@ async def live_view(session_id: str,request: Request):
                 version=session.version
                 yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n'+session.jpeg+b'\r\n'
             if session.state in ('stopped','failed'):break
-            await asyncio.sleep(.08)
+            await asyncio.sleep(.025)
     return StreamingResponse(generate(),media_type='multipart/x-mixed-replace; boundary=frame',
                              headers={'Cache-Control':'no-store'})
 

@@ -1,0 +1,259 @@
+{
+  "method": "Assistant visually reviewed whole-person crops in torso-review.jpg; not expert-certified.",
+  "scope": "Visible vest garment only; factory uniforms with reflective strips are not automatically noncompliant. Not an event metric or independent safety audit.",
+  "rows": [
+    {
+      "id": "0192",
+      "source_video": "test/1_te9.mp4",
+      "frame_index": 135,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 69.4,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "worn",
+        "reason": "pose_assisted_torso",
+        "fresh": true,
+        "head_pixels_estimate": 69.4,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0193",
+      "source_video": "test/1_te9.mp4",
+      "frame_index": 135,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 28.1,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 28.1,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0195",
+      "source_video": "test/2_te1.mp4",
+      "frame_index": 46,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 94.8,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_torso",
+        "fresh": true,
+        "head_pixels_estimate": 94.8,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0196",
+      "source_video": "test/2_te1.mp4",
+      "frame_index": 46,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 86.4,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 86.4,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0197",
+      "source_video": "test/2_te1.mp4",
+      "frame_index": 46,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 59.4,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 59.4,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0199",
+      "source_video": "test/2_te1.mp4",
+      "frame_index": 46,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 27.6,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 27.6,
+        "observed_at_s": null
+      }
+    },
+    {
+      "id": "0202",
+      "source_video": "test/2_te9.mp4",
+      "frame_index": 88,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "missing",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 69.3,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_torso",
+        "fresh": true,
+        "head_pixels_estimate": 69.3,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0208",
+      "source_video": "test/4_te1.mp4",
+      "frame_index": 86,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 84.7,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 84.7,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0214",
+      "source_video": "test/5_te1.mp4",
+      "frame_index": 86,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 51.8,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 51.8,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0215",
+      "source_video": "test/5_te1.mp4",
+      "frame_index": 86,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "unknown",
+        "reason": "no_reliable_evidence",
+        "fresh": false,
+        "head_pixels_estimate": 63.0,
+        "observed_at_s": null
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "pose_assisted_torso",
+        "fresh": true,
+        "head_pixels_estimate": 63.0,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0216",
+      "source_video": "test/5_te1.mp4",
+      "frame_index": 86,
+      "truth": "worn",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "worn",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 56.6,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "worn",
+        "reason": "measured",
+        "fresh": true,
+        "head_pixels_estimate": 56.6,
+        "observed_at_s": 0
+      }
+    },
+    {
+      "id": "0223",
+      "source_video": "test/6_te1.mp4",
+      "frame_index": 64,
+      "truth": "missing",
+      "reviewer": "assistant_visual_review_2026-10-24",
+      "detector_only": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 57.5,
+        "observed_at_s": 0
+      },
+      "pose_fallback": {
+        "state": "missing",
+        "reason": "specialist_consensus",
+        "fresh": true,
+        "head_pixels_estimate": 57.5,
+        "observed_at_s": 0
+      }
+    }
+  ],
+  "status": "debug_subset_not_deployment_certification"
+}

@@ -1,0 +1,1302 @@
+{
+  "source": "https://huggingface.co/datasets/raiyaanabdullah/isafety-bench",
+  "revision": "8336f1c57076d598677effa1da9870b300790804",
+  "license": "CC-BY-NC-SA-4.0",
+  "config": {
+    "camera": "\u041a\u0430\u043c\u0435\u0440\u0430 01",
+    "recorded_at": null,
+    "zones": [],
+    "zone_hold": 1.0,
+    "fast_motion": false,
+    "speed_threshold": 1.25,
+    "motion_hold": 1.0,
+    "fall_detection": false,
+    "fall_hold": 1.0,
+    "lying_hold": 5.0,
+    "release_hold": 2.0,
+    "observation_gap": 0.8,
+    "sample_fps": 10,
+    "confidence": 0.4,
+    "calibration": null,
+    "speed_threshold_m_s": 2.5,
+    "body_threshold": 0.9,
+    "body_hold": 0.5,
+    "body_transition_max_s": 1.0,
+    "helmet_detection": false,
+    "vest_detection": false,
+    "mask_detection": false,
+    "harness_detection": false,
+    "phone_detection": false,
+    "fire_detection": true,
+    "smoke_detection": true,
+    "smoking_detection": false,
+    "proximity_detection": false,
+    "load_posture_detection": false,
+    "ppe_hold": 1.5,
+    "object_hold": 1.0,
+    "object_confidence": 0.5,
+    "phone_confidence": 0.3,
+    "phone_work_context_only": false,
+    "distant_people": true,
+    "smoking_min_person_height": 120,
+    "ppe_crops": true,
+    "ppe_max_people": 8,
+    "ppe_memory_s": 0.5,
+    "ppe_conflict_margin": 0.15,
+    "proximity_heights": 0.6,
+    "proximity_m": 3.0
+  },
+  "sample_fps": 5,
+  "models": {
+    "baseline": [
+      {
+        "file": "hazard/-BzGMvclD88_trim_1.mp4",
+        "source_group": "-BzGMvclD88",
+        "declared_fire": false,
+        "declared_actions": [
+          "carrying object and slipping",
+          "person falling down",
+          "rescue effort",
+          "watching incident passively",
+          "escaping from danger"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 25,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 1.12
+      },
+      {
+        "file": "hazard/_2tSBxyAwLs_trim_7.mp4",
+        "source_group": "_2tSBxyAwLs",
+        "declared_fire": false,
+        "declared_actions": [
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 30,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.58
+      },
+      {
+        "file": "hazard/4nQuQnaZjy8_trim_3.mp4",
+        "source_group": "4nQuQnaZjy8",
+        "declared_fire": false,
+        "declared_actions": [
+          "carrying object and slipping",
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": true,
+        "events": [
+          {
+            "track_id": 0,
+            "kind": "smoke",
+            "zone": "",
+            "start_s": 2.4,
+            "alert_s": 3.4,
+            "sequence": 1,
+            "score": 0.5707,
+            "reason": "\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0438 \u0434\u044b\u043c\u0430. \u041f\u0430\u0440/\u043f\u044b\u043b\u044c \u043c\u043e\u0433\u0443\u0442 \u0434\u0430\u0432\u0430\u0442\u044c \u043e\u0448\u0438\u0431\u043a\u0438.",
+            "confirmation_s": 1.0,
+            "source": "scenario_rules",
+            "scope": "scene",
+            "experimental": true,
+            "evidence_label": "smoke",
+            "evidence_model": "fire-smoke",
+            "evidence_box": [
+              3.5600266456604004,
+              298.53790283203125,
+              109.86571502685547,
+              464.3471984863281
+            ]
+          }
+        ],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 11
+        },
+        "seconds": 0.39
+      },
+      {
+        "file": "hazard/6fhnKhZQE4o_trim_3.mp4",
+        "source_group": "6fhnKhZQE4o",
+        "declared_fire": true,
+        "declared_actions": [
+          "fire incident",
+          "escaping from danger",
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.37
+      },
+      {
+        "file": "hazard/91OaD3ixCyA_trim_37.mp4",
+        "source_group": "91OaD3ixCyA",
+        "declared_fire": false,
+        "declared_actions": [
+          "falling load",
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.68
+      },
+      {
+        "file": "hazard/aTW27C3AG-o_trim_9.mp4",
+        "source_group": "aTW27C3AG-o",
+        "declared_fire": false,
+        "declared_actions": [
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 3
+        },
+        "seconds": 0.36
+      },
+      {
+        "file": "hazard/BWZSWUVBOuw_trim_5.mp4",
+        "source_group": "BWZSWUVBOuw",
+        "declared_fire": false,
+        "declared_actions": [
+          "machine part flying off",
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.74
+      },
+      {
+        "file": "hazard/ELLtmRhxG0Q_trim_1.mp4",
+        "source_group": "ELLtmRhxG0Q",
+        "declared_fire": false,
+        "declared_actions": [
+          "rescue effort",
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.59
+      },
+      {
+        "file": "hazard/1s2Tcqr3Rgg_trim_19.mp4",
+        "source_group": "1s2Tcqr3Rgg",
+        "declared_fire": true,
+        "declared_actions": [
+          "fire incident",
+          "watching incident passively"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 25,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 2
+        },
+        "seconds": 0.5
+      },
+      {
+        "file": "hazard/2Z2PVoOIPHU_trim_1.mp4",
+        "source_group": "2Z2PVoOIPHU",
+        "declared_fire": true,
+        "declared_actions": [
+          "machine explosion",
+          "fire incident",
+          "escaping from danger"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 1
+        },
+        "seconds": 0.4
+      },
+      {
+        "file": "hazard/3AFgNQQMRzw_trim_2.mp4",
+        "source_group": "3AFgNQQMRzw",
+        "declared_fire": true,
+        "declared_actions": [
+          "operating forklift",
+          "fire incident"
+        ],
+        "fire_alert": false,
+        "smoke_alert": true,
+        "events": [
+          {
+            "track_id": 0,
+            "kind": "smoke",
+            "zone": "",
+            "start_s": 6.807,
+            "alert_s": 7.808,
+            "sequence": 1,
+            "score": 0.7316,
+            "reason": "\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0438 \u0434\u044b\u043c\u0430. \u041f\u0430\u0440/\u043f\u044b\u043b\u044c \u043c\u043e\u0433\u0443\u0442 \u0434\u0430\u0432\u0430\u0442\u044c \u043e\u0448\u0438\u0431\u043a\u0438.",
+            "confirmation_s": 1.001,
+            "source": "scenario_rules",
+            "scope": "scene",
+            "experimental": true,
+            "evidence_label": "smoke",
+            "evidence_model": "fire-smoke",
+            "evidence_box": [
+              941.812255859375,
+              16.46600341796875,
+              1106.144287109375,
+              310.875732421875
+            ]
+          }
+        ],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 4,
+          "smoke": 12
+        },
+        "seconds": 0.81
+      },
+      {
+        "file": "hazard/4zjuYM_NGEY_clip0_trim_1.mp4",
+        "source_group": "4zjuYM_NGEY_clip0",
+        "declared_fire": true,
+        "declared_actions": [
+          "fire incident",
+          "escaping from danger"
+        ],
+        "fire_alert": false,
+        "smoke_alert": true,
+        "events": [
+          {
+            "track_id": 0,
+            "kind": "smoke",
+            "zone": "",
+            "start_s": 0.0,
+            "alert_s": 1.001,
+            "sequence": 1,
+            "score": 0.604,
+            "reason": "\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0438 \u0434\u044b\u043c\u0430. \u041f\u0430\u0440/\u043f\u044b\u043b\u044c \u043c\u043e\u0433\u0443\u0442 \u0434\u0430\u0432\u0430\u0442\u044c \u043e\u0448\u0438\u0431\u043a\u0438.",
+            "confirmation_s": 1.001,
+            "source": "scenario_rules",
+            "scope": "scene",
+            "experimental": true,
+            "evidence_label": "smoke",
+            "evidence_model": "fire-smoke",
+            "evidence_box": [
+              737.937255859375,
+              15.8055419921875,
+              1270.1903076171875,
+              411.6795654296875
+            ]
+          }
+        ],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 28
+        },
+        "seconds": 0.77
+      },
+      {
+        "file": "normal/_n8cIxEpups_trim_13.mp4",
+        "source_group": "_n8cIxEpups",
+        "declared_fire": false,
+        "declared_actions": [
+          "placing object",
+          "bending down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 24,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.25
+      },
+      {
+        "file": "normal/0piTQw83NBE_trim_1.mp4",
+        "source_group": "0piTQw83NBE",
+        "declared_fire": false,
+        "declared_actions": [
+          "standing",
+          "moving object",
+          "bending down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.62
+      },
+      {
+        "file": "normal/1tuWxs8fUOk_trim_21.mp4",
+        "source_group": "1tuWxs8fUOk",
+        "declared_fire": false,
+        "declared_actions": [
+          "bending down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 25,
+        "frames_with_objects": {
+          "fire": 2,
+          "smoke": 1
+        },
+        "seconds": 0.79
+      },
+      {
+        "file": "normal/oeHrto1r-S4_clip0_trim_38.mp4",
+        "source_group": "oeHrto1r-S4_clip0",
+        "declared_fire": false,
+        "declared_actions": [
+          "holding object",
+          "bending down",
+          "picking object"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 1,
+          "smoke": 0
+        },
+        "seconds": 0.55
+      },
+      {
+        "file": "normal/0kog0iuGxOc_trim_4.mp4",
+        "source_group": "0kog0iuGxOc",
+        "declared_fire": false,
+        "declared_actions": [
+          "crouching",
+          "walking",
+          "talking",
+          "getting up"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 25,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.78
+      },
+      {
+        "file": "normal/0zQ9fI30v1E_trim_7.mp4",
+        "source_group": "0zQ9fI30v1E",
+        "declared_fire": false,
+        "declared_actions": [
+          "crouching",
+          "folding fabric",
+          "tying fabric",
+          "stamping object",
+          "walking"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.69
+      },
+      {
+        "file": "normal/62_bh4b5puY_trim_23.mp4",
+        "source_group": "62_bh4b5puY",
+        "declared_fire": false,
+        "declared_actions": [
+          "using jack to lift vehicle",
+          "crouching"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 1,
+          "smoke": 0
+        },
+        "seconds": 1.88
+      },
+      {
+        "file": "normal/MEEGwePfDgM_trim_23.mp4",
+        "source_group": "MEEGwePfDgM",
+        "declared_fire": false,
+        "declared_actions": [
+          "holding object",
+          "talking",
+          "showing discomfort",
+          "assisting injured coworker",
+          "sitting",
+          "crouching"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 25,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 15
+        },
+        "seconds": 0.53
+      },
+      {
+        "file": "normal/0E-P6HrYYQI_trim_0.mp4",
+        "source_group": "0E-P6HrYYQI",
+        "declared_fire": false,
+        "declared_actions": [
+          "assembling electronic components",
+          "screwing parts",
+          "operating machine"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 30,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.54
+      },
+      {
+        "file": "normal/0jbAwaxJlCU_trim_3.mp4",
+        "source_group": "0jbAwaxJlCU",
+        "declared_fire": false,
+        "declared_actions": [
+          "adjusting machine components",
+          "operating machine"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 30,
+        "frames_with_objects": {
+          "fire": 1,
+          "smoke": 0
+        },
+        "seconds": 0.31
+      },
+      {
+        "file": "normal/3xr0dRq2QfM_trim_0.mp4",
+        "source_group": "3xr0dRq2QfM",
+        "declared_fire": false,
+        "declared_actions": [
+          "operating machine"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.33
+      },
+      {
+        "file": "normal/iKJpKjnqWnw_trim_0.mp4",
+        "source_group": "iKJpKjnqWnw",
+        "declared_fire": false,
+        "declared_actions": [
+          "rotating object",
+          "operating machine",
+          "adjusting machine components"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.31
+      },
+      {
+        "file": "normal/_g7R05NOikU_trim_0.mp4",
+        "source_group": "_g7R05NOikU",
+        "declared_fire": false,
+        "declared_actions": [
+          "operating industrial vehicle",
+          "monitoring onboard camera",
+          "looking at screen"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 30,
+        "frames_with_objects": {
+          "fire": 4,
+          "smoke": 0
+        },
+        "seconds": 0.64
+      },
+      {
+        "file": "normal/_nm1Yb8sxxY_trim_2.mp4",
+        "source_group": "_nm1Yb8sxxY",
+        "declared_fire": false,
+        "declared_actions": [
+          "pulling object",
+          "operating industrial vehicle",
+          "signaling to someone"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 18,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.17
+      },
+      {
+        "file": "normal/1SR4reJQnCM_trim_0.mp4",
+        "source_group": "1SR4reJQnCM",
+        "declared_fire": false,
+        "declared_actions": [
+          "operating industrial vehicle"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 5
+        },
+        "seconds": 0.35
+      },
+      {
+        "file": "normal/G8z74loJO7U_trim_8.mp4",
+        "source_group": "G8z74loJO7U",
+        "declared_fire": false,
+        "declared_actions": [
+          "operating industrial vehicle",
+          "writing notes",
+          "standing"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 17,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.2
+      }
+    ],
+    "dfire_yolov5s": [
+      {
+        "file": "hazard/-BzGMvclD88_trim_1.mp4",
+        "source_group": "-BzGMvclD88",
+        "declared_fire": false,
+        "declared_actions": [
+          "carrying object and slipping",
+          "person falling down",
+          "rescue effort",
+          "watching incident passively",
+          "escaping from danger"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 25,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.54
+      },
+      {
+        "file": "hazard/_2tSBxyAwLs_trim_7.mp4",
+        "source_group": "_2tSBxyAwLs",
+        "declared_fire": false,
+        "declared_actions": [
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 30,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.59
+      },
+      {
+        "file": "hazard/4nQuQnaZjy8_trim_3.mp4",
+        "source_group": "4nQuQnaZjy8",
+        "declared_fire": false,
+        "declared_actions": [
+          "carrying object and slipping",
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 7
+        },
+        "seconds": 0.39
+      },
+      {
+        "file": "hazard/6fhnKhZQE4o_trim_3.mp4",
+        "source_group": "6fhnKhZQE4o",
+        "declared_fire": true,
+        "declared_actions": [
+          "fire incident",
+          "escaping from danger",
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.45
+      },
+      {
+        "file": "hazard/91OaD3ixCyA_trim_37.mp4",
+        "source_group": "91OaD3ixCyA",
+        "declared_fire": false,
+        "declared_actions": [
+          "falling load",
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.73
+      },
+      {
+        "file": "hazard/aTW27C3AG-o_trim_9.mp4",
+        "source_group": "aTW27C3AG-o",
+        "declared_fire": false,
+        "declared_actions": [
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 2
+        },
+        "seconds": 0.38
+      },
+      {
+        "file": "hazard/BWZSWUVBOuw_trim_5.mp4",
+        "source_group": "BWZSWUVBOuw",
+        "declared_fire": false,
+        "declared_actions": [
+          "machine part flying off",
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.74
+      },
+      {
+        "file": "hazard/ELLtmRhxG0Q_trim_1.mp4",
+        "source_group": "ELLtmRhxG0Q",
+        "declared_fire": false,
+        "declared_actions": [
+          "rescue effort",
+          "person falling down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 1
+        },
+        "seconds": 0.64
+      },
+      {
+        "file": "hazard/1s2Tcqr3Rgg_trim_19.mp4",
+        "source_group": "1s2Tcqr3Rgg",
+        "declared_fire": true,
+        "declared_actions": [
+          "fire incident",
+          "watching incident passively"
+        ],
+        "fire_alert": true,
+        "smoke_alert": false,
+        "events": [
+          {
+            "track_id": 0,
+            "kind": "fire",
+            "zone": "",
+            "start_s": 1.8,
+            "alert_s": 2.8,
+            "sequence": 1,
+            "score": 0.6308,
+            "reason": "\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0438 \u043e\u0442\u043a\u0440\u044b\u0442\u043e\u0433\u043e \u043e\u0433\u043d\u044f \u0432\u043d\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0451\u043d\u043d\u043e\u0439 \u043e\u0431\u043b\u0430\u0441\u0442\u0438.",
+            "confirmation_s": 1.0,
+            "source": "scenario_rules",
+            "scope": "scene",
+            "experimental": true,
+            "evidence_label": "fire",
+            "evidence_model": "yolov5s",
+            "evidence_box": [
+              241.52708435058594,
+              594.141845703125,
+              291.5984802246094,
+              635.763671875
+            ]
+          }
+        ],
+        "frames": 25,
+        "frames_with_objects": {
+          "fire": 15,
+          "smoke": 0
+        },
+        "seconds": 0.65
+      },
+      {
+        "file": "hazard/2Z2PVoOIPHU_trim_1.mp4",
+        "source_group": "2Z2PVoOIPHU",
+        "declared_fire": true,
+        "declared_actions": [
+          "machine explosion",
+          "fire incident",
+          "escaping from danger"
+        ],
+        "fire_alert": true,
+        "smoke_alert": false,
+        "events": [
+          {
+            "track_id": 0,
+            "kind": "fire",
+            "zone": "",
+            "start_s": 3.4,
+            "alert_s": 4.4,
+            "sequence": 1,
+            "score": 0.5328,
+            "reason": "\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0438 \u043e\u0442\u043a\u0440\u044b\u0442\u043e\u0433\u043e \u043e\u0433\u043d\u044f \u0432\u043d\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0451\u043d\u043d\u043e\u0439 \u043e\u0431\u043b\u0430\u0441\u0442\u0438.",
+            "confirmation_s": 1.0,
+            "source": "scenario_rules",
+            "scope": "scene",
+            "experimental": true,
+            "evidence_label": "fire",
+            "evidence_model": "yolov5s",
+            "evidence_box": [
+              124.58300018310547,
+              141.86978149414062,
+              190.8898468017578,
+              226.3976287841797
+            ]
+          }
+        ],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 17,
+          "smoke": 0
+        },
+        "seconds": 0.56
+      },
+      {
+        "file": "hazard/3AFgNQQMRzw_trim_2.mp4",
+        "source_group": "3AFgNQQMRzw",
+        "declared_fire": true,
+        "declared_actions": [
+          "operating forklift",
+          "fire incident"
+        ],
+        "fire_alert": true,
+        "smoke_alert": true,
+        "events": [
+          {
+            "track_id": 0,
+            "kind": "fire",
+            "zone": "",
+            "start_s": 1.602,
+            "alert_s": 2.603,
+            "sequence": 1,
+            "score": 0.7226,
+            "reason": "\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0438 \u043e\u0442\u043a\u0440\u044b\u0442\u043e\u0433\u043e \u043e\u0433\u043d\u044f \u0432\u043d\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0451\u043d\u043d\u043e\u0439 \u043e\u0431\u043b\u0430\u0441\u0442\u0438.",
+            "confirmation_s": 1.001,
+            "source": "scenario_rules",
+            "scope": "scene",
+            "experimental": true,
+            "evidence_label": "fire",
+            "evidence_model": "yolov5s",
+            "evidence_box": [
+              902.601318359375,
+              37.411529541015625,
+              1002.9625244140625,
+              159.06539916992188
+            ]
+          },
+          {
+            "track_id": 0,
+            "kind": "smoke",
+            "zone": "",
+            "start_s": 3.203,
+            "alert_s": 4.204,
+            "sequence": 1,
+            "score": 0.7963,
+            "reason": "\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0438 \u0434\u044b\u043c\u0430. \u041f\u0430\u0440/\u043f\u044b\u043b\u044c \u043c\u043e\u0433\u0443\u0442 \u0434\u0430\u0432\u0430\u0442\u044c \u043e\u0448\u0438\u0431\u043a\u0438.",
+            "confirmation_s": 1.001,
+            "source": "scenario_rules",
+            "scope": "scene",
+            "experimental": true,
+            "evidence_label": "smoke",
+            "evidence_model": "yolov5s",
+            "evidence_box": [
+              463.128173828125,
+              215.95904541015625,
+              776.4593505859375,
+              599.3042602539062
+            ]
+          }
+        ],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 31,
+          "smoke": 19
+        },
+        "seconds": 1.0
+      },
+      {
+        "file": "hazard/4zjuYM_NGEY_clip0_trim_1.mp4",
+        "source_group": "4zjuYM_NGEY_clip0",
+        "declared_fire": true,
+        "declared_actions": [
+          "fire incident",
+          "escaping from danger"
+        ],
+        "fire_alert": true,
+        "smoke_alert": true,
+        "events": [
+          {
+            "track_id": 0,
+            "kind": "fire",
+            "zone": "",
+            "start_s": 0.4,
+            "alert_s": 1.401,
+            "sequence": 1,
+            "score": 0.5199,
+            "reason": "\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0438 \u043e\u0442\u043a\u0440\u044b\u0442\u043e\u0433\u043e \u043e\u0433\u043d\u044f \u0432\u043d\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0451\u043d\u043d\u043e\u0439 \u043e\u0431\u043b\u0430\u0441\u0442\u0438.",
+            "confirmation_s": 1.001,
+            "source": "scenario_rules",
+            "scope": "scene",
+            "experimental": true,
+            "evidence_label": "fire",
+            "evidence_model": "yolov5s",
+            "evidence_box": [
+              569.0255126953125,
+              141.1048583984375,
+              621.7373046875,
+              216.96728515625
+            ]
+          },
+          {
+            "track_id": 0,
+            "kind": "smoke",
+            "zone": "",
+            "start_s": 3.604,
+            "alert_s": 4.605,
+            "sequence": 1,
+            "score": 0.7823,
+            "reason": "\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0438 \u0434\u044b\u043c\u0430. \u041f\u0430\u0440/\u043f\u044b\u043b\u044c \u043c\u043e\u0433\u0443\u0442 \u0434\u0430\u0432\u0430\u0442\u044c \u043e\u0448\u0438\u0431\u043a\u0438.",
+            "confirmation_s": 1.001,
+            "source": "scenario_rules",
+            "scope": "scene",
+            "experimental": true,
+            "evidence_label": "smoke",
+            "evidence_model": "yolov5s",
+            "evidence_box": [
+              159.0124053955078,
+              10.5152587890625,
+              469.00946044921875,
+              349.79449462890625
+            ]
+          }
+        ],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 26,
+          "smoke": 25
+        },
+        "seconds": 1.05
+      },
+      {
+        "file": "normal/_n8cIxEpups_trim_13.mp4",
+        "source_group": "_n8cIxEpups",
+        "declared_fire": false,
+        "declared_actions": [
+          "placing object",
+          "bending down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 24,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 2
+        },
+        "seconds": 0.33
+      },
+      {
+        "file": "normal/0piTQw83NBE_trim_1.mp4",
+        "source_group": "0piTQw83NBE",
+        "declared_fire": false,
+        "declared_actions": [
+          "standing",
+          "moving object",
+          "bending down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.79
+      },
+      {
+        "file": "normal/1tuWxs8fUOk_trim_21.mp4",
+        "source_group": "1tuWxs8fUOk",
+        "declared_fire": false,
+        "declared_actions": [
+          "bending down"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 25,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 1.19
+      },
+      {
+        "file": "normal/oeHrto1r-S4_clip0_trim_38.mp4",
+        "source_group": "oeHrto1r-S4_clip0",
+        "declared_fire": false,
+        "declared_actions": [
+          "holding object",
+          "bending down",
+          "picking object"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 3
+        },
+        "seconds": 0.9
+      },
+      {
+        "file": "normal/0kog0iuGxOc_trim_4.mp4",
+        "source_group": "0kog0iuGxOc",
+        "declared_fire": false,
+        "declared_actions": [
+          "crouching",
+          "walking",
+          "talking",
+          "getting up"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 25,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 1.62
+      },
+      {
+        "file": "normal/0zQ9fI30v1E_trim_7.mp4",
+        "source_group": "0zQ9fI30v1E",
+        "declared_fire": false,
+        "declared_actions": [
+          "crouching",
+          "folding fabric",
+          "tying fabric",
+          "stamping object",
+          "walking"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.93
+      },
+      {
+        "file": "normal/62_bh4b5puY_trim_23.mp4",
+        "source_group": "62_bh4b5puY",
+        "declared_fire": false,
+        "declared_actions": [
+          "using jack to lift vehicle",
+          "crouching"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 2.68
+      },
+      {
+        "file": "normal/MEEGwePfDgM_trim_23.mp4",
+        "source_group": "MEEGwePfDgM",
+        "declared_fire": false,
+        "declared_actions": [
+          "holding object",
+          "talking",
+          "showing discomfort",
+          "assisting injured coworker",
+          "sitting",
+          "crouching"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 25,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.67
+      },
+      {
+        "file": "normal/0E-P6HrYYQI_trim_0.mp4",
+        "source_group": "0E-P6HrYYQI",
+        "declared_fire": false,
+        "declared_actions": [
+          "assembling electronic components",
+          "screwing parts",
+          "operating machine"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 30,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 4
+        },
+        "seconds": 0.8
+      },
+      {
+        "file": "normal/0jbAwaxJlCU_trim_3.mp4",
+        "source_group": "0jbAwaxJlCU",
+        "declared_fire": false,
+        "declared_actions": [
+          "adjusting machine components",
+          "operating machine"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 30,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.48
+      },
+      {
+        "file": "normal/3xr0dRq2QfM_trim_0.mp4",
+        "source_group": "3xr0dRq2QfM",
+        "declared_fire": false,
+        "declared_actions": [
+          "operating machine"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.54
+      },
+      {
+        "file": "normal/iKJpKjnqWnw_trim_0.mp4",
+        "source_group": "iKJpKjnqWnw",
+        "declared_fire": false,
+        "declared_actions": [
+          "rotating object",
+          "operating machine",
+          "adjusting machine components"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 35,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.63
+      },
+      {
+        "file": "normal/_g7R05NOikU_trim_0.mp4",
+        "source_group": "_g7R05NOikU",
+        "declared_fire": false,
+        "declared_actions": [
+          "operating industrial vehicle",
+          "monitoring onboard camera",
+          "looking at screen"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 30,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 2.38
+      },
+      {
+        "file": "normal/_nm1Yb8sxxY_trim_2.mp4",
+        "source_group": "_nm1Yb8sxxY",
+        "declared_fire": false,
+        "declared_actions": [
+          "pulling object",
+          "operating industrial vehicle",
+          "signaling to someone"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 18,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.39
+      },
+      {
+        "file": "normal/1SR4reJQnCM_trim_0.mp4",
+        "source_group": "1SR4reJQnCM",
+        "declared_fire": false,
+        "declared_actions": [
+          "operating industrial vehicle"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 40,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.78
+      },
+      {
+        "file": "normal/G8z74loJO7U_trim_8.mp4",
+        "source_group": "G8z74loJO7U",
+        "declared_fire": false,
+        "declared_actions": [
+          "operating industrial vehicle",
+          "writing notes",
+          "standing"
+        ],
+        "fire_alert": false,
+        "smoke_alert": false,
+        "events": [],
+        "frames": 17,
+        "frames_with_objects": {
+          "fire": 0,
+          "smoke": 0
+        },
+        "seconds": 0.45
+      }
+    ]
+  },
+  "warning": "Debug clips, author action labels only. Fire incident can mean smoke/sparks without visible flame. Not event precision or a blind independent test. Candidates remain undeployed."
+}

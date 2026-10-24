@@ -1,0 +1,122 @@
+{
+  "dataset": "https://data.mendeley.com/datasets/xjmtb22pff/1",
+  "protocol": "One frame at 60% duration in each of 16 test clips; first clip excluded from warm latency summary.",
+  "limitation": "Unannotated factory smoke test. This is not an independent event-quality benchmark or a recall/F1 measurement.",
+  "baseline_warm_median_ms": 1770.872799999779,
+  "intermediate_optimized_warm_median_ms": 665.6252000002496,
+  "intermediate_changes": "Native-resolution input, 960px distant-person stock pass, strong-person crop budget, reduced redundant crops. Subsequent pose-assisted proposals and live pipeline changes are separate.",
+  "clips": [
+    {
+      "file": "0_te26.mp4",
+      "before_ms": 12358.710199999223,
+      "intermediate_after_ms": 5982.086699999854,
+      "before_people_above_0_4": 3,
+      "after_people_above_0_4": 4
+    },
+    {
+      "file": "0_te9.mp4",
+      "before_ms": 2798.1786999998803,
+      "intermediate_after_ms": 871.1120000007213,
+      "before_people_above_0_4": 4,
+      "after_people_above_0_4": 5
+    },
+    {
+      "file": "1_te2.mp4",
+      "before_ms": 1201.7637999997532,
+      "intermediate_after_ms": 398.58299999923474,
+      "before_people_above_0_4": 2,
+      "after_people_above_0_4": 3
+    },
+    {
+      "file": "1_te6.mp4",
+      "before_ms": 1058.5938000003807,
+      "intermediate_after_ms": 447.47649999953865,
+      "before_people_above_0_4": 1,
+      "after_people_above_0_4": 1
+    },
+    {
+      "file": "2_te12.mp4",
+      "before_ms": 2054.0352999996685,
+      "intermediate_after_ms": 644.58360000026,
+      "before_people_above_0_4": 3,
+      "after_people_above_0_4": 3
+    },
+    {
+      "file": "2_te6.mp4",
+      "before_ms": 1770.872799999779,
+      "intermediate_after_ms": 528.3455999997386,
+      "before_people_above_0_4": 2,
+      "after_people_above_0_4": 2
+    },
+    {
+      "file": "3_te2.mp4",
+      "before_ms": 1671.9330999994781,
+      "intermediate_after_ms": 222.71749999981694,
+      "before_people_above_0_4": 0,
+      "after_people_above_0_4": 0
+    },
+    {
+      "file": "3_te4.mp4",
+      "before_ms": 2100.5717999996705,
+      "intermediate_after_ms": 866.1311000005298,
+      "before_people_above_0_4": 2,
+      "after_people_above_0_4": 4
+    },
+    {
+      "file": "4_te17.mp4",
+      "before_ms": 740.8961000001,
+      "intermediate_after_ms": 728.254100000413,
+      "before_people_above_0_4": 1,
+      "after_people_above_0_4": 2
+    },
+    {
+      "file": "4_te19.mp4",
+      "before_ms": 851.4068999993469,
+      "intermediate_after_ms": 525.6480000007286,
+      "before_people_above_0_4": 1,
+      "after_people_above_0_4": 1
+    },
+    {
+      "file": "5_te15.mp4",
+      "before_ms": 3973.7789000000703,
+      "intermediate_after_ms": 871.1875999997574,
+      "before_people_above_0_4": 2,
+      "after_people_above_0_4": 4
+    },
+    {
+      "file": "5_te8.mp4",
+      "before_ms": 2202.309900000728,
+      "intermediate_after_ms": 810.6050999995205,
+      "before_people_above_0_4": 2,
+      "after_people_above_0_4": 2
+    },
+    {
+      "file": "6_te11.mp4",
+      "before_ms": 1661.1260999998194,
+      "intermediate_after_ms": 1142.9963999999018,
+      "before_people_above_0_4": 3,
+      "after_people_above_0_4": 4
+    },
+    {
+      "file": "6_te4.mp4",
+      "before_ms": 820.1159999998708,
+      "intermediate_after_ms": 931.8643999995402,
+      "before_people_above_0_4": 2,
+      "after_people_above_0_4": 3
+    },
+    {
+      "file": "7_te1.mp4",
+      "before_ms": 1996.5352999997776,
+      "intermediate_after_ms": 461.7203999996491,
+      "before_people_above_0_4": 1,
+      "after_people_above_0_4": 1
+    },
+    {
+      "file": "7_te6.mp4",
+      "before_ms": 1831.9170000004306,
+      "intermediate_after_ms": 665.6252000002496,
+      "before_people_above_0_4": 1,
+      "after_people_above_0_4": 1
+    }
+  ]
+}

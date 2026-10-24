@@ -18,7 +18,12 @@ class Backend(Protocol):
 class YoloBackend:
     def __init__(self, model: Path, confidence: float, fall_detection=False,config=None):
         import torch
+        import cv2
         from ultralytics import YOLO
+        # Many tiny CPU preprocessing operations run alongside camera rendering.
+        # Dozens of OpenMP workers make these slower and starve video threads.
+        torch.set_num_threads(max(1,int(os.getenv('SAFETY_CPU_THREADS','2'))))
+        cv2.setNumThreads(1)
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
         self.name = f"PyTorch / {self.device} / {model.name}"
         self.model = YOLO(str(model),task="pose")
@@ -38,6 +43,10 @@ class YoloBackend:
         self.imgsz=int(os.getenv('SAFETY_IMAGE_SIZE','640'))
         self.reflections=[z for z in config.zones if z.kind=='reflection'] if config else []
         self.confidence = confidence
+        self.distant_people = config.distant_people if config else True
+        self.refine_phone_pose = bool(config and config.phone_detection)
+        self.refine_head_pose = bool(config and config.helmet_detection)
+        self.refine_torso_pose = bool(config and config.vest_detection)
         self.model_id = model.stem+('+'+people_path.stem if self.person_model else '')
         if len(self.person_models)>1:self.model_id+='+yolo12m-coco-ensemble'
         self.rotated_search = os.getenv("SAFETY_ROTATED_SEARCH","0")=="1"
@@ -78,7 +87,7 @@ class YoloBackend:
                      temporal_ready=probability is not None)
         self.scene_state=state
 
-    def predict(self, bgr):
+    def predict_people(self, bgr):
         if self.body:
             self.scene_state={"lying_probability":self.body.predict(bgr),"scope":"scene"}
         # Low confidence detections are retained for ByteTrack's second pass.
@@ -107,23 +116,95 @@ class YoloBackend:
             from .scenario_models import iou
             strong=[]
             for detector in self.person_models:
-                detected=detector.predict(bgr,classes=[0],conf=.1,imgsz=self.imgsz,
+                size=max(self.imgsz,960) if self.distant_people and w>=1600 and detector is self.person_models[-1] else self.imgsz
+                detected=detector.predict(bgr,classes=[0],conf=.1,imgsz=size,
                                           device=self.device,verbose=False)[0]
                 for row in detected.boxes.data.cpu().numpy():
                     box=tuple(map(float,row[:4]));matches=[p for p in candidates if iou(p.box,box)>.3]
                     pose=max(matches,key=lambda p:iou(p.box,box)).keypoints if matches else None
                     strong.append(Person(box,float(row[4]),pose))
             candidates=suppress_duplicates(strong+[p for p in candidates if not any(iou(p.box,s.box)>.3 for s in strong)])
+            if self.distant_people and w>=1600:
+                ordinary=self.person_models[-1].predict(bgr,classes=[0],conf=max(.4,self.confidence),
+                    imgsz=self.imgsz,device=self.device,verbose=False)[0]
+                for row in ordinary.boxes.data.cpu().numpy():
+                    box=tuple(map(float,row[:4]))
+                    if any(p.confidence>=self.confidence and iou(p.box,box)>.3 for p in candidates):continue
+                    matches=[p for p in candidates if p.keypoints is not None and iou(p.box,box)>.3]
+                    pose=max(matches,key=lambda p:iou(p.box,box)).keypoints if matches else None
+                    candidates.append(Person(box,float(row[4]),pose))
+                # Native-pixel overlapping tiles supplement the ordinary pass.
+                # Replacing 640 with 960 alone regressed two reviewed workers;
+                # preserve strong original boxes and add only new/weak people.
+                crops=[];origins=[];tile=704;overlap=128
+                xs=list(range(0,max(1,w-tile+1),tile-overlap));ys=list(range(0,max(1,h-tile+1),tile-overlap))
+                if xs[-1]!=max(0,w-tile):xs.append(max(0,w-tile))
+                if ys[-1]!=max(0,h-tile):ys.append(max(0,h-tile))
+                # Bound cost on 4K inputs; tiles still retain original pixels.
+                if len(xs)*len(ys)>12:
+                    xs=np.linspace(0,max(0,w-tile),4).round().astype(int).tolist()
+                    ys=np.linspace(0,max(0,h-tile),3).round().astype(int).tolist()
+                for y in ys:
+                    for x in xs:
+                        crops.append(bgr[y:y+tile,x:x+tile]);origins.append((x,y))
+                outputs=self.person_models[-1].predict(crops,classes=[0],conf=max(.55,self.confidence),
+                    imgsz=640,rect=False,device=self.device,verbose=False)
+                for result,(x,y),crop in zip(outputs,origins,crops):
+                    ch,cw=crop.shape[:2]
+                    for row in result.boxes.data.cpu().numpy():
+                        a,b,c,d=map(float,row[:4])
+                        # A cut body at an internal tile edge is not a second
+                        # person. Overlapping adjacent tiles cover these areas.
+                        if (x>0 and a<6) or (y>0 and b<6) or (x+cw<w and c>cw-6) or (y+ch<h and d>ch-6):continue
+                        box=(a+x,b+y,c+x,d+y)
+                        if d-b<48 or d-b>h*.4:continue
+                        if any(p.confidence>=self.confidence and iou(p.box,box)>.3 for p in candidates):continue
+                        matches=[p for p in candidates if p.keypoints is not None and iou(p.box,box)>.3]
+                        pose=max(matches,key=lambda p:iou(p.box,box)).keypoints if matches else None
+                        candidates.append(Person(box,float(row[4]),pose))
+                candidates=suppress_duplicates(candidates)
         if self.reflections:
             from .scenarios import contains
             # A bbox overlapping a mirror may belong to someone standing in
             # front of it. Only the annotated reflection foot region is masked.
             candidates=[p for p in candidates if not any(contains(z,p.foot,w,h) for z in self.reflections)]
-        self.objects_state=self.objects.predict(bgr,candidates) if self.objects else []
+        if self.refine_phone_pose or self.refine_head_pose or self.refine_torso_pose:
+            # The full-frame pose pass often misses wrists on distant people.
+            # A measured crop pose can supply them; never fabricate keypoints.
+            def needs_pose(p):
+                if p.keypoints is None:return True
+                return ((self.refine_phone_pose and not np.any(p.keypoints[[9,10],2]>=.4)) or
+                        (self.refine_head_pose and np.sum(p.keypoints[:5,2]>=.5)<3) or
+                        (self.refine_torso_pose and np.any(p.keypoints[[5,6,11,12],2]<.55)))
+            selected=sorted((p for p in candidates if needs_pose(p) and p.height>=64
+                             and p.confidence>=self.confidence),key=lambda p:p.height,reverse=True)[:4]
+            for p in selected:
+                a,b,c,d=p.box;pad=p.height*.1
+                x1,y1=max(0,int(a-pad)),max(0,int(b-pad));x2,y2=min(w,int(c+pad)),min(h,int(d+pad))
+                result=self.model.predict(bgr[y1:y2,x1:x2],conf=.25,imgsz=640,rect=False,device=self.device,verbose=False)[0]
+                if result.keypoints is not None and len(result.boxes):
+                    from .scenario_models import iou
+                    matches=[]
+                    for row,kp in zip(result.boxes.data.cpu().numpy(),result.keypoints.data.cpu().numpy()):
+                        box=(row[0]+x1,row[1]+y1,row[2]+x1,row[3]+y1)
+                        matches.append((iou(box,p.box),kp))
+                    overlap,kp=max(matches,key=lambda x:x[0])
+                    if overlap>=.4:
+                        p.keypoints=kp.copy();p.keypoints[:,:2]+=[x1,y1]
+        return candidates
+
+    def predict_scenarios(self,bgr,people):
+        return self.objects.predict(bgr,people) if self.objects else []
+
+    def predict(self,bgr):
+        candidates=self.predict_people(bgr)
+        h,w=bgr.shape[:2]
+        self.objects_state=self.predict_scenarios(bgr,candidates)
         from .scenario_models import iou
         for obj in self.objects_state:
             if obj.label=='person' and not any(iou(p.box,obj.box)>.3 for p in candidates):
                 candidate=Person(obj.box,obj.confidence)
+                from .scenarios import contains
                 if not any(contains(z,candidate.foot,w,h) for z in self.reflections):
                     candidates.append(candidate)
         return candidates
@@ -177,17 +258,20 @@ def create_backend(model,confidence,fall_detection=False,config=None):
 
 class StableTracks:
     """Conservative short-gap spatial relinking, without biometric identity."""
-    def __init__(self,fps):
+    def __init__(self,fps,max_gap=1.2):
         self.fps=fps;self.frame=0;self.next_id=1;self.mapping={};self.recent={}
+        self.max_gap=max_gap
 
     def update(self,people,now=None):
+        from .scenario_models import iou as box_iou
         self.frame+=1
         now=self.frame/self.fps if now is None else float(now)
         occupied=set();pending=[]
         for p in sorted(people,key=lambda p:p.confidence,reverse=True):
             raw=p.track_id;canonical=self.mapping.get(raw)
             if (canonical in self.recent and canonical not in occupied
-                    and now-self.recent[canonical][0] <= 1.2):
+                    and now-self.recent[canonical][0] <= self.max_gap
+                    and (now-self.recent[canonical][0]<=1.2 or box_iou(p.box,self.recent[canonical][1])>=.6)):
                 p.track_id=canonical;occupied.add(canonical)
             else:
                 pending.append((raw,p))
@@ -195,13 +279,13 @@ class StableTracks:
             matches=[]
             a=np.asarray(p.box)
             for canonical,(last,bbox) in self.recent.items():
-                if canonical in occupied or now-last>1.2:
+                if canonical in occupied or now-last>self.max_gap:
                     continue
                 b=np.asarray(bbox)
                 inter=np.maximum(0,np.minimum(a[2:],b[2:])-np.maximum(a[:2],b[:2])).prod()
                 aa=np.maximum(0,a[2:]-a[:2]).prod();bb=np.maximum(0,b[2:]-b[:2]).prod()
                 iou=inter/max(aa+bb-inter,1e-9)
-                if iou>=.3 and .3<aa/max(bb,1)<3:
+                if iou>=(.6 if now-last>1.2 else .3) and .3<aa/max(bb,1)<3:
                     matches.append((iou,canonical))
             if matches:
                 canonical=max(matches)[1]
@@ -218,7 +302,7 @@ class StableTracks:
 
 
 class PeopleTracker:
-    def __init__(self, fps, confidence):
+    def __init__(self, fps, confidence,max_gap=1.2):
         from ultralytics.trackers.byte_tracker import BYTETracker
         self.tracker = BYTETracker(SimpleNamespace(
             track_high_thresh=confidence,track_low_thresh=.1,new_track_thresh=confidence,
@@ -228,7 +312,7 @@ class PeopleTracker:
         # box then cannot match even at perfect IoU. Spatial matching rescues
         # existing IDs; the separate alert threshold remains unchanged.
         self.confidence = confidence
-        self.stable=StableTracks(fps)
+        self.stable=StableTracks(fps,max_gap)
         self.fps=fps;self.frame=0;self.recent={}
 
     def update(self, people, shape, now=None):

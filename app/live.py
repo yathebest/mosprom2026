@@ -2,10 +2,15 @@
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime,timedelta,timezone
+from dataclasses import replace
+import logging
+import gc
 import queue
+import subprocess
 import threading
 import time
 import uuid
+import sys
 
 import cv2
 import numpy as np
@@ -14,8 +19,9 @@ from . import storage as db
 from .core import Rules
 from .inference import create_backend,PeopleTracker
 from .streams import open_capture
-from .video import MODEL,draw,transcode
+from .video import MODEL,draw,ffmpeg_path
 from .scenarios import ScenarioRules,base_config,annotate_objects,assessment_rows
+from .preview_motion import PreviewMotion
 
 SESSIONS={}
 LOCK=threading.Lock()
@@ -23,10 +29,39 @@ CLIPS=ThreadPoolExecutor(max_workers=2,thread_name_prefix='live-clip')
 PRE_SECONDS=3.
 POST_SECONDS=4.
 SAMPLE_FPS=10.
+DISPLAY_FPS=25.
+
+
+def latest_only(target,item):
+    """A slow consumer gets the newest frame, never a growing backlog."""
+    dropped=0
+    try:target.put_nowait(item)
+    except queue.Full:
+        try:target.get_nowait();dropped=1
+        except queue.Empty:pass
+        try:target.put_nowait(item)
+        except queue.Full:dropped=1
+    return dropped
+
+
+def measured_fps(times):
+    values=list(times)
+    return round((len(values)-1)/max(values[-1]-values[0],.001),2) if len(values)>1 else 0.
+
+
+class FramePacer:
+    """Bound presentation rate without discarding every jittered early frame."""
+    def __init__(self,fps):self.period=1/fps;self.due=None
+    def accept(self,captured):
+        if self.due is None:self.due=captured
+        if captured+.002<self.due:return False
+        self.due=max(self.due+self.period,captured)
+        return True
 
 
 class LiveSession:
     def __init__(self,config,source_type,url=None):
+        cv2.setNumThreads(1)
         self.id=uuid.uuid4().hex;self.config=config;self.source_type=source_type;self.url=url
         self.folder=db.DATA/'runs'/self.id;self.folder.mkdir(parents=True)
         (self.folder/'clips').mkdir()
@@ -35,9 +70,18 @@ class LiveSession:
         self.started=datetime.now(timezone.utc);self.first_mono=None;self.frame_origin=None
         self.last_ingest=time.monotonic();self.last_processed=None
         self.processed=0;self.dropped=0;self.elapsed=0.;self.events=0;self.pending=[]
-        self.ring=deque();self.latencies=[];self.clip_futures=[];self.backend=None
+        self.ring=deque();self.latencies=[];self.clip_futures=[];self.backend=None;self.backend_name=None
         self.created=time.monotonic()
         self.assessments=[]
+        self.frame_lock=threading.RLock()
+        self.display_frames=queue.Queue(maxsize=1);self.scenario_frames=queue.Queue(maxsize=1)
+        self.record_frames=queue.Queue(maxsize=1);self.record_times=deque(maxlen=150)
+        self.visual=None;self.scenario_visual=None
+        self.capture_times=deque(maxlen=150);self.display_times=deque(maxlen=150)
+        self.analysis_times=deque(maxlen=100);self.scenario_times=deque(maxlen=100)
+        self.scenario_latencies=[];self.analysis_age_ms=None;self.scenario_age_ms=None
+        self.capture_count=0;self.display_count=0;self.scenario_count=0
+        self.helpers=[];self.shape=None
         db.add_job(self.id,'Прямой эфир · '+config.camera,
                    {'live':True,'mode':'live','source_type':source_type,'duration_s':0,
                     'fps':SAMPLE_FPS,'width':0,'height':0,'frames':0})
@@ -50,16 +94,127 @@ class LiveSession:
 
     def ingest(self,frame):
         if self.stop_event.is_set():return
-        h,w=frame.shape[:2]
-        scale=min(1,1280/max(h,w))
-        if scale<1:frame=cv2.resize(frame,(round(w*scale/2)*2,round(h*scale/2)*2))
         captured=time.monotonic();self.last_ingest=captured
-        try:self.frames.put_nowait((captured,frame))
-        except queue.Full:
-            try:self.frames.get_nowait();self.dropped+=1
-            except queue.Empty:pass
-            try:self.frames.put_nowait((captured,frame))
-            except queue.Full:self.dropped+=1
+        # Original pixels go to inference. Only the display copy is resized.
+        with self.frame_lock:
+            if self.first_mono is None:
+                self.first_mono=captured;self.frame_origin=datetime.now(timezone.utc)
+                self.shape=frame.shape
+            elif frame.shape!=self.shape:
+                self.error='Источник изменил разрешение. Запустите новый эфир.';self.stop_event.set();return
+            self.elapsed=captured-self.first_mono
+            self.capture_times.append(captured);self.capture_count+=1
+        self.dropped+=latest_only(self.frames,(captured,frame))
+        latest_only(self.display_frames,(captured,frame))
+        latest_only(self.record_frames,(captured,frame))
+
+    def encode_recording(self):
+        """Full-resolution evidence encoding never delays the live preview."""
+        try:
+            while not self.stop_event.is_set():
+                try:captured,frame=self.record_frames.get(timeout=.2)
+                except queue.Empty:continue
+                now=captured-self.first_mono
+                ok,encoded=cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,85])
+                if not ok:continue
+                original=encoded.tobytes()
+                with self.frame_lock:
+                    self.ring.append((now,original))
+                    history_s=PRE_SECONDS+min(15.,max(4.,(self.scenario_age_ms or 0)/1000+1.))
+                    while self.ring and now-self.ring[0][0]>history_s:self.ring.popleft()
+                    for clip in self.pending:
+                        if now<=clip['until']:clip['frames'].append((now,original))
+                self.record_times.append(time.monotonic())
+                self.queue_finished_clips(now)
+        except Exception:
+            logging.exception('Live recording failed: %s',self.id)
+            self.error='Ошибка записи кадров происшествий.';self.stop_event.set()
+
+    def render_frames(self):
+        """Capture evidence and render independently of all neural networks."""
+        pacer=FramePacer(DISPLAY_FPS)
+        motion=PreviewMotion()
+        try:
+            while not self.stop_event.is_set():
+                try:captured,frame=self.display_frames.get(timeout=.2)
+                except queue.Empty:continue
+                if not pacer.accept(captured):continue
+                now=captured-self.first_mono
+                if self.display_count==0:
+                    h,w=frame.shape[:2];cv2.imwrite(str(self.folder/'preview.jpg'),frame)
+                    db.update_job(self.id,meta={'live':True,'mode':'live','source_type':self.source_type,
+                        'started_at':self.frame_origin.isoformat(),'fps':DISPLAY_FPS,'width':w,'height':h,'frames':0,'duration_s':0})
+                h,w=frame.shape[:2];scale=min(1,960/max(h,w))
+                preview=cv2.resize(frame,(round(w*scale),round(h*scale))) if scale<1 else frame
+                visual=self.visual;annotated=preview.copy()
+                if visual and now-visual['time']<=2.5:
+                    # Flow follows current preview pixels. These blue projected
+                    # boxes never enter tracking/rules or confirm an incident.
+                    people=motion.project(visual,preview,now)
+                    preview_details={tid:{**row,'tracking':'preview flow'} for tid,row in visual['details'].items()}
+                    annotated=draw(preview,people,preview_details,self.config,now,
+                                   visual['scene'],visual['scene_alerts'])
+                    scenario=self.scenario_visual
+                    if scenario and now-scenario['time']<=2:
+                        # These are display-only cached assessments. Rules never
+                        # receive them again as fresh measurements.
+                        details={tid:{key:{**value,'fresh':False,'reason':'recent_observation'}
+                                      for key,value in rows.items()} for tid,rows in scenario['details'].items()}
+                        objects=[replace(o,box=tuple(v*scale for v in o.box)) for o in scenario['objects']] if now-scenario['time']<=.5 else []
+                        annotated=annotate_objects(annotated,objects,scenario['status'],people,details)
+                label='ANALYSIS: WARMUP' if not visual else f"ANALYSIS AGE: {max(0,now-visual['time']):.2f}s"
+                cv2.putText(annotated,label,(14,52),cv2.FONT_HERSHEY_SIMPLEX,.55,(80,220,245),2)
+                ok,encoded=cv2.imencode('.jpg',annotated,[cv2.IMWRITE_JPEG_QUALITY,82])
+                if ok:
+                    self.jpeg=encoded.tobytes();self.version+=1
+                    self.display_count+=1;self.display_times.append(time.monotonic())
+                    if self.display_count%25==0:(self.folder/'latest.jpg').write_bytes(self.jpeg)
+                self.queue_finished_clips(now)
+        except Exception:
+            logging.exception('Live rendering failed: %s',self.id)
+            self.error='Ошибка видеопотока. Запустите эфир заново.';self.stop_event.set()
+
+    def record_events(self,events,annotated,source_time):
+        for event in events:
+            arrived=time.monotonic()-self.first_mono
+            event.update(live=True,clip_state='capturing',processing_delay_s=round(max(0,arrived-event['alert_s']),3),
+                occurred_at=(self.frame_origin+timedelta(seconds=event['alert_s'])).isoformat(),
+                priority=next((z.priority for z in self.config.zones if z.name==event.get('zone')),None))
+            image=f'runs/{self.id}/evidence_{uuid.uuid4().hex}.jpg'
+            cv2.imwrite(str(db.DATA/image),annotated)
+            saved_id=db.add_event(self.id,self.config.camera,event,image)
+            with self.frame_lock:
+                self.pending.append({'id':saved_id,'frames':[(t,b) for t,b in self.ring if source_time-PRE_SECONDS<=t<=source_time+POST_SECONDS],
+                    'until':source_time+POST_SECONDS,'alert_s':event['alert_s']})
+                self.events+=1
+        self.queue_finished_clips(self.elapsed)
+
+    def analyze_scenarios(self):
+        # Slower object models have their own latest-frame queue. Each result
+        # enters the rule engine exactly once, at its source timestamp.
+        cfg=self.config.model_copy(update={'observation_gap':max(2.5,self.config.observation_gap)})
+        rules=ScenarioRules(cfg)
+        try:
+            while not self.stop_event.is_set():
+                try:now,frame,people,details=self.scenario_frames.get(timeout=.2)
+                except queue.Empty:continue
+                start=time.perf_counter();objects=self.backend.predict_scenarios(frame,people)
+                self.scenario_latencies.append((time.perf_counter()-start)*1000)
+                self.scenario_latencies=self.scenario_latencies[-300:]
+                events,active=rules.step(people,objects,now,frame.shape[1],frame.shape[0],details)
+                self.assessments=assessment_rows(people,rules.ppe_details)
+                self.scenario_visual={'time':now,'objects':objects,'details':rules.ppe_details,'status':rules.ppe_status}
+                self.scenario_count+=1;self.scenario_times.append(time.monotonic())
+                self.scenario_age_ms=round((time.monotonic()-self.first_mono-now)*1000,1)
+                for tid,kinds in active.items():
+                    if tid in details:details[tid]['active'].extend(kinds)
+                if events:
+                    annotated=draw(frame,people,details,self.config,now)
+                    annotated=annotate_objects(annotated,objects,rules.ppe_status,people,rules.ppe_details)
+                    self.record_events(events,annotated,now)
+        except Exception:
+            logging.exception('Live scenario inference failed: %s',self.id)
+            self.error='Ошибка анализа СИЗ и объектов. Запустите эфир заново.';self.stop_event.set()
 
     def read_network(self):
         cap=None
@@ -81,128 +236,145 @@ class LiveSession:
                 'config':self.config.model_dump(),'job_id':self.id,
                 'source_type':self.source_type,'started_at':self.started.isoformat(),
                 'elapsed_s':round(self.elapsed,2),'processed_frames':self.processed,
+                'capture_fps':measured_fps(self.capture_times),'display_fps':measured_fps(self.display_times),
+                'recording_fps':measured_fps(self.record_times),
+                'analysis_fps':measured_fps(self.analysis_times),'scenario_fps':measured_fps(self.scenario_times),
+                'captured_frames':self.capture_count,'displayed_frames':self.display_count,'scenario_frames':self.scenario_count,
+                'analysis_age_ms':self.analysis_age_ms,'scenario_age_ms':self.scenario_age_ms,
+                'scenario_p95_ms':round(float(np.percentile(self.scenario_latencies,95)),2) if self.scenario_latencies else None,
                 'dropped_frames':self.dropped,'events':self.events,
                 'clips_pending':len(self.pending)+sum(not f.done() for f in self.clip_futures),
                 'inference_p95_ms':round(float(np.percentile(self.latencies,95)),2) if self.latencies else None,
                 'view_url':f'/api/live/{self.id}/view','clip_pre_s':PRE_SECONDS,'clip_post_s':POST_SECONDS,
                 'timing':'Server frame-arrival time; network/camera latency is not measured',
-                'model':getattr(self.backend,'name',None),'assessments':self.assessments}
+                'model':getattr(self.backend,'name',self.backend_name),'assessments':self.assessments}
 
     def finalize_clip(self,clip):
         event_id=clip['id'];frames=clip['frames']
         if not frames:
             db.patch_payload(event_id,{'clip_state':'failed'});return
         db.patch_payload(event_id,{'clip_state':'exporting'})
-        raw=self.folder/'clips'/f'{event_id}-raw.mp4'
         target=self.folder/'clips'/f'{event_id}.mp4'
-        writer=None
+        process=None
         try:
             start,end=frames[0][0],frames[-1][0]
-            first=cv2.imdecode(np.frombuffer(frames[0][1],np.uint8),cv2.IMREAD_COLOR)
-            h,w=first.shape[:2]
-            writer=cv2.VideoWriter(str(raw),cv2.VideoWriter_fourcc(*'mp4v'),SAMPLE_FPS,(w,h))
-            if not writer.isOpened():raise RuntimeError('MP4 writer unavailable')
-            index=0;decoded=first
-            for t in np.arange(start,end+.0001,1/SAMPLE_FPS):
-                while index+1<len(frames) and frames[index+1][0]<=t:
-                    index+=1;decoded=cv2.imdecode(np.frombuffer(frames[index][1],np.uint8),cv2.IMREAD_COLOR)
-                writer.write(decoded)
-            writer.release();writer=None
-            if not transcode(raw,target):raise RuntimeError('H264 export failed')
+            executable=ffmpeg_path()
+            if not executable:raise RuntimeError('H264 encoder unavailable')
+            # Decode the JPEG sequence and encode H264 once in native FFmpeg.
+            # Avoid Python JPEG decode -> MPEG4 encode -> decode -> H264 encode.
+            process=subprocess.Popen([executable,'-hide_banner','-loglevel','error','-y',
+                '-f','image2pipe','-vcodec','mjpeg','-framerate',str(DISPLAY_FPS),'-i','pipe:0',
+                '-an','-c:v','libx264','-threads','2','-preset','ultrafast','-crf','23',
+                '-pix_fmt','yuv420p','-movflags','+faststart',str(target)],
+                stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+            index=0
+            for t in np.arange(start,end+.0001,1/DISPLAY_FPS):
+                while index+1<len(frames) and frames[index+1][0]<=t:index+=1
+                process.stdin.write(frames[index][1])
+            process.stdin.close();process.stdin=None
+            _,error=process.communicate(timeout=60)
+            if process.returncode or not target.exists():raise RuntimeError('H264 export failed')
             db.set_clip(event_id,f'runs/{self.id}/clips/{target.name}')
             db.patch_payload(event_id,{'clip_state':'ready','clip_start_s':round(start,3),
                 'clip_end_s':round(end,3),'clip_truncated_after':end<clip['until']-.2,
+                'clip_truncated_before':start>max(0,clip['alert_s']-PRE_SECONDS)+.2,
                 'clip_alert_offset_s':round(clip['alert_s']-start,3)})
-            raw.unlink(missing_ok=True)
         except Exception:
+            logging.exception('Clip export failed: %s',event_id)
             db.patch_payload(event_id,{'clip_state':'failed'})
         finally:
-            if writer is not None:writer.release()
+            if process is not None and process.poll() is None:
+                process.kill();process.communicate()
 
     def queue_finished_clips(self,now,force=False):
-        remaining=[]
-        for clip in self.pending:
-            if force or now>=clip['until']:
-                self.clip_futures.append(CLIPS.submit(self.finalize_clip,clip))
-            else:remaining.append(clip)
-        self.pending=remaining
-        self.clip_futures=[f for f in self.clip_futures if not f.done()]
+        with self.frame_lock:
+            remaining=[]
+            for clip in self.pending:
+                if force or now>=clip['until']:
+                    self.clip_futures.append(CLIPS.submit(self.finalize_clip,clip))
+                else:remaining.append(clip)
+            self.pending=remaining
+            self.clip_futures=[f for f in self.clip_futures if not f.done()]
 
     def run(self):
         try:
-            self.backend=create_backend(MODEL,self.config.confidence,self.config.fall_detection,config=self.config)
-            tracker=PeopleTracker(SAMPLE_FPS,self.config.confidence);rules=Rules(base_config(self.config));scenario_rules=ScenarioRules(self.config)
-            self.state='running';db.update_job(self.id,status='running')
+            renderer=threading.Thread(target=self.render_frames,name='display-'+self.id[:6],daemon=True)
+            renderer.start();self.helpers.append(renderer)
+            recorder=threading.Thread(target=self.encode_recording,name='record-'+self.id[:6],daemon=True)
+            recorder.start();self.helpers.append(recorder)
             if self.source_type=='network':
                 threading.Thread(target=self.read_network,name='camera-'+self.id[:6],daemon=True).start()
+            self.backend=create_backend(MODEL,self.config.confidence,self.config.fall_detection,config=self.config)
+            self.backend_name=self.backend.name
+            tracker=PeopleTracker(SAMPLE_FPS,self.config.confidence,max_gap=3.)
+            rules=Rules(base_config(self.config))
+            separated=callable(getattr(self.backend,'predict_people',None)) and callable(getattr(self.backend,'predict_scenarios',None))
+            scenarios=ScenarioRules(self.config)
+            if separated:
+                helper=threading.Thread(target=self.analyze_scenarios,name='objects-'+self.id[:6],daemon=True)
+                helper.start();self.helpers.append(helper)
+            self.state='running';db.update_job(self.id,status='running')
             while not self.stop_event.is_set():
                 try:captured,frame=self.frames.get(timeout=.25)
                 except queue.Empty:
                     if time.monotonic()-self.last_ingest>20:
                         self.error='Нет кадров больше 20 секунд. Подключите источник заново.';break
-                    self.queue_finished_clips(self.elapsed)
                     continue
                 if self.last_processed is not None and captured-self.last_processed<1/SAMPLE_FPS-.005:
                     self.dropped+=1;continue
-                if self.first_mono is None:
-                    self.first_mono=captured;self.frame_origin=datetime.now(timezone.utc)
-                    h,w=frame.shape[:2]
-                    cv2.imwrite(str(self.folder/'preview.jpg'),frame)
-                    db.update_job(self.id,meta={'live':True,'mode':'live','source_type':self.source_type,
-                        'started_at':self.frame_origin.isoformat(),'fps':SAMPLE_FPS,'width':w,'height':h,'frames':0,'duration_s':0})
-                self.last_processed=captured;self.elapsed=captured-self.first_mono
-                now=self.elapsed;h,w=frame.shape[:2]
-                began=time.perf_counter();people=self.backend.predict(frame)
+                self.last_processed=captured;now=captured-self.first_mono;h,w=frame.shape[:2]
+                began=time.perf_counter()
+                people=self.backend.predict_people(frame) if separated else self.backend.predict(frame)
                 if callable(getattr(self.backend,'predict_temporal',None)):
                     self.backend.predict_temporal(frame,now)
                 self.latencies.append((time.perf_counter()-began)*1000)
-                if len(self.latencies)>3000:self.latencies=self.latencies[-3000:]
+                self.latencies=self.latencies[-300:]
                 people=tracker.update(people,frame.shape,now)
-                events,details=rules.step(people,now,w,h,getattr(self.backend,'scene_state',None))
-                observations=getattr(self.backend,'objects_state',[])
-                extra_events,extra_active=scenario_rules.step(people,observations,now,w,h,details)
-                self.assessments=assessment_rows(people,scenario_rules.ppe_details)
-                events.extend(extra_events)
-                for tid,kinds in extra_active.items():
-                    if tid in details:details[tid]['active'].extend(kinds)
+                scene=dict(getattr(self.backend,'scene_state',None) or {}) or None
+                events,details=rules.step(people,now,w,h,scene)
                 scene_alerts=[key[1] for key,gate in rules.gates.items() if key[0]==0 and gate.active]
-                annotated=draw(frame,people,details,self.config,now,getattr(self.backend,'scene_state',None),scene_alerts)
-                annotated=annotate_objects(annotated,observations,scenario_rules.ppe_status,people,scenario_rules.ppe_details)
-                ok,encoded=cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,85])
-                original=encoded.tobytes()
-                self.ring.append((now,original))
-                while self.ring and now-self.ring[0][0]>PRE_SECONDS+1:self.ring.popleft()
-                for clip in self.pending:clip['frames'].append((now,original))
-                for event in events:
-                    event.update(live=True,clip_state='capturing',
-                        occurred_at=(self.frame_origin+timedelta(seconds=event['alert_s'])).isoformat(),
-                        priority=next((z.priority for z in self.config.zones if z.name==event.get('zone')),None))
-                    event_id=uuid.uuid4().hex
-                    image=f'runs/{self.id}/evidence_{event_id}.jpg'
-                    cv2.imwrite(str(db.DATA/image),annotated)
-                    saved_id=db.add_event(self.id,self.config.camera,event,image)
-                    self.pending.append({'id':saved_id,'frames':[(t,b) for t,b in self.ring if t>=now-PRE_SECONDS],
-                                         'until':now+POST_SECONDS,'alert_s':event['alert_s']})
-                    self.events+=1
-                self.jpeg=cv2.imencode('.jpg',annotated,[cv2.IMWRITE_JPEG_QUALITY,85])[1].tobytes()
-                self.version+=1;self.processed+=1
-                if self.processed%10==0:
-                    cv2.imwrite(str(self.folder/'latest.jpg'),annotated)
-                self.queue_finished_clips(now)
+                if separated:
+                    # Clone mutable arrays/details before passing ownership to
+                    # another worker. Never reuse cached inference as evidence.
+                    copied=[replace(p,keypoints=p.keypoints.copy() if p.keypoints is not None else None) for p in people]
+                    copied_details={tid:{**d,'active':list(d.get('active',[]))} for tid,d in details.items()}
+                    latest_only(self.scenario_frames,(now,frame,copied,copied_details))
+                else:
+                    objects=getattr(self.backend,'objects_state',[])
+                    extra,active=scenarios.step(people,objects,now,w,h,details)
+                    events.extend(extra);self.assessments=assessment_rows(people,scenarios.ppe_details)
+                    self.scenario_visual={'time':now,'objects':objects,'details':scenarios.ppe_details,'status':scenarios.ppe_status}
+                preview_scale=min(1,960/max(h,w))
+                small=cv2.resize(frame,(round(w*preview_scale),round(h*preview_scale))) if preview_scale<1 else frame
+                self.visual={'time':now,'people':people,'details':details,'scene':scene,'scene_alerts':scene_alerts,
+                             'gray':cv2.cvtColor(small,cv2.COLOR_BGR2GRAY),'width':w}
+                if events:self.record_events(events,draw(frame,people,details,self.config,now,scene,scene_alerts),now)
+                self.processed+=1;self.analysis_times.append(time.monotonic())
+                self.analysis_age_ms=round((time.monotonic()-captured)*1000,1)
         except Exception as exc:
+            logging.exception('Live inference failed: %s',self.id)
             self.error='Ошибка прямого эфира: '+type(exc).__name__
         finally:
             self.state='stopping';self.stop_event.set();self.url=None
+            for helper in self.helpers:helper.join(timeout=30)
             self.queue_finished_clips(self.elapsed,force=True)
-            for future in self.clip_futures:
+            for future in list(self.clip_futures):
                 try:future.result(timeout=30)
                 except Exception:pass
             self.state='failed' if self.error else 'stopped'
-            stats=self.report()
-            stats['backend']=getattr(self.backend,'name','unknown')
-            db.update_job(self.id,status='failed' if self.error else 'completed',stats=stats,
-                          progress=1,error=self.error)
+            stats=self.report();stats['backend']=getattr(self.backend,'name','unknown')
+            db.update_job(self.id,status='failed' if self.error else 'completed',stats=stats,progress=1,error=self.error)
             self.backend=None;self.ring.clear()
+            for pending_frames in (self.frames,self.display_frames,self.record_frames,self.scenario_frames):
+                while True:
+                    try:pending_frames.get_nowait()
+                    except queue.Empty:break
+            # CUDA's unused allocator cache otherwise stays reserved by this
+            # server after Stop and competes with other applications/processes.
+            gc.collect()
+            torch=sys.modules.get('torch')
+            if torch is not None and torch.cuda.is_initialized():torch.cuda.empty_cache()
+
 
 
 def create(config,source_type,url):

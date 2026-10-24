@@ -46,3 +46,11 @@ data/models/fall-temporal*
 data/models/*-metrics.json
 data/models/trained-installation.json
 data/models/training-progress.json
+
+# Scratch checkpoints downloaded by Ultralytics AMP checks
+/yolo*.pt
+
+# Local candidate binaries and rendered PDF review pages
+data/models/fire-dfire.onnx
+data/models/dfire-installation.json
+/tmp/
