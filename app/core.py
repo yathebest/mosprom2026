@@ -269,8 +269,7 @@ class Rules:
                 if state.lying_since is None:
                     state.lying_since = now
                     standing_confirmed=any(key[0]==tid and key[1] in ('possible_fall','person_down') and gate.state=='clear'
-                                           and gate.observed_state=='clear' and gate.agreement>=cfg.state_confirmation_ratio
-                                           and gate.sample_count>=cfg.state_min_samples for key,gate in self.gates.items())
+                                           for key,gate in self.gates.items())
                     state.fall_candidate = standing_confirmed and state.last_upright is not None and now-state.last_upright <= 1.2
             else:
                 state.lying_since = None
@@ -313,13 +312,10 @@ class Rules:
                 for key in [k for k in self.gates if k[0]==tid]:
                     del self.gates[key]
         if cfg.fall_detection and scene_state is not None:
-            eligible=[p for p in people if p.track_id>0 and p.observed and p.alert_eligible and p.confidence>=cfg.confidence]
-            visible=[p for p in people if p.track_id>0 and p.observed]
-            candidate_tid=eligible[0].track_id if len(eligible)==1 and len(visible)==1 else 0
-            locked=next((key[0] for key,gate in self.gates.items() if key[1] in ('possible_fall','person_down') and gate.active
-                         and (self.scene.get('owner') is None or key[0]==self.scene['owner'])),None)
-            scene_tid=locked if locked is not None else candidate_tid
-            association_valid=scene_tid==0 or candidate_tid==scene_tid
+            # RGB/temporal classifiers measure the whole scene, not a track.
+            # Detector dropouts must not split their history between track0
+            # and a person ID, nor attribute scene recovery to a lost worker.
+            scene_tid=0
             probability=float(scene_state.get("lying_probability",0))
             high=probability>=cfg.body_threshold
             temporal=scene_state.get('fall_probability')
@@ -339,9 +335,11 @@ class Rules:
                 if self.scene["high_since"] is None:
                     self.scene["high_since"]=now
                     previous=self.scene["last_upright"]
+                    # A transition frame may be unknown. It contributes no
+                    # vote but cannot erase previously confirmed standing;
+                    # freshness is bounded separately by last_upright below.
                     standing_confirmed=any(key[0]==scene_tid and key[1] in ('possible_fall','person_down') and gate.state=='clear'
-                                           and gate.observed_state=='clear' and gate.agreement>=cfg.state_confirmation_ratio
-                                           and gate.sample_count>=cfg.state_min_samples for key,gate in self.gates.items())
+                                           for key,gate in self.gates.items())
                     self.scene["fall_candidate"]=standing_confirmed and previous is not None and now-previous<=cfg.body_transition_max_s
                 self.scene["upright_since"]=None
             else:
@@ -351,7 +349,7 @@ class Rules:
             kind=self._body_kind(scene_tid,proposed,high)
             for event_kind in (kind,):
                 hold=cfg.body_hold if event_kind=="possible_fall" else cfg.lying_hold
-                measured=(True if high else False if strong_upright else None) if association_valid else None
+                measured=True if high else False if strong_upright else None
                 gate,fired=self.temporal.observe(scene_tid,event_kind,'',measured,hold,cfg.release_hold,cfg.observation_gap)
                 if fired:
                     self.scene['owner']=scene_tid

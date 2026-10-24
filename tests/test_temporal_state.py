@@ -90,17 +90,56 @@ def test_id_handoff_is_mutually_unambiguous_and_preserves_episode():
     assert ambiguous.begin([new,neighbour],1.5)=={}
 
 
-def test_rgb_fall_episode_locks_scene_or_person_owner_as_cardinality_changes():
+def test_rgb_fall_episode_stays_scene_scoped_as_person_cardinality_changes():
     from app.core import Person,Rules,RunConfig
     high={'lying_probability':.99,'fall_probability':.99,'fall_threshold':.5}
     cfg=RunConfig(fast_motion=False,fall_detection=True,lying_hold=1)
     p=Person((10,0,60,180),.9,track_id=1);q=Person((80,0,130,180),.9,track_id=2)
-    for initial,later,owner in [([], [p],0),([p],[p,q],1)]:
+    for initial,later in [([], [p]),([p],[p,q])]:
         rules=Rules(cfg);events=[]
         for t in [0,.5,1]:events+=rules.step(initial,t,200,200,high)[0]
         for t in [1.5,2,2.5,3]:events+=rules.step(later,t,200,200,high)[0]
-        assert len(events)==1 and events[0]['track_id']==owner
+        assert len(events)==1 and events[0]['track_id']==0 and events[0]['scope']=='scene'
         assert events[0]['kind']=='person_down'  # No prior confirmed standing.
+
+
+def test_rgb_transition_unknown_preserves_confirmed_standing_across_detector_dropouts():
+    from app.core import Person,Rules,RunConfig
+    rules=Rules(RunConfig(fast_motion=False,fall_detection=True))
+    person=Person((10,0,60,180),.9,track_id=1)
+    predicted=Person(person.box,.9,track_id=1,observed=False,alert_eligible=False)
+    events=[]
+    for i in range(35):
+        events+=rules.step([person],i/10,320,240,{'lying_probability':.01})[0]
+    assert rules.state_rows[0]['person_down']['state']=='clear'
+    events+=rules.step([person],3.5,320,240,{'lying_probability':.66})[0]
+    assert rules.state_rows[0]['person_down']['state']=='clear'
+    assert rules.state_rows[0]['person_down']['observed_state']=='unknown'
+    for i in range(36,48):
+        people=[person] if i%2==0 else [predicted]
+        events+=rules.step(people,i/10,320,240,{'lying_probability':.99})[0]
+    assert len(events)==1 and events[0]['kind']=='possible_fall'
+    assert events[0]['track_id']==0 and events[0]['scope']=='scene'
+    assert events[0]['start_s']==3.6 and events[0]['alert_s']==4.1
+    assert not any(key[0] for key in rules.gates if key[1] in ('possible_fall','person_down'))
+
+
+def test_pose_unknown_transition_keeps_previous_confirmed_standing():
+    import numpy as np
+    from app.core import Person,Rules,RunConfig
+    def person(lying=None):
+        points=np.zeros((17,3),np.float32)
+        if lying is not None:
+            points[[5,6]]=[[30,125,.9],[30,135,.9]] if lying else [[25,45,.9],[35,45,.9]]
+            points[[11,12]]=[[110,125,.9],[110,135,.9]] if lying else [[25,110,.9],[35,110,.9]]
+        return Person((10,100,190,160) if lying else (10,10,50,190),.9,track_id=1,keypoints=points)
+    rules=Rules(RunConfig(fast_motion=False,fall_detection=True));events=[]
+    for i in range(35):events+=rules.step([person(False)],i/10,320,240)[0]
+    events+=rules.step([person()],3.5,320,240)[0]
+    for i in range(36,49):events+=rules.step([person(True)],i/10,320,240)[0]
+    assert len(events)==1 and events[0]['kind']=='possible_fall'
+    assert events[0]['scope']=='person' and events[0]['track_id']==1
+    assert events[0]['start_s']==3.6 and events[0]['alert_s']>=4.6
 
 
 def test_body_recovery_keeps_same_gate_and_rearms_scene_and_pose_falls():

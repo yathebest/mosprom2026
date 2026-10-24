@@ -121,3 +121,14 @@ test('live mutations localize only affected subtrees and ignore their own transl
   observe([{type:'characterData',target:liveText}]);assert.equal(queue.length,0,'the observer must not schedule a second pass for its own translation');
  }finally{for(const key of keys){if(saved[key]===undefined)delete global[key];else global[key]=saved[key]}delete require.cache[require.resolve('../app/static/i18n.js')]}
 });
+
+test('confirmation hold explanations describe time coverage and adaptive windows in both languages',()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../app/static/scenarios-ui.js'),'utf8');
+ const base=source.match(/const baseParameterHelp=\{([\s\S]*?)\n\};/)[1];
+ const extras=source.match(/const scenarioParamHelp=\{([\s\S]*?)\n\};/)[1];
+ for(const [section,keys] of [[base,['zone-hold','motion-hold','body-hold']],[extras,['ppe_hold','object_hold']]])for(const key of keys){
+  const match=section.match(new RegExp("['\"]?"+key+"['\"]?:'([^']+)'"));assert.ok(match,key);const text=match[1];
+  assert.match(text,/Номинальное окно/);assert.match(text,/75%/);assert.match(text,/трёх/);assert.match(text,/редких замерах/);assert.doesNotMatch(text,/непрерывно/);
+  const english=i18n.t(text,'en');assert.notEqual(english,text);assert.match(english,/75%/);assert.match(english,/three/);assert.match(english,/extend/);
+ }
+});
