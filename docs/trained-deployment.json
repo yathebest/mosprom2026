@@ -65,8 +65,26 @@
     "clips_created": 2,
     "processing_fps": 1.29
   },
-  "tests": "44 passed: trained integration, rules, detection upgrade, scenarios",
-  "fall_ui_verification": "pending",
-  "live_ui_verification": "pending",
-  "linq_hardware_verified": false
+  "tests": "45 passed: trained integration, rules, detection upgrade, scenarios; live.js syntax checked",
+  "fall_ui_verification": {
+    "job_id": "da46c98679b043ecbc743850f8f42ab3",
+    "source": "URFD training example, integration only",
+    "kind": "possible_fall",
+    "start_s": 3.6,
+    "alert_s": 4.1,
+    "model_source": "rgb_temporal_fusion",
+    "score": 0.9886711835861206,
+    "clip_state": "ready"
+  },
+  "live_ui_verification": {
+    "job_id": "41be2edd731644ceaf4bacd6c9076b6d",
+    "source": "Recorded public portrait via local HTTP MJPEG fixture, not a physical camera",
+    "state": "completed",
+    "processed_frames": 111,
+    "events": 8,
+    "clips_created": 8,
+    "model": "PyTorch / cuda:0 / yolov8n-pose.pt + person-yolo12m.pt + COCO person ensemble + ONNX CUDA scenarios + trained PPE classifiers + RGB ResNet18 + temporal ResNet18/GRU"
+  },
+  "linq_hardware_verified": false,
+  "live_performance_change": "Skip repeated detector crops for large foreground people; small-person refinement and proposal classifiers retained. Covered by a regression test; new latency not yet benchmarked."
 }

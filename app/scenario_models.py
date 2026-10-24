@@ -199,6 +199,11 @@ class ScenarioModels:
                 h,w=frame.shape[:2]
                 # Prioritize small visible people; bound inference work per frame.
                 for person in sorted(people,key=lambda p:p.height)[:self.max_people]:
+                    # Large foreground people already have detailed head/torso
+                    # pixels in the 640px full-frame detector input. Repeating
+                    # every PPE model on their crops adds live latency without
+                    # rescuing a small object. Classifier proposal crops remain.
+                    if person.height>=h*.55:continue
                     for region,(x1,y1,x2,y2) in person_regions(person,w,h).items():
                         if model.name=='ppe-head' and region!='head':continue
                         if model.name=='ppe-vest' and region!='torso':continue

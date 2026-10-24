@@ -60,3 +60,22 @@ def test_temporal_window_resamples_slow_camera_without_joining_outages():
     assert bool(torch.all(sequence[:,1:]>=sequence[:,:-1]))
     assert temporal.predict(np.zeros((30,30,3),np.uint8),10) is None
     assert temporal.predict(np.zeros((30,30,3),np.uint8),.1) is None
+
+
+def test_ppe_refinement_skips_large_people_but_keeps_small_person_crops():
+    from app.core import Person
+    from app.scenario_models import ScenarioModels
+    class Detector:
+        name='ppe-head'
+        def __init__(self):self.calls=0
+        def predict(self,frame):self.calls+=1;return []
+    pipeline=ScenarioModels.__new__(ScenarioModels);detector=Detector()
+    pipeline.models=[detector];pipeline.classifiers=[];pipeline.allowed=set()
+    pipeline.ppe_crops=True;pipeline.phone_crops=False;pipeline.max_people=8
+    pipeline.ppe_labels={'head':{'hardhat','no_hardhat'},'torso':{'vest','no_vest'}}
+    frame=np.zeros((200,100,3),np.uint8)
+    pipeline.predict(frame,[Person((5,5,95,190),.9)])
+    assert detector.calls==1
+    detector.calls=0
+    pipeline.predict(frame,[Person((5,5,35,80),.9)])
+    assert detector.calls==2
