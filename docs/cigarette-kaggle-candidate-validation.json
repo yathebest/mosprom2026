@@ -1,0 +1,82 @@
+{
+  "split": "validation",
+  "confidence": 0.5,
+  "iou": 0.5,
+  "images": 89,
+  "test_evaluated": false,
+  "deployed": false,
+  "models": {
+    "baseline": {
+      "file": "smoking.onnx",
+      "sha256": "ddc8cae492f0c28e1ccbadb11560de49b436dd4544f4382a361d3b047f02f38f",
+      "scales": {
+        "1.0": {
+          "tp": 72,
+          "fp": 14,
+          "fn": 17,
+          "precision": 0.8372093023255814,
+          "recall": 0.8089887640449438,
+          "f1": 0.822857142857143,
+          "p95_ms": 73.22621999992404
+        },
+        "0.5": {
+          "tp": 65,
+          "fp": 14,
+          "fn": 24,
+          "precision": 0.8227848101265823,
+          "recall": 0.7303370786516854,
+          "f1": 0.7738095238095237,
+          "p95_ms": 35.39405999981682
+        },
+        "0.25": {
+          "tp": 22,
+          "fp": 12,
+          "fn": 67,
+          "precision": 0.6470588235294118,
+          "recall": 0.24719101123595505,
+          "f1": 0.35772357723577236,
+          "p95_ms": 34.320160000788746
+        }
+      }
+    },
+    "candidate": {
+      "file": "cigarette.onnx",
+      "sha256": "bce2ffbd3190d86266dc775d015925dfd328361eaa915c44e4daba828e5818a2",
+      "scales": {
+        "1.0": {
+          "tp": 39,
+          "fp": 2,
+          "fn": 50,
+          "precision": 0.9512195121951219,
+          "recall": 0.43820224719101125,
+          "f1": 0.6,
+          "p95_ms": 72.05780000003868
+        },
+        "0.5": {
+          "tp": 37,
+          "fp": 4,
+          "fn": 52,
+          "precision": 0.9024390243902439,
+          "recall": 0.4157303370786517,
+          "f1": 0.5692307692307692,
+          "p95_ms": 114.02182000019819
+        },
+        "0.25": {
+          "tp": 10,
+          "fp": 3,
+          "fn": 79,
+          "precision": 0.7692307692307693,
+          "recall": 0.11235955056179775,
+          "f1": 0.19607843137254902,
+          "p95_ms": 135.791920000338
+        }
+      }
+    }
+  },
+  "limitations": [
+    "CigDet image object boxes, not industrial smoking episodes.",
+    "Upstream baseline training overlap is unknown.",
+    "Downscaling is a synthetic small-object stress test.",
+    "This validation has been used for candidate selection."
+  ]
+}

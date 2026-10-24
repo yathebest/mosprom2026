@@ -1,0 +1,31 @@
+{
+  "source": "https://www.kaggle.com/code/yathebest/linq-factory-objects-training-2026/output?scriptVersionId=361806401",
+  "kernel_version": 361806401,
+  "task": "cigarette object detector candidate",
+  "completed_epochs": 13,
+  "runtime_replaced": false,
+  "checkpoint_in_kaggle": {
+    "epoch_index": 12,
+    "optimizer_present": true,
+    "optimizer_parameter_states": 381,
+    "bytes": 161970667,
+    "sha256": "9ea027ee535a80e6e1010ba15e364368d8f09e7893b336733d1c3ae11d4b8bc2"
+  },
+  "local_files": {
+    "cigarette.onnx": {
+      "bytes": 80720087,
+      "sha256": "bce2ffbd3190d86266dc775d015925dfd328361eaa915c44e4daba828e5818a2"
+    },
+    "best.pt": {
+      "bytes": 40760878,
+      "sha256": "5856468d7131c57f978de4a8461d6dfeda0e14d4259b034cb014fc1bd1be9873"
+    }
+  },
+  "validation_report": "docs/cigarette-kaggle-candidate-validation.json",
+  "decision": "Keep current runtime: candidate loses recall/F1 at the same threshold on validation.",
+  "limitations": [
+    "CigDet validation object metrics, not factory smoking episode metrics.",
+    "best.pt is for inference/fine tuning; optimizer resume-last.pt remains in pinned Kaggle output.",
+    "No test data read during this comparison."
+  ]
+}
