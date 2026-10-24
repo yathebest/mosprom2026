@@ -1,0 +1,92 @@
+{
+  "scope": "Four selected integration demonstrations; not a precision/recall benchmark",
+  "helmet_duplicate_check": {
+    "event_track_ids": [
+      1,
+      2
+    ],
+    "unique_episode_ids": 2,
+    "simultaneous_id1_id2_measurements": 15,
+    "max_box_iou": 0.0,
+    "assistant_visual_review": "Frame1.99s: ID1 foreground worker and ID2 far worker at different machine, both bareheaded; no duplicate ID event. ID3 is a false person detection on machinery, status UNKNOWN, with no event; it remains visible.",
+    "event_end_states": [
+      {
+        "track_id": 1,
+        "episode_state": "interrupted",
+        "end_s": null,
+        "closure_reason": "video_ended"
+      },
+      {
+        "track_id": 2,
+        "episode_state": "interrupted",
+        "end_s": null,
+        "closure_reason": "video_ended"
+      }
+    ]
+  },
+  "video_checks": [
+    {
+      "file": "01-no-helmet-factory.mp4",
+      "decodes_start_middle_end": [
+        true,
+        true,
+        true
+      ],
+      "fps": 25.11,
+      "frames": 75,
+      "duration_s": 2.986857825567503,
+      "width": 1280,
+      "height": 858,
+      "model_event_count": 2
+    },
+    {
+      "file": "02-vest-factory.mp4",
+      "decodes_start_middle_end": [
+        true,
+        true,
+        true
+      ],
+      "fps": 25.05,
+      "frames": 174,
+      "duration_s": 6.946107784431137,
+      "width": 1280,
+      "height": 858,
+      "model_event_count": 2
+    },
+    {
+      "file": "03-fall-laboratory.mp4",
+      "decodes_start_middle_end": [
+        true,
+        true,
+        true
+      ],
+      "fps": 10.0,
+      "frames": 54,
+      "duration_s": 5.4,
+      "width": 800,
+      "height": 786,
+      "model_event_count": 1
+    },
+    {
+      "file": "04-smoking-street.mp4",
+      "decodes_start_middle_end": [
+        true,
+        true,
+        true
+      ],
+      "fps": 29.97,
+      "frames": 300,
+      "duration_s": 10.01001001001001,
+      "width": 1280,
+      "height": 858,
+      "model_event_count": 1
+    }
+  ],
+  "limitations": [
+    "Helmet ID2 is small; selected-video inspection is not a target-camera accuracy guarantee.",
+    "False person detection on machinery ID3 remains visible in the helmet clip; status UNKNOWN and no event. The demonstration is not perfect.",
+    "Two sources are factory CCTV; fall is a staged laboratory sequence and smoking is street footage.",
+    "No generated/repeated still frames or manual detection labels were inserted.",
+    "PPE/smoking replay made zero inference calls and zero rule calls; original measured reports are unchanged."
+  ]
+}

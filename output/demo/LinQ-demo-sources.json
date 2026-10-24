@@ -1,0 +1,200 @@
+{
+  "created_date": "2026-10-24",
+  "selection": "Only four clean production-cascade demonstration exports; failed/debug/intermediate videos excluded",
+  "clips": [
+    {
+      "archive_file": "01-no-helmet-factory.mp4",
+      "local_clean_file": "C:\\Users\\User\\Desktop\\mosprom2026\\output\\demo\\01-no-helmet-factory-clean.mp4",
+      "scene": "factory CCTV",
+      "bytes": 2044343,
+      "sha256": "be5810d55d04094c15b17a083d70b16b037fd2585008b2196a4c88e638c08233",
+      "fps": 25.11,
+      "frames": 75,
+      "width": 1280,
+      "height": 858,
+      "duration_s": 2.986857825567503,
+      "report_file": "proofs/01-helmet/helmet-current.json",
+      "report_sha256": "08ebfc15a90667380439b0cd4b14dae1c57c9ee69a64c7d722318744447d5dac",
+      "events": [
+        {
+          "track_id": 1,
+          "kind": "no_helmet",
+          "alert_s": 1.593,
+          "end_s": null,
+          "episode_state": "interrupted"
+        },
+        {
+          "track_id": 2,
+          "kind": "no_helmet",
+          "alert_s": 1.792,
+          "end_s": null,
+          "episode_state": "interrupted"
+        }
+      ],
+      "source": {
+        "authors": [
+          "Oguzhan Onal",
+          "Emre Dandil"
+        ],
+        "source_page": "https://data.mendeley.com/datasets/xjmtb22pff/1",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "original_video": {
+          "file": "test/6_te9.mp4",
+          "source_url": "https://huggingface.co/datasets/Voxel51/Safe_and_Unsafe_Behaviours/resolve/7369ff1830b5f6c00f7d7383eeeaa90704bfc5b5/data/6_te9.mp4",
+          "source_split": "test",
+          "sha256": "7434951bbc7f87ba144436863f7128e8780b14721191431aa30d7f3020ac0987",
+          "source_behavior_label": "Closed Panel Cover",
+          "safety_annotations": "unreviewed",
+          "_cls": "VideoMetadata",
+          "size_bytes": 8433507,
+          "mime_type": "video/mp4",
+          "frame_width": 1920,
+          "frame_height": 1080,
+          "frame_rate": 25.11,
+          "total_frame_count": 75,
+          "duration": 2.986858,
+          "encoding_str": "avc1"
+        }
+      },
+      "known_issue": "False person box on machinery, ID3 UNKNOWN, no event; output not manually cleaned."
+    },
+    {
+      "archive_file": "02-vest-factory.mp4",
+      "local_clean_file": "C:\\Users\\User\\Desktop\\mosprom2026\\output\\demo\\02-vest-factory-clean.mp4",
+      "scene": "factory CCTV",
+      "bytes": 3979181,
+      "sha256": "06c9224b58c4156c14f4399022dac354c9a8c11291e51d376162830a04011376",
+      "fps": 25.05,
+      "frames": 174,
+      "width": 1280,
+      "height": 858,
+      "duration_s": 6.946107784431137,
+      "report_file": "proofs/02-vest/02-vest-factory.json",
+      "report_sha256": "abfac5534fabf4c5ef9594d50fc268e851766190fc9121ff7a99b5d1ac72638a",
+      "events": [
+        {
+          "track_id": 2,
+          "kind": "no_vest",
+          "alert_s": 1.597,
+          "end_s": null,
+          "episode_state": "interrupted"
+        },
+        {
+          "track_id": 4,
+          "kind": "no_vest",
+          "alert_s": 1.597,
+          "end_s": null,
+          "episode_state": "interrupted"
+        }
+      ],
+      "source": {
+        "authors": [
+          "Oguzhan Onal",
+          "Emre Dandil"
+        ],
+        "source_page": "https://data.mendeley.com/datasets/xjmtb22pff/1",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "original_video": {
+          "file": "test/5_te1.mp4",
+          "source_url": "https://huggingface.co/datasets/Voxel51/Safe_and_Unsafe_Behaviours/resolve/7369ff1830b5f6c00f7d7383eeeaa90704bfc5b5/data/5_te1.mp4",
+          "source_split": "test",
+          "sha256": "f0dcc960126cb82e2bd0f34b95694c36011362ce2d243a59f95c696cddf853ec",
+          "source_behavior_label": "Authorized Intervention",
+          "safety_annotations": "unreviewed",
+          "_cls": "VideoMetadata",
+          "size_bytes": 12384656,
+          "mime_type": "video/mp4",
+          "frame_width": 1920,
+          "frame_height": 1080,
+          "frame_rate": 25.05,
+          "total_frame_count": 174,
+          "duration": 6.946108,
+          "encoding_str": "avc1"
+        }
+      }
+    },
+    {
+      "archive_file": "03-fall-laboratory.mp4",
+      "local_clean_file": "C:\\Users\\User\\Desktop\\mosprom2026\\output\\demo\\03-fall-laboratory.mp4",
+      "scene": "staged laboratory fall",
+      "bytes": 313458,
+      "sha256": "02523d0fc7d29650921073bfa15d06d36730e0f0d9fdd107561359c9db0256f1",
+      "fps": 10.0,
+      "frames": 54,
+      "width": 800,
+      "height": 786,
+      "duration_s": 5.4,
+      "report_file": "proofs/03-fall/03-fall-laboratory-proof.json",
+      "report_sha256": "9b80f41a4fc6b81b1510b7d92d9ca09d78da7e5cf018b1b741ba16c781e46973",
+      "events": [
+        {
+          "track_id": 0,
+          "kind": "possible_fall",
+          "alert_s": 4.1,
+          "end_s": null,
+          "episode_state": "open"
+        }
+      ],
+      "source": {
+        "dataset": "UR Fall Detection, laboratory staged fall, training sequence; integration demo only, NOT factory CCTV or independent quality evaluation",
+        "source": "C:\\Users\\User\\Desktop\\mosprom2026\\data\\datasets\\urfd\\fall-01-cam0-rgb.mp4",
+        "source_url": "https://fenix.ur.edu.pl/~mkepski/ds/uf.html",
+        "source_video_url": "https://fenix.ur.edu.pl/~mkepski/ds/data/fall-01-cam0.mp4",
+        "source_sha256": "b0a6ab8d9377960739d110d5efe272858bad7a72c14a7e1d3239261054fcda58",
+        "authors": "Bogdan Kwolek and Michal Kepski",
+        "license": "CC BY-NC-SA 4.0",
+        "input_transform": "Existing preview RGB right-half extraction. Inference original resolution; display only scaled to800x600 plus title/footer. No hand boxes, GT poses, inserted/repeated frames or overridden detections."
+      }
+    },
+    {
+      "archive_file": "04-smoking-street.mp4",
+      "local_clean_file": "C:\\Users\\User\\Desktop\\mosprom2026\\output\\demo\\04-smoking-street-clean.mp4",
+      "scene": "street footage; not factory",
+      "bytes": 2589184,
+      "sha256": "1482617bda61d0aceab96a46cdcd3f791e23e47b912eba4dd5e09e4a65fbadb3",
+      "fps": 29.97,
+      "frames": 300,
+      "width": 1280,
+      "height": 858,
+      "duration_s": 10.01001001001001,
+      "report_file": "proofs/04-smoking/04-smoking-street.json",
+      "report_sha256": "6060c167d1e0d1a03f45ea1ff3791f1a85d9648b1e134f05124558dfc44bcaa2",
+      "events": [
+        {
+          "track_id": 1,
+          "kind": "possible_smoking",
+          "alert_s": 1.401,
+          "end_s": null,
+          "episode_state": "interrupted"
+        }
+      ],
+      "source": {
+        "title": "Crash zoom on cigarette.webm",
+        "author": "Sarrah Anderson",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Crash_zoom_on_cigarette.webm",
+        "original_source": "https://www.youtube.com/watch?v=WPMTla169X0",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Crash_zoom_on_cigarette.webm",
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0/",
+        "license_evidence": "Explicit CC BY 3.0 license on Wikimedia Commons file page; saved alongside source.",
+        "downloaded_source_unannotated": true,
+        "scene": "Filmed cigarette smoking with a crash zoom; not a factory CCTV recording.",
+        "our_model_inference_tested": false,
+        "sha256": "954d93e3a70964c32c9b5c25bac9e5e82a7682d3214d109955c83f69b571cd46",
+        "bytes": 4109768,
+        "fps": 29.97002997002997,
+        "frames": 300,
+        "duration_s": 10.01,
+        "changes": "Trimmed original video, removed audio, transcoded to H.264 MP4. No overlays or generated frames.",
+        "derived_from": "smoking-cigarette-raw.webm",
+        "source_start_s": 0,
+        "source_duration_s": 10,
+        "width": 1920,
+        "height": 1080
+      }
+    }
+  ],
+  "quality_claim": "No measured precision/recall/F1 or >0.95 claim is established by these selected clips."
+}
