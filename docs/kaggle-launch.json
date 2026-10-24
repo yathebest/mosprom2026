@@ -25,14 +25,14 @@
     "release_model": false
   },
   "full": {
-    "status": "running_at_verification",
+    "status": "cancelled_outputs_recovered",
     "version_id": 361611151,
     "version_url": "https://www.kaggle.com/code/yathebest/linq-ppe-full-training-2026?scriptVersionId=361611151",
     "started_at_local": "2026-10-24T02:02:06+03:00",
     "launch_method": "Save Version / Save & Run All (Commit), independent GPU T4 x2 batch session",
-    "draft_gpu_session": "stopped; only the independent version is active",
-    "verified_stage": "Both detector workers started; scanning full train splits (people 2910, head_ppe 6438), not the smoke subsets",
-    "first_full_epoch_verified": false,
+    "draft_gpu_session": "stopped",
+    "verified_stage": "Cancelled at user request to shorten training. Delayed saved output downloaded; optimizer checkpoints: people 17 epochs, head_ppe 3 epochs.",
+    "first_full_epoch_verified": true,
     "browser_may_close": true,
     "completed": false,
     "notebook_file_sha256": "29dac0315b24fc1beb494071b62ac8d4bb1eadb6b91583722bb89c84bed3ad54",

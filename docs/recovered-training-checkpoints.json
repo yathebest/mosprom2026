@@ -1,0 +1,17 @@
+{
+  "people": {
+    "completed_epochs": 17,
+    "optimizer_present": true,
+    "last_sha256": "64f17bf536a74c8a206aa02f578788db9424883161282d2cac75815d566c8a95",
+    "best_sha256": "64f17bf536a74c8a206aa02f578788db9424883161282d2cac75815d566c8a95"
+  },
+  "head_ppe": {
+    "completed_epochs": 3,
+    "optimizer_present": true,
+    "last_sha256": "3f2cb464393065851ebbdef00f34cbdeff750469a865219958b336ff6b02c85b",
+    "best_sha256": "1c8428cc672fb4b699679c477167a0df4f7656af7bc23a8f5c7b5b4128418cb2"
+  },
+  "source_version_id": 361611151,
+  "archive_bytes": 638326001,
+  "checkpoint_deserialization": "Verified using trusted own checkpoints with Ultralytics 8.4.88"
+}

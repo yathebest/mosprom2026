@@ -1,0 +1,32 @@
+{
+  "account": "yathebest",
+  "visibility": "private",
+  "version": 2,
+  "version_id": 361631539,
+  "url": "https://www.kaggle.com/code/yathebest/linq-ppe-full-training-2026?scriptVersionId=361631539",
+  "verified_at_local": "2026-10-24T04:00:36.944607+03:00",
+  "status": "starting_worker_not_yet_verified",
+  "execution": "Save & Run All (Commit), independent batch",
+  "gpu_setting": "GPU T4 x2",
+  "checkpoint_source_version": 361611151,
+  "restored_input_epochs_expected": {
+    "people": 17,
+    "head_ppe": 3
+  },
+  "runtime_restoration_verified": false,
+  "remote_backup_verified": false,
+  "people_added_training_minutes": 20,
+  "detector_total_epoch_caps": {
+    "people": 25,
+    "head_ppe": 40,
+    "vest_ppe": 40
+  },
+  "classifier": "resnet50",
+  "classifier_max_epochs": 12,
+  "data": "full original splits",
+  "notebook_sha256": "2ab5cd9be8c1be0cf53ed362c8b069836a5daed5a98e8fcc1d49919ec7647b4a",
+  "quality_measured": false,
+  "trained_weights_installed": false,
+  "warning": "Save & Run All created. Version History says Starting; viewer says Running but has no first logs. GPU execution, restoration and remote backup are not yet verified.",
+  "input_source_version_verified_in_saved_metadata": 361611151
+}

@@ -1,0 +1,10 @@
+{
+  "actual_continuation": "passed: original head epoch 3 -> epoch 4; optimizer restored",
+  "atomic_replacement": "passed",
+  "previous_generation": "passed",
+  "injected_write_failure_retains_checkpoint": "passed",
+  "optimizer_checkpoint_after_export": true,
+  "test_only_models_installed": false,
+  "classifier_resume_and_deadline": "passed: ResNet50 continued epoch 1 -> epoch 2, validated and exported",
+  "classifier_optimizer_scaler_rng_checkpoint": "passed"
+}

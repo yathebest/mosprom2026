@@ -50,7 +50,7 @@ print({'python':platform.python_version(),'torch':torch.__version__,'onnx':metad
        'gpus':[{'name':torch.cuda.get_device_name(i),'GiB':torch.cuda.get_device_properties(i).total_memory/2**30}
                for i in range(torch.cuda.device_count())]})
 ''')
-embedded=['download_ppe_data.py','prepare_ppe_data.py','finalize_ppe_data.py','train_ppe.py','run_ppe_training.py','check_linq_compatibility.py']
+embedded=['download_ppe_data.py','prepare_ppe_data.py','finalize_ppe_data.py','train_ppe.py','run_ppe_training.py','training_checkpoint.py','check_linq_compatibility.py']
 code("SCRIPTS=WORK/'scripts'; SCRIPTS.mkdir(exist_ok=True)\n"+'\n'.join(
     f"(SCRIPTS/{name!r}).write_text({(ROOT/'scripts'/name).read_text(encoding='utf-8')!r},encoding='utf-8')" for name in embedded),True)
 code('''
