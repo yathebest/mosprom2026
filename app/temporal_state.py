@@ -12,6 +12,7 @@ class TemporalGate:
     def __init__(self,ratio=.75,min_samples=3):
         self.ratio=ratio;self.min_samples=min_samples;self.history=deque()
         self.state='unknown';self.observed_state='unknown';self.confirmed_at_s=None
+        self.last_confirmed_state='unknown';self.last_confirmed_at_s=None
         self.last_seen=None;self.last_true=None;self.last_observed_s=None;self.since=None
         self.sequence=0;self.samples=0;self.episode_id=None;self.episode_start=None
         self.last_transition=None;self.window_s=1.;self.clear_window_s=2.;self.gap=.8
@@ -71,6 +72,9 @@ class TemporalGate:
         target='violation' if condition else 'clear'
         if target==self.state:return None
         previous=self.state;self.state=target;self.confirmed_at_s=now
+        # Historical confirmation survives an interrupted/currently unknown
+        # episode. Repeated observations never refresh this transition time.
+        self.last_confirmed_state=target;self.last_confirmed_at_s=now
         proof=self.confirmation(window,agreement,coverage,count)
         if condition:
             self.sequence+=1;self.episode_id=uuid.uuid4().hex;self.episode_start=started
@@ -96,6 +100,7 @@ class TemporalGate:
 
     def snapshot(self):
         return {'state':self.state,'observed_state':self.observed_state,'last_observed_state':self.observed_state,
+            'last_confirmed_state':self.last_confirmed_state,'last_confirmed_at_s':self.last_confirmed_at_s,
             'confirmed_at_s':self.confirmed_at_s,'window_s':self.clear_window_s if self.observed_state=='clear' else self.window_s,
             'violation_window_s':self.window_s,'clear_window_s':self.clear_window_s,
             'nominal_window_s':self.nominal_window_s,'nominal_clear_window_s':self.nominal_clear_window_s,

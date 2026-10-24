@@ -197,7 +197,7 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
                 if tid in details:details[tid]['active'].extend(kinds)
             scene_alerts=[key[1] for key,gate in rules.gates.items() if key[0]==0 and gate.active]
             annotated = draw(frame,people,details,config,now,getattr(backend,'scene_state',None),scene_alerts)
-            annotated=annotate_objects(annotated,observations,scenario_rules.ppe_status,people,scenario_rules.ppe_details)
+            annotated=annotate_objects(annotated,observations,scenario_rules.ppe_status,people,scenario_rules.ppe_details,scenario_rules.state_rows)
             writer.write(annotated)
             if processed%3==0:
                 temp = folder/"latest.tmp.jpg"

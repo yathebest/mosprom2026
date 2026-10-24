@@ -9,6 +9,56 @@ import numpy as np
 
 from .core import Person
 
+_FAST_ARRAY_PREDICTOR_MODULES={
+    'ultralytics.models.yolo.detect.predict','ultralytics.models.yolo.pose.predict'}
+
+
+def warm_array_predict(model,source,kwargs):
+    """Reuse the initialized Ultralytics array pipeline without timing barriers.
+
+    Ultralytics' public prediction loop synchronizes CUDA six times per batch
+    solely for its three speed profilers, including when verbose=False. Live
+    analysis measures the complete call itself and materializes the result once.
+    Keep the exact source loader, preprocessing, forward pass and postprocessing.
+    Unsupported/uninitialized predictors use the ordinary public entry point.
+    """
+    predictor=getattr(model,'predictor',None)
+    arrays=[source] if isinstance(source,np.ndarray) else source
+    methods=('setup_source','preprocess','inference','postprocess','run_callbacks')
+    if (getattr(model,'task',None) not in ('detect','pose')
+            or type(predictor).__module__ not in _FAST_ARRAY_PREDICTOR_MODULES
+            or not isinstance(arrays,(list,tuple)) or not arrays
+            or not all(isinstance(x,np.ndarray) and x.ndim==3 and x.shape[2]==3 and x.dtype==np.uint8 for x in arrays)
+            or predictor is None or not getattr(predictor,'done_warmup',False)
+            or not all(callable(getattr(predictor,name,None)) for name in methods)
+            or not hasattr(predictor,'_lock') or not hasattr(predictor,'args')):
+        return model.predict(source,**kwargs)
+    if str(getattr(predictor.args,'device',''))!=str(kwargs.get('device',getattr(predictor.args,'device',''))):
+        return model.predict(source,**kwargs)
+    import torch
+    from ultralytics.cfg import get_cfg
+    custom={'conf':.25,'batch':1,'save':False,'mode':'predict','rect':True,'embed':None}
+    args={**getattr(model,'overrides',{}),**custom,**kwargs}
+    with torch.inference_mode(),predictor._lock:
+        predictor.args=get_cfg(predictor.args,args)
+        predictor.setup_source(source)
+        predictor.seen,predictor.windows,predictor.batch=0,[],None
+        predictor.run_callbacks('on_predict_start')
+        results=[]
+        for batch in predictor.dataset:
+            predictor.batch=batch
+            predictor.run_callbacks('on_predict_batch_start')
+            _,originals,_=batch
+            tensor=predictor.preprocess(originals)
+            predictions=predictor.inference(tensor)
+            predictor.results=predictor.postprocess(predictions,tensor,originals)
+            predictor.run_callbacks('on_predict_postprocess_end')
+            predictor.seen+=len(originals)
+            results.extend(predictor.results)
+            predictor.run_callbacks('on_predict_batch_end')
+        predictor.run_callbacks('on_predict_end')
+        return results
+
 
 class Backend(Protocol):
     name: str
@@ -19,7 +69,9 @@ class YoloBackend:
     def _model_predict(self,model,*args,**kwargs):
         from .scenario_models import accelerator_lane
         with accelerator_lane(self.device.startswith('cuda')):
-            results=model.predict(*args,**kwargs)
+            if len(args)==1 and self.device.startswith('cuda') and getattr(self,'fast_array_prediction',False):
+                results=warm_array_predict(model,args[0],kwargs)
+            else:results=model.predict(*args,**kwargs)
             # Materialize device results before yielding the lane to ONNX.
             # All box/keypoint coordinates retain their original FP32 values.
             return [result.cpu() for result in results]
@@ -28,11 +80,16 @@ class YoloBackend:
         import torch
         import cv2
         from ultralytics import YOLO
+        from ultralytics import __version__ as ultralytics_version
         # Many tiny CPU preprocessing operations run alongside camera rendering.
         # Dozens of OpenMP workers make these slower and starve video threads.
         torch.set_num_threads(max(1,int(os.getenv('SAFETY_CPU_THREADS','2'))))
         cv2.setNumThreads(1)
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        # Private predictor reuse is enabled only for the implementation whose
+        # preprocessing/NMS contract was inspected and compared on real frames.
+        self.fast_array_prediction=(os.getenv('SAFETY_FAST_ARRAY_PREDICT','1')=='1'
+                                    and ultralytics_version=='8.4.88')
         self.name = f"PyTorch / {self.device} / {model.name}"
         self.model = YOLO(str(model),task="pose")
         preferred=model.parent/'person-yolo12m.pt'

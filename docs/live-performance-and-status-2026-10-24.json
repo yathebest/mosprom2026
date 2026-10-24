@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-24",
+  "timezone": "Europe/Moscow",
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU, 16 GB system RAM",
+  "method": "Live camera started and stopped by clicking the application UI. Same looping public factory MJPEG fixture and same fall/helmet/vest/distant-people settings. No concurrent inference benchmarks during each live session.",
+  "before": {
+    "capture_fps": 19.16,
+    "display_fps": 13.37,
+    "analysis_fps": 0.25,
+    "scenario_fps": 0.22,
+    "inference_p95_ms": 6588.46,
+    "scenario_p95_ms": 7634.13,
+    "analysis_age_ms": 3052.9,
+    "scenario_age_ms": 14460.3,
+    "preview_age_ms": null,
+    "render_p95_ms": null,
+    "jpeg_p95_ms": null,
+    "inference_pipeline": null,
+    "fast_array_prediction": null,
+    "events": 0
+  },
+  "after": {
+    "capture_fps": 16.74,
+    "display_fps": 12.7,
+    "analysis_fps": 0.23,
+    "scenario_fps": 0.23,
+    "inference_p95_ms": 6559.55,
+    "scenario_p95_ms": 1476.36,
+    "analysis_age_ms": 5997.6,
+    "scenario_age_ms": 5994.4,
+    "preview_age_ms": 75.3,
+    "render_p95_ms": 138.35,
+    "jpeg_p95_ms": 84.02,
+    "inference_pipeline": "serial",
+    "fast_array_prediction": true,
+    "events": 1
+  },
+  "interpretation": "Initial post-change video reached 18-19 FPS and PPE age about 2 seconds, but sustained inference remained about 0.23 FPS. The long-run comparison does not establish a recognition speed improvement. No claim of completed performance acceptance.",
+  "model_equivalence": {
+    "pairs": 4,
+    "person_boxes_and_keypoints_exact": true,
+    "object_predictions_exact": true,
+    "scene_predictions_exact": true,
+    "people_median_before_s": 0.4083709999995335,
+    "people_median_after_s": 0.34349124999971536,
+    "scope": "Two source frames, alternating calls with the same weights, FP32, preprocessing and NMS. This is not a full recognition-quality benchmark."
+  },
+  "system_memory_observation": {
+    "nonpaged_pool_bytes": 8986968064,
+    "available_MB": 622,
+    "page_reads_per_second": 371,
+    "dominant_pool_tag": {
+      "tag": "NtFC",
+      "nonpaged_bytes": 7385590528,
+      "nonpaged_outstanding": 30773309,
+      "paged_bytes": 110368
+    },
+    "source": "Read-only Windows performance counters and NtQuerySystemInformation(22). The pool tag does not identify a proven responsible application or driver.",
+    "required_follow_up": "User-controlled Windows restart after saving work, then repeat UI FPS and alert-latency measurements. No system services, protections or user applications were disabled."
+  },
+  "status_fixes": [
+    "Separate measured evidence, temporal confirmation, operator review and incident closure.",
+    "Preserve last-confirmed history after interruption, without fabricating current safe state.",
+    "Legacy historical fallback is scoped to exact job, person ID, pattern and zone.",
+    "Raw detector proposals are explicitly MEASURED; only state-engine confirmation is labelled CONFIRMED."
+  ],
+  "verification": {
+    "python_tests_passed": 171,
+    "javascript_tests_passed": 53,
+    "ui_checks": [
+      "Started and stopped before/after live sessions by clicking buttons.",
+      "Opened saved factory analysis through the history card. ID1 shows confirmation at 1.6s; ID2 without an event remains pending.",
+      "Checked explicit operator-review labels and separate measured/confirmed states."
+    ],
+    "remaining_acceptance": "Repeat sustained live inference and alert timing after the system memory pressure is resolved."
+  }
+}

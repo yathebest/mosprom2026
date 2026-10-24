@@ -132,3 +132,15 @@ test('confirmation hold explanations describe time coverage and adaptive windows
   const english=i18n.t(text,'en');assert.notEqual(english,text);assert.match(english,/75%/);assert.match(english,/three/);assert.match(english,/extend/);
  }
 });
+
+test('freshness group header survives RU to EN to RU without the retired wording',()=>{
+ const saved={document:global.document,NodeFilter:global.NodeFilter,CustomEvent:global.CustomEvent};
+ const parent={closest(){return null},matches(){return false},querySelectorAll(){return []},getAttribute(){return null}};
+ const text={data:'ID без свежего замера',parentElement:parent};global.NodeFilter={SHOW_TEXT:4};global.CustomEvent=class{};
+ global.document={body:parent,documentElement:{lang:'ru'},getElementById:()=>null,dispatchEvent(){},createTreeWalker(){let done=false;return {currentNode:null,nextNode(){if(done)return false;done=true;this.currentNode=text;return true}}}};
+ try{i18n.setLanguage('en');assert.equal(text.data,'IDs without a fresh measurement');i18n.setLanguage('ru');assert.equal(text.data,'ID без свежего замера');assert.doesNotMatch(text.data,/Ранее наблюдавшиеся/)}finally{Object.assign(global,saved);i18n.setLanguage('ru')}
+});
+test('operator review labels remain distinct from model confirmation without changing API enum values',()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../app/static/app.js'),'utf8'),literal=source.match(/const reviews=(\{[^;]+\});/)[1];const reviews=require('node:vm').runInNewContext('('+literal+')');
+ assert.deepEqual(Object.keys(reviews),['new','confirmed','false','forwarded']);assert.equal(reviews.new,'Нужна проверка оператором');assert.equal(reviews.confirmed,'Подтверждено оператором');assert.equal(i18n.t(reviews.new,'en'),'Needs operator review');assert.equal(i18n.t('Последний признак правила','en'),'Latest rule observation');
+});

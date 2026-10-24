@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime,timedelta,timezone
 from dataclasses import replace
 import logging
+import os
 import gc
 import queue
 import subprocess
@@ -83,6 +84,9 @@ class LiveSession:
         self.analysis_times=deque(maxlen=100);self.scenario_times=deque(maxlen=100)
         self.scenario_latencies=[];self.analysis_age_ms=None;self.scenario_age_ms=None
         self.capture_count=0;self.display_count=0;self.scenario_count=0
+        self.render_latencies=deque(maxlen=150);self.jpeg_latencies=deque(maxlen=150)
+        self.preview_age_ms=None
+        self.pipeline_mode='starting'
         self.helpers=[];self.shape=None
         db.add_job(self.id,'Прямой эфир · '+config.camera,
                    {'live':True,'mode':'live','source_type':source_type,'duration_s':0,
@@ -94,7 +98,7 @@ class LiveSession:
         self.worker.start()
         return self
 
-    def ingest(self,frame):
+    def ingest(self,frame,encoded=None):
         if self.stop_event.is_set():return
         captured=time.monotonic();self.last_ingest=captured
         # Original pixels go to inference. Only the display copy is resized.
@@ -108,18 +112,21 @@ class LiveSession:
             self.capture_times.append(captured);self.capture_count+=1
         self.dropped+=latest_only(self.frames,(captured,frame))
         latest_only(self.display_frames,(captured,frame))
-        latest_only(self.record_frames,(captured,frame))
+        latest_only(self.record_frames,(captured,frame,encoded))
 
     def encode_recording(self):
         """Full-resolution evidence encoding never delays the live preview."""
         try:
             while not self.stop_event.is_set():
-                try:captured,frame=self.record_frames.get(timeout=.2)
+                try:captured,frame,original=self.record_frames.get(timeout=.2)
                 except queue.Empty:continue
                 now=captured-self.first_mono
-                ok,encoded=cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,85])
-                if not ok:continue
-                original=encoded.tobytes()
+                # Browser frames already arrive as a validated full-resolution
+                # JPEG. Preserve those bytes rather than JPEG-encoding again.
+                if original is None:
+                    ok,encoded=cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,85])
+                    if not ok:continue
+                    original=encoded.tobytes()
                 with self.frame_lock:
                     self.ring.append((now,original))
                     history_s=PRE_SECONDS+min(15.,max(4.,(self.scenario_age_ms or 0)/1000+1.))
@@ -141,6 +148,7 @@ class LiveSession:
                 try:captured,frame=self.display_frames.get(timeout=.2)
                 except queue.Empty:continue
                 if not pacer.accept(captured):continue
+                render_began=time.perf_counter()
                 now=captured-self.first_mono
                 if self.display_count==0:
                     h,w=frame.shape[:2];cv2.imwrite(str(self.folder/'preview.jpg'),frame)
@@ -163,14 +171,18 @@ class LiveSession:
                         details={tid:{key:{**value,'fresh':False,'reason':'recent_observation'}
                                       for key,value in rows.items()} for tid,rows in scenario['details'].items()}
                         objects=[replace(o,box=tuple(v*scale for v in o.box)) for o in scenario['objects']] if now-scenario['time']<=.5 else []
-                        annotated=annotate_objects(annotated,objects,scenario['status'],people,details)
+                        annotated=annotate_objects(annotated,objects,scenario['status'],people,details,scenario.get('states'))
                 label='ANALYSIS: WARMUP' if not visual else f"ANALYSIS AGE: {max(0,now-visual['time']):.2f}s"
                 cv2.putText(annotated,label,(14,52),cv2.FONT_HERSHEY_SIMPLEX,.55,(80,220,245),2)
+                jpeg_began=time.perf_counter()
                 ok,encoded=cv2.imencode('.jpg',annotated,[cv2.IMWRITE_JPEG_QUALITY,82])
+                self.jpeg_latencies.append((time.perf_counter()-jpeg_began)*1000)
                 if ok:
                     self.jpeg=encoded.tobytes();self.version+=1
                     self.display_count+=1;self.display_times.append(time.monotonic())
                     if self.display_count%25==0:(self.folder/'latest.jpg').write_bytes(self.jpeg)
+                    self.preview_age_ms=round((time.monotonic()-captured)*1000,1)
+                self.render_latencies.append((time.perf_counter()-render_began)*1000)
                 self.queue_finished_clips(now)
         except Exception:
             logging.exception('Live rendering failed: %s',self.id)
@@ -214,14 +226,14 @@ class LiveSession:
                 with self.frame_lock:
                     self.scenario_states=state_snapshot(rules);self.states_updated_s=max(self.states_updated_s,now)
                 self.assessments=assessment_rows(people,rules.ppe_details)
-                self.scenario_visual={'time':now,'objects':objects,'details':rules.ppe_details,'status':rules.ppe_status}
+                self.scenario_visual={'time':now,'objects':objects,'details':rules.ppe_details,'status':rules.ppe_status,'states':state_snapshot(rules)}
                 self.scenario_count+=1;self.scenario_times.append(time.monotonic())
                 self.scenario_age_ms=round((time.monotonic()-self.first_mono-now)*1000,1)
                 for tid,kinds in active.items():
                     if tid in details:details[tid]['active'].extend(kinds)
                 if events or updates:
                     annotated=draw(frame,people,details,self.config,now)
-                    annotated=annotate_objects(annotated,objects,rules.ppe_status,people,rules.ppe_details)
+                    annotated=annotate_objects(annotated,objects,rules.ppe_status,people,rules.ppe_details,rules.state_rows)
                     self.record_events(events,annotated,now)
                     persist_episode_updates(self.id,updates,annotated)
         except Exception:
@@ -263,6 +275,11 @@ class LiveSession:
                 'analysis_fps':measured_fps(self.analysis_times),'scenario_fps':measured_fps(self.scenario_times),
                 'captured_frames':self.capture_count,'displayed_frames':self.display_count,'scenario_frames':self.scenario_count,
                 'analysis_age_ms':self.analysis_age_ms,'scenario_age_ms':self.scenario_age_ms,
+                'preview_age_ms':self.preview_age_ms,
+                'render_p95_ms':round(float(np.percentile(self.render_latencies,95)),2) if self.render_latencies else None,
+                'jpeg_p95_ms':round(float(np.percentile(self.jpeg_latencies,95)),2) if self.jpeg_latencies else None,
+                'inference_pipeline':self.pipeline_mode,
+                'fast_array_prediction':getattr(self.backend,'fast_array_prediction',False),
                 'scenario_p95_ms':round(float(np.percentile(self.scenario_latencies,95)),2) if self.scenario_latencies else None,
                 'dropped_frames':self.dropped,'events':self.events,
                 'clips_pending':len(self.pending)+sum(not f.done() for f in self.clip_futures),
@@ -335,7 +352,14 @@ class LiveSession:
             # projected/predicted boxes never become evidence for this allowance.
             cfg=self.config.model_copy(update={'observation_gap':self.effective_observation_gap_s})
             rules=Rules(base_config(cfg))
-            separated=callable(getattr(self.backend,'predict_people',None)) and callable(getattr(self.backend,'predict_scenarios',None))
+            staged=callable(getattr(self.backend,'predict_people',None)) and callable(getattr(self.backend,'predict_scenarios',None))
+            # One CUDA device processes the same source frame end-to-end.
+            # Two workers previously interleaved many model stages while PPE
+            # waited behind people inference, so results arrived seconds old.
+            # Camera display/recording remain independent in either mode.
+            split_default='0' if str(getattr(self.backend,'device','')).startswith('cuda') else '1'
+            separated=staged and os.getenv('SAFETY_LIVE_SPLIT_INFERENCE',split_default)=='1'
+            self.pipeline_mode='split' if separated else 'serial'
             scenarios=ScenarioRules(cfg)
             if separated:
                 helper=threading.Thread(target=self.analyze_scenarios,name='objects-'+self.id[:6],daemon=True)
@@ -350,7 +374,7 @@ class LiveSession:
                     self.dropped+=1;continue
                 self.last_processed=captured;now=captured-self.first_mono;h,w=frame.shape[:2]
                 began=time.perf_counter()
-                people=self.backend.predict_people(frame) if separated else self.backend.predict(frame)
+                people=self.backend.predict_people(frame) if staged else self.backend.predict(frame)
                 if callable(getattr(self.backend,'predict_temporal',None)):
                     self.backend.predict_temporal(frame,now)
                 self.latencies.append((time.perf_counter()-began)*1000)
@@ -370,7 +394,10 @@ class LiveSession:
                     copied_details={tid:{**d,'active':list(d.get('active',[]))} for tid,d in details.items()}
                     latest_only(self.scenario_frames,(now,frame,copied,copied_details))
                 else:
-                    objects=getattr(self.backend,'objects_state',[])
+                    scenario_began=time.perf_counter()
+                    objects=self.backend.predict_scenarios(frame,people) if staged else getattr(self.backend,'objects_state',[])
+                    self.scenario_latencies.append((time.perf_counter()-scenario_began)*1000)
+                    self.scenario_latencies=self.scenario_latencies[-300:]
                     extra,active=scenarios.step(people,objects,now,w,h,details)
                     scenario_time=now
                     updates.extend(getattr(scenarios,'event_updates',[]))
@@ -378,14 +405,16 @@ class LiveSession:
                     events.extend(extra);self.assessments=assessment_rows(people,scenarios.ppe_details)
                     for tid,kinds in active.items():
                         if tid in details:details[tid]['active'].extend(kinds)
-                    self.scenario_visual={'time':now,'objects':objects,'details':scenarios.ppe_details,'status':scenarios.ppe_status}
+                    self.scenario_visual={'time':now,'objects':objects,'details':scenarios.ppe_details,'status':scenarios.ppe_status,'states':state_snapshot(scenarios)}
+                    self.scenario_count+=1;self.scenario_times.append(time.monotonic())
+                    self.scenario_age_ms=round((time.monotonic()-captured)*1000,1)
                 preview_scale=min(1,960/max(h,w))
                 small=cv2.resize(frame,(round(w*preview_scale),round(h*preview_scale))) if preview_scale<1 else frame
                 self.visual={'time':now,'people':people,'details':details,'scene':scene,'scene_alerts':scene_alerts,
                              'gray':cv2.cvtColor(small,cv2.COLOR_BGR2GRAY),'width':w}
                 if events or updates:
                     annotated=draw(frame,people,details,self.config,now,scene,scene_alerts)
-                    if not separated:annotated=annotate_objects(annotated,objects,scenarios.ppe_status,people,scenarios.ppe_details)
+                    if not separated:annotated=annotate_objects(annotated,objects,scenarios.ppe_status,people,scenarios.ppe_details,scenarios.state_rows)
                     self.record_events(events,annotated,now)
                     persist_episode_updates(self.id,updates,annotated)
                 if self.state=='starting':

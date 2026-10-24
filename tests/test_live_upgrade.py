@@ -156,6 +156,41 @@ def test_slow_live_relink_requires_close_spatial_continuity():
     assert tracks.update([worker(box=(35,0,85,180))],4)[0].track_id!=first
 
 
+def test_single_cuda_pipeline_uses_each_source_frame_once_without_object_queue(monkeypatch,tmp_path):
+    from app import live
+    class Backend:
+        name='single-device';device='cuda:0';scene_state=None
+        def __init__(self):self.people_frames=[];self.object_frames=[]
+        def predict(self,frame):raise AssertionError('Use the explicit staged contract')
+        def predict_people(self,frame):
+            self.people_frames.append(int(frame[0,0,0]));return [worker()]
+        def predict_scenarios(self,frame,people):
+            self.object_frames.append(int(frame[0,0,0]));assert people[0].track_id==1
+            return []
+    class Tracker:
+        def __init__(self,*args,**kwargs):pass
+        def update(self,people,*args):return people
+    backend=Backend()
+    monkeypatch.delenv('SAFETY_LIVE_SPLIT_INFERENCE',raising=False)
+    monkeypatch.setattr(live,'create_backend',lambda *a,**k:backend)
+    monkeypatch.setattr(live,'PeopleTracker',Tracker)
+    monkeypatch.setattr(live.db,'DATA',tmp_path)
+    monkeypatch.setattr(live.db,'add_job',lambda *a,**k:None)
+    monkeypatch.setattr(live.db,'update_job',lambda *a,**k:None)
+    session=live.LiveSession(RunConfig(fast_motion=False),'browser').start()
+    try:
+        for i in range(18):
+            session.ingest(np.full((120,160,3),i,np.uint8));time.sleep(.04)
+    finally:
+        session.stop_event.set();session.worker.join(timeout=5)
+    assert session.state=='stopped' and session.pipeline_mode=='serial'
+    assert len(backend.people_frames)>=4
+    assert backend.people_frames==backend.object_frames
+    assert len(set(backend.object_frames))==len(backend.object_frames)
+    assert session.scenario_count==session.processed
+    assert session.scenario_frames.empty() and session.display_count>=8
+
+
 def test_pose_proposal_is_neutral_and_requires_visible_face():
     from app.scenario_models import pose_head_proposal
     p=worker();assert pose_head_proposal(p,100,200) is None

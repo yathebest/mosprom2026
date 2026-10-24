@@ -140,11 +140,12 @@ async def live_frame(session_id: str,request: Request):
         raise HTTPException(409,'Сеанс не принимает кадры устройства')
     content=await request.body()
     if len(content)>3*1024*1024:raise HTTPException(413,'Кадр слишком большой')
+    if not content.startswith(b'\xff\xd8\xff'):raise HTTPException(400,'Нужен JPEG-кадр')
     # JPEG decoding must not block event polling or the MJPEG stream.
     frame=await asyncio.to_thread(cv2.imdecode,np.frombuffer(content,np.uint8),cv2.IMREAD_COLOR)
     if frame is None or frame.shape[0]*frame.shape[1]>4096*2160:
         raise HTTPException(400,'Нужен JPEG-кадр не более 4K')
-    session.ingest(frame)
+    session.ingest(frame,encoded=content)
     return {'accepted':True}
 
 
@@ -154,16 +155,19 @@ async def live_view(session_id: str,request: Request):
     async def generate():
         version=-1
         while not await request.is_disconnected():
-            user=auth.resolve(request.cookies.get(auth.COOKIE))
+            # The same revocation/scope check remains before every stream poll.
+            # SQLite I/O must not stall all MJPEG consumers and event polling.
+            user=await asyncio.to_thread(auth.resolve,request.cookies.get(auth.COOKIE))
             if not user or 'live.read' not in user['permissions']:break
             if user['organization_id']!=request.state.user['organization_id'] or user['cameras']!=request.state.user['cameras']:break
             if session.jpeg and session.version!=version:
                 version=session.version
-                yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n'+session.jpeg+b'\r\n'
+                jpeg=session.jpeg
+                yield b'--frame\r\nContent-Type: image/jpeg\r\nContent-Length: '+str(len(jpeg)).encode()+b'\r\n\r\n'+jpeg+b'\r\n'
             if session.state in ('stopped','failed'):break
             await asyncio.sleep(.025)
     return StreamingResponse(generate(),media_type='multipart/x-mixed-replace; boundary=frame',
-                             headers={'Cache-Control':'no-store'})
+                             headers={'Cache-Control':'no-store','X-Accel-Buffering':'no'})
 
 
 @app.post("/api/samples/{sample_id}/import")

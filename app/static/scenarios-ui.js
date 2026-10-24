@@ -65,7 +65,7 @@ $('live-template').onchange=()=>{baseTemplateChange();setScenarioValues('live-ex
 const baseLiveNew=$('live-new').onclick;
 $('live-new').onclick=()=>{const before=L.current?.id;baseLiveNew();if(L.current?.id!==before||L.drafting){setScenarioValues('live-extra');renderPpeAssessments('live-ppe-assessments',[])}};
 const baseLiveStatus=renderLiveStatus;
-renderLiveStatus=function(){baseLiveStatus();renderPpeAssessments('live-ppe-assessments',L.current?.assessments,L.current?.current_states??L.current?.person_states,{now:L.current?.current_states_updated_s??L.current?.elapsed_s,historical:!['starting','running'].includes(L.current?.state),ratio:L.current?.config?.state_confirmation_ratio});if(!L.current)return;const active=['starting','running','stopping'].includes(L.current.state);for(const el of document.querySelectorAll('#live .scenario-extension input, #live-zone-kind'))el.disabled=active;if(active)setScenarioValues('live-extra',L.current.config||S.jobs.find(j=>j.id===L.current.job_id)?.config||{})};
+renderLiveStatus=function(){baseLiveStatus();renderPpeAssessments('live-ppe-assessments',L.current?.assessments,L.current?.current_states??L.current?.person_states,{jobId:L.current?.id,events:L.events.filter(e=>e.job_id===L.current?.id),now:L.current?.current_states_updated_s??L.current?.elapsed_s,historical:!['starting','running'].includes(L.current?.state),ratio:L.current?.config?.state_confirmation_ratio});if(!L.current)return;const active=['starting','running','stopping'].includes(L.current.state);for(const el of document.querySelectorAll('#live .scenario-extension input, #live-zone-kind'))el.disabled=active;if(active)setScenarioValues('live-extra',L.current.config||S.jobs.find(j=>j.id===L.current.job_id)?.config||{})};
 
 for(const [parent,id] of [['live-sessions','live-ppe-assessments'],['result-events','result-ppe-assessments']])$(parent).insertAdjacentHTML('beforebegin',`<section id="${id}" class="callout compact" hidden></section>`);
 const ppeTitles={helmet:'Каска',vest:'Жилет',mask:'Защита лица',harness:'Привязь'};
@@ -74,7 +74,7 @@ const ppeReasons={pose_assisted_torso:'Корпус найден по измер
 function renderPpeAssessments(id,rows=[],states={},options={}){
  const el=$(id);rows=rows||[];states=states||{};
  const view=IncidentUI.stateView(states,rows,options),sourceKey=IncidentUI.stateRenderKey(view,rows,options);
- el.hidden=!rows.length&&!view.rows.length;if(el.hidden)return;
+ el.hidden=!rows.length&&!view.rows.length;if(el.hidden){if(el.childNodes.length)el.replaceChildren();el._stateRenderKey=null;el._stateView=null;el._expandedStateKeys=new Set();return;}
  if(el._stateRenderKey===sourceKey)return;
  const expanded=el._expandedStateKeys||new Set();for(const detail of el.querySelectorAll('[data-preserve-key]')){if(detail.open)expanded.add(detail.dataset.preserveKey);else expanded.delete(detail.dataset.preserveKey)}
  const renderOptions={...options,labels,view,expandedKeys:expanded},confirmed=IncidentUI.statesMarkup(states,rows,renderOptions);
@@ -91,7 +91,7 @@ function renderPpeAssessments(id,rows=[],states={},options={}){
 }
 
 const basePpeResult=renderResult;
-renderResult=function(){basePpeResult();renderPpeAssessments('result-ppe-assessments',S.current?.stats?.latest_assessments,S.current?.stats?.current_states??S.current?.stats?.person_states,{now:S.current?.stats?.current_states_updated_s,historical:!['queued','running'].includes(S.current?.status),ratio:S.current?.config?.state_confirmation_ratio})};
+renderResult=function(){basePpeResult();renderPpeAssessments('result-ppe-assessments',S.current?.stats?.latest_assessments,S.current?.stats?.current_states??S.current?.stats?.person_states,{jobId:S.current?.id,events:S.events.filter(e=>e.job_id===S.current?.id),now:S.current?.stats?.current_states_updated_s,historical:!['queued','running'].includes(S.current?.status),ratio:S.current?.config?.state_confirmation_ratio})};
 const baseSetStep=setStep;
 setStep=function(step){baseSetStep(step);updateConfirmationControls('extra');if(step===2)$('drawing-help').textContent=$('extra-harness')?.checked?'Выбран сценарий «Работа на высоте без привязи»: отметьте область с назначением «Работа на высоте», чтобы правило действовало только там. Высоту по видео система не измеряет. Если этот контроль не нужен, отключите сценарий на шаге «Сценарии».':'Если выбранный сценарий требует контекста, отметьте область и её назначение. Для каски и огня зоны необязательны. Разрешённые области исключают тревоги огня или курения.'};
 const baseHelp=renderHelp;

@@ -317,16 +317,41 @@ def assessment_rows(people,details):
              'ppe':details.get(p.track_id,{})} for p in people[:32]]
 
 
-def annotate_objects(frame,objects,ppe_status,people,ppe_details=None):
+def ppe_overlay_label(key,measured,detail):
+    """Use the same measured/confirmed fields as the state cards, separately."""
+    observed=detail.get('observed_state',detail.get('state',measured)) or 'unknown'
+    confirmed=detail.get('confirmed_state','unknown') or 'unknown'
+    recent=detail.get('fresh') is False or detail.get('reason')=='recent_observation'
+    pending=not recent and observed!='unknown' and observed!=confirmed
+    if observed==confirmed and confirmed!='unknown' and not recent:
+        text=f'{key.upper()}: {confirmed.upper()} (CONFIRMED)'
+    else:
+        evidence='LAST MEASURED' if recent else 'CONFIRMING' if pending else 'MEASURED'
+        text=f'{key.upper()}: {observed.upper()} ({evidence})'
+        if confirmed!='unknown':text+=f' | CONFIRMED:{confirmed.upper()}'
+    color=(65,65,240) if confirmed=='missing' else (90,220,90) if confirmed=='worn' and observed=='worn' and not recent else (80,215,240)
+    return text,color
+
+
+def annotate_objects(frame,objects,ppe_status,people,ppe_details=None,pattern_states=None):
     for obj in objects:
         if obj.label in ('person','fall_detected'):continue
-        color=(65,65,240) if obj.label.startswith('no_') or obj.label in ('fire','smoke','smooking','smoking') else (60,205,220)
+        # A raw detector proposal is a measurement, never a confirmed incident.
+        color=(60,205,220)
         x1,y1,x2,y2=map(int,obj.box)
         cv2.rectangle(frame,(x1,y1),(x2,y2),color,2)
-        cv2.putText(frame,f'{obj.label} {obj.confidence:.2f}',(max(0,x1),max(16,y1-5)),cv2.FONT_HERSHEY_SIMPLEX,.45,color,1,cv2.LINE_AA)
+        cv2.putText(frame,f'MEASURED {obj.label} {obj.confidence:.2f}',(max(0,x1),max(16,y1-5)),cv2.FONT_HERSHEY_SIMPLEX,.4,color,1,cv2.LINE_AA)
     for person in people:
         status=ppe_status.get(person.track_id,{})
-        known=[f'{key}:{value}'+(' (recent)' if (ppe_details or {}).get(person.track_id,{}).get(key,{}).get('reason')=='recent_observation' else '') for key,value in status.items()]
-        if known:
-            x,y=map(int,person.box[:2]);cv2.putText(frame,' '.join(known),(max(0,x),max(32,y+17)),cv2.FONT_HERSHEY_SIMPLEX,.4,(80,235,230),1,cv2.LINE_AA)
+        rows=[ppe_overlay_label(key,value,(ppe_details or {}).get(person.track_id,{}).get(key,{})) for key,value in status.items()]
+        states=(pattern_states or {}).get(person.track_id,{})
+        for name,row in states.items():
+            if row.get('kind',name) in {spec[2] for spec in PPE.values()}:continue
+            state=row.get('state','unknown');observed=row.get('observed_state','unknown')
+            color=(65,65,240) if state=='violation' else (90,220,90) if state=='clear' and observed=='clear' else (80,215,240)
+            evidence='LAST MEASURED' if not person.observed or row.get('observation_fresh') is False else 'MEASURED'
+            rows.append((f'{row.get("kind",name)} {evidence}:{observed.upper()} CONFIRMED:{state.upper()}',color))
+        x,y=map(int,person.box[:2])
+        for index,(label,color) in enumerate(rows):
+            cv2.putText(frame,label,(max(0,x),min(frame.shape[0]-4,max(32,y+17)+index*16)),cv2.FONT_HERSHEY_SIMPLEX,.4,color,1,cv2.LINE_AA)
     return frame

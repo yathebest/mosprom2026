@@ -114,6 +114,8 @@ def test_browser_live_ingest_keeps_latest_and_rejects_other_source(client,monkey
     assert client.post(url,content=second,headers={'content-type':'image/jpeg'}).status_code==200
     assert session.frames.qsize()==1 and session.dropped==1
     assert session.frames.get()[1].mean()>190
+    # Evidence preserves the already validated source JPEG byte-for-byte.
+    assert session.record_frames.get()[2]==second
     assert client.post(url,content=b'not an image').status_code==400
     session.source_type='network'
     assert client.post(url,content=first).status_code==409

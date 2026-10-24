@@ -1,6 +1,50 @@
 from app.temporal_state import TemporalGate
 
 
+def test_confirmation_history_is_initially_unknown_and_survives_interruption():
+    gate=TemporalGate()
+    assert gate.snapshot()['last_confirmed_state']=='unknown'
+    assert gate.snapshot()['last_confirmed_at_s'] is None
+    gate.update(0,None,1,1,.8)
+    assert gate.snapshot()['last_confirmed_state']=='unknown'
+    for t in [.5,1,1.5]:gate.update(t,True,1,1,.8)
+    episode=gate.episode_id
+    assert gate.snapshot()['last_confirmed_state']=='violation'
+    assert gate.snapshot()['last_confirmed_at_s']==1.5
+    gate.update(2,True,1,1,.8)  # Steady support is not another transition.
+    gate.update(2.1,None,1,1,.8)
+    assert gate.snapshot()['agreement']==0 and gate.snapshot()['state_confirmation']['samples']==0
+    assert gate.snapshot()['last_confirmed_at_s']==1.5
+    patch=gate.interrupt(2.2,'source_lost')
+    assert patch['episode_id']==episode and patch['episode_state']=='interrupted'
+    assert patch['end_s'] is None and gate.snapshot()['state']=='unknown'
+    assert gate.snapshot()['observed_state']=='unknown'
+    assert gate.snapshot()['last_confirmed_state']=='violation'
+    assert gate.snapshot()['last_confirmed_at_s']==1.5
+    assert gate.interrupt(2.3,'source_lost') is None
+    assert gate.snapshot()['last_confirmed_at_s']==1.5
+
+
+def test_confirmed_clear_history_changes_only_on_confirmed_transition():
+    gate=TemporalGate()
+    for t in [0,.5,1]:gate.update(t,True,1,1,.8)
+    assert gate.snapshot()['last_confirmed_state']=='violation'
+    gate.update(1.5,False,1,1,.8)
+    assert gate.snapshot()['last_confirmed_state']=='violation'  # Unconfirmed candidate.
+    for t in [2,2.5]:gate.update(t,False,1,1,.8)
+    assert gate.snapshot()['state']=='clear'
+    assert gate.snapshot()['last_confirmed_state']=='clear'
+    assert gate.snapshot()['last_confirmed_at_s']==2.5
+    gate.update(3,False,1,1,.8)
+    gate.update(3.1,None,1,1,.8)
+    assert gate.snapshot()['last_confirmed_state']=='clear'
+    assert gate.snapshot()['last_confirmed_at_s']==2.5
+    assert gate.snapshot()['agreement']==0 and gate.snapshot()['state_confirmation']['samples']==0
+    assert gate.interrupt(3.2,'source_lost') is None  # No open episode to interrupt.
+    assert gate.snapshot()['last_confirmed_state']=='clear'
+    assert gate.snapshot()['last_confirmed_at_s']==2.5
+
+
 def test_time_weighted_majority_and_three_distinct_samples():
     gate=TemporalGate()
     for t,value in [(0,True),(.5,False),(1,True),(1.5,True)]:assert gate.update(t,value,2,2,.8) is None

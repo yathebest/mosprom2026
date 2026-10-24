@@ -6,7 +6,7 @@
  const finite=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value))?Number(value):null;
  const time=value=>{const s=finite(value);return s===null?'—':`${Math.floor(s/60)}:${(s%60).toFixed(1).padStart(4,'0')}`};
  const stateLabels={unknown:'Пока не определено',violation:'Нарушение подтверждено',clear:'Признак нарушения снят'};
- const clearLabels={no_helmet:'Каска обнаружена',no_vest:'Жилет обнаружен',no_mask:'Защита лица обнаружена',no_harness_at_height:'Привязь обнаружена в зоне высоты'};
+ const clearLabels={no_helmet:'Каска обнаружена',no_vest:'Жилет обнаружен',no_mask:'Защита лица обнаружена',no_harness_at_height:'Признак нарушения в зоне снят'};
  const observationLabels={unknown:'Не определено',violation:'Признак нарушения',clear:'Признака нарушения нет'};
  const normalizeState=value=>({violation:'violation',clear:'clear',unknown:'unknown',missing:'violation',worn:'clear'})[value]||'unknown';
  function episode(event){
@@ -56,6 +56,10 @@
   const state=event?.payload?.episode_state||event?.episode_state;
   return !['closed','interrupted'].includes(state)&&event?.payload?.transition!=='clear';
  }
+ function assessmentObservation(value={}){
+  return {state:normalizeState(value.observed_state??value.state),fresh:value.fresh!==false&&value.reason!=='recent_observation',
+   observed_at_s:finite(value.observed_at_s),confirmed_state:normalizeState(value.confirmed_state),confirmed_at_s:finite(value.confirmed_at_s)};
+ }
  function personRows(states,assessments=[]){
   const rows=new Map();
   for(const [id,patterns] of Object.entries(states||{})){
@@ -66,14 +70,29 @@
    const id=String(a.track_id),row=rows.get(id)||{id:Number(a.track_id),tracking:a.tracking,patterns:[]};row.tracking=a.tracking;row.assessed=true;
    for(const [key,value] of Object.entries(a.ppe||{})){
     const pattern={helmet:'no_helmet',vest:'no_vest',mask:'no_mask',harness:'no_harness_at_height'}[key]||key;
-    if(row.patterns.some(p=>p.key===pattern||p.key.startsWith(pattern+':')))continue;
-    row.patterns.push({key:pattern,state:normalizeState(value.confirmed_state),observed_state:normalizeState(value.observed_state??value.state),
+    const measured=assessmentObservation(value),matches=row.patterns.filter(p=>p.key===pattern||p.key.startsWith(pattern+':'));
+    if(matches.length){for(const match of matches)match.assessment=measured;continue;}
+    row.patterns.push({key:pattern,state:normalizeState(value.confirmed_state),observed_state:measured.state,observation_fresh:measured.fresh,
      confirmed_at_s:value.confirmed_at_s,observed_at_s:value.observed_at_s,window_s:value.state_confirmation?.window_s,
-     agreement:value.agreement??value.state_confirmation?.agreement,state_confirmation:value.state_confirmation,reason:value.reason});
+     agreement:value.agreement??value.state_confirmation?.agreement,state_confirmation:value.state_confirmation,reason:value.reason,assessment:measured});
    }
    rows.set(id,row);
   }
   return Array.from(rows.values()).sort((a,b)=>a.id-b.id);
+ }
+ function ruleEventHistory(events,jobId,trackId,key){
+  if(jobId===null||jobId===undefined||jobId==='')return {confirmed:null,rejected:null};
+  const colon=key.indexOf(':'),kind=colon<0?key:key.slice(0,colon),zone=colon<0?'':key.slice(colon+1),confirmed=[],rejected=[];
+  for(const event of events||[]){
+   if(String(event.job_id)!==String(jobId)||Number(event.track_id)!==Number(trackId)||event.kind!==kind||String(event.zone||'')!==zone)continue;
+   const payload=event.payload||{},start=finite(event.start_s??payload.start_s),alert=finite(event.alert_s??payload.alert_s);
+   if(start===null||alert===null||start<0||alert<start)continue;
+   if(event.status==='false'){rejected.push({at:alert,status:'false'});continue;}
+   const end=finite(payload.end_s??event.end_s),closedAt=finite(payload.closed_at_s??event.closed_at_s),claimed=payload.episode_state||event.episode_state;
+   const validClear=claimed==='closed'&&end!==null&&closedAt!==null&&closedAt>=end&&end>=start&&closedAt>=alert;
+   confirmed.push({state:validClear?'clear':'violation',at:validClear?closedAt:alert,source:'event',review:event.status||'new'});
+  }
+  confirmed.sort((a,b)=>b.at-a.at);rejected.sort((a,b)=>b.at-a.at);return {confirmed:confirmed[0]||null,rejected:rejected[0]||null};
  }
  function stateView(states,assessments=[],options={}){
   const now=finite(options.now),rows=personRows(states,assessments).map(row=>{
@@ -82,8 +101,11 @@
     const observed=finite(p.observed_at_s??p.last_observed_s??p.last_seen_s),window=finite(p.window_s??p.state_confirmation?.window_s);
     const stale=Boolean(p.stale)||(now!==null&&observed!==null&&now-observed>Math.max(3,(window??1)*2));
     const last=stale||p.observation_fresh===false||['weak','predicted'].includes(row.tracking)?'unknown':p.observed_state;
-    const pending=last!=='unknown'&&p.state!=='unknown'&&last!==p.state,currentState=last==='unknown'?'unknown':pending?'pending':p.state;
-    return {...p,kind,zone,observed,window,stale,last,currentState};
+    const pending=last!=='unknown'&&(p.state==='unknown'||last!==p.state);let currentState=last==='unknown'?'unknown':pending?'pending':p.state;
+    const eventHistory=options.historical?ruleEventHistory(options.events,options.jobId,row.id,p.key):{confirmed:null,rejected:null};const explicitHistory=normalizeState(p.last_confirmed_state),historyCandidates=[{state:explicitHistory,at:finite(p.last_confirmed_at_s),source:'snapshot'},{state:p.assessment?.confirmed_state||'unknown',at:p.assessment?.confirmed_at_s??null,source:'assessment'},...(eventHistory.confirmed?[eventHistory.confirmed]:[])].filter(v=>v.state!=='unknown'&&v.at!==null).sort((a,b)=>b.at-a.at);const historyState=p.state!=='unknown'?p.state:historyCandidates[0]?.state||'unknown',historyAt=p.state!=='unknown'?finite(p.confirmed_at_s):historyCandidates[0]?.at??null,historySource=p.state!=='unknown'?'snapshot':historyCandidates[0]?.source;if(p.state==='unknown'&&historyState!=='unknown'&&options.historical)currentState='unknown';const eventReview=historySource==='event'?historyCandidates[0]?.review:null,rejectedEvent=eventHistory.rejected&&(historyAt===null||eventHistory.rejected.at>=historyAt)?eventHistory.rejected:null;
+    const measuredAt=p.assessment?.observed_at_s,assessmentLatest=p.assessment&&(measuredAt===null||observed===null||measuredAt>=observed);
+    const measurement=assessmentLatest?(p.assessment.fresh&&!stale&&!['weak','predicted'].includes(row.tracking)?p.assessment.state:'unknown'):last;
+    return {...p,kind,zone,observed,window,stale,last,currentState,historyState,historyAt,historySource,eventReview,rejectedEvent,historyOnly:p.state==='unknown'&&historyState!=='unknown',measurement,measurementAt:measurement==='unknown'?(finite(p.last_sample_s)??observed):(assessmentLatest?measuredAt:observed)};
    });
    const recentSample=row.patterns.some(p=>{const sample=finite(p.last_sample_s??p.observed);return sample===null||now===null||now-sample<=Math.max(3,(p.window??1)*2)});row.current=Boolean(row.assessed&&row.tracking!=='predicted'&&recentSample)||row.patterns.some(p=>!p.stale&&p.observation_fresh!==false&&p.observed!==null&&row.tracking!=='predicted');
    row.violations=row.patterns.filter(p=>p.state==='violation').length;
@@ -94,24 +116,30 @@
   return {rows,primary:current.slice(0,limit),more:current.slice(limit),history,violations:rows.reduce((n,r)=>n+r.violations,0),violationIds:rows.filter(r=>r.violations).map(r=>r.id)};
  }
  function stateRenderKey(view,assessments=[],options={}){
-  return JSON.stringify([Boolean(options.historical),options.ratio??.75,view.rows.map(r=>[r.id,r.current,r.tracking,r.patterns.map(p=>[p.key,p.state,p.observed_state,p.currentState,p.stale,p.confirmed_at_s,p.observed,p.window,p.clear_window_s,p.agreement,p.state_confirmation,p.episode_id])]),assessments.map(r=>[r.track_id,r.tracking,r.visibility?.small_objects,Object.entries(r.ppe||{}).map(([k,v])=>[k,v.observed_state||v.state,v.reason,v.observed_at_s])])]);
+  return JSON.stringify([Boolean(options.historical),options.jobId??null,options.ratio??.75,view.rows.map(r=>[r.id,r.current,r.tracking,r.patterns.map(p=>[p.key,p.state,p.observed_state,p.currentState,p.stale,p.historyState,p.historyAt,p.historySource,p.eventReview,p.rejectedEvent,p.historyOnly,p.measurement,p.measurementAt,p.confirmed_at_s,p.observed,p.window,p.clear_window_s,p.agreement,p.state_confirmation,p.episode_id,p.assessment])]),assessments.map(r=>[r.track_id,r.tracking,r.visibility?.small_objects,Object.entries(r.ppe||{}).map(([k,v])=>[k,v.observed_state||v.state,v.reason,v.observed_at_s])])]);
  }
  function stateCardMarkup(row,options={}){
   const format=options.format||time,labels=options.labels||{},expanded=options.expandedKeys||new Set(),name=row.id===0?'Сцена':`Человек #${row.id}`;
   return `<article class="person-state-card" data-person-state-id="${row.id}"><h4>${name}${row.violations?` <span class="state-violation-count"><span>Не снято</span>: ${row.violations}</span>`:''}</h4><div class="person-state-brief">${row.patterns.map(p=>{
-   const text=p.currentState==='unknown'?'Текущее состояние не определено':p.currentState==='pending'?'Проверяем изменение состояния':p.state==='clear'?(clearLabels[p.kind]||stateLabels.clear):stateLabels[p.state];
-   return `<div class="person-state-brief-row" data-current-state="${p.currentState}"><span><b>${escape(labels[p.kind]||p.kind)}</b>${p.zone?` · <span data-i18n-ignore>${escape(p.zone)}</span>`:''}</span><span class="confirmed-state confirmed-${p.currentState}">${text}</span></div>`;
+   const history=p.historyState==='clear'?(clearLabels[p.kind]||stateLabels.clear):stateLabels[p.historyState];
+   const accumulating=p.currentState==='pending'&&p.state==='unknown';
+   const text=accumulating?'Накопление подтверждения':p.currentState==='pending'?'Проверяем изменение состояния':p.historyState!=='unknown'?history:'Нет подтверждённого состояния';
+   const stateClass=p.currentState==='unknown'&&p.historyState!=='unknown'?'history':p.currentState;
+   const prefix=p.historyOnly||p.currentState==='unknown'&&p.historyState!=='unknown'?'Последнее подтверждение':accumulating||p.currentState==='pending'?'Подтверждение':p.historyState==='unknown'?'Подтверждение':'Подтверждено правилом';
+   const raw={no_helmet:{violation:'Каска отсутствует',clear:'Каска обнаружена'},no_vest:{violation:'Жилет отсутствует',clear:'Жилет обнаружен'},no_mask:{violation:'Защита лица отсутствует',clear:'Защита лица обнаружена'},no_harness_at_height:{violation:'Привязь отсутствует',clear:'Привязь обнаружена'}};
+   const measured=p.measurement==='unknown'&&(p.stale||p.observation_fresh===false||p.assessment?.fresh===false||['weak','predicted'].includes(row.tracking))?'Нет свежего замера':raw[p.kind]?.[p.measurement]||observationLabels[p.measurement];
+   return `<div class="person-state-brief-row" data-current-state="${p.currentState}" data-confirmed-state="${p.state}"><span><b>${escape(labels[p.kind]||p.kind)}</b>${p.zone?` · <span data-i18n-ignore>${escape(p.zone)}</span>`:''}</span><div class="state-layers"><span class="state-layer-label">${prefix}</span><span class="confirmed-state confirmed-${stateClass}">${text}${prefix==='Последнее подтверждение'&&p.historyAt!==null?` · ${format(p.historyAt)}`:''}</span>${p.eventReview?`<small class="state-operator-review">${{new:'Нужна проверка оператором',confirmed:'Подтверждено оператором',forwarded:'Передано мастеру'}[p.eventReview]||'Проверка оператором'}</small>`:''}${p.rejectedEvent?`<small class="state-operator-rejected"><span>Оператор отклонил событие</span> · ${format(p.rejectedEvent.at)}</small>`:''}<small class="state-measurement-summary"><span>Замер</span>: <b>${measured}</b>${p.measurementAt!==null?` · ${format(p.measurementAt)}`:''}${p.stale?' · <span>Данные устарели</span>':''}</small>${p.currentState==='pending'&&p.state!=='unknown'?`<small class="state-previous-confirmed"><span>Последнее подтверждение</span>: ${history}</small>`:''}${accumulating&&p.window!==null?`<small class="state-confirmation-progress"><span>Окно</span>: ${p.window} <span>с</span> · <span>Свежих наблюдений</span>: ${Number(p.state_confirmation?.samples??0)} / ${Number(p.state_confirmation?.min_samples??options.minSamples??3)}</small>`:''}</div></div>`;
   }).join('')}</div><details class="person-state-measurements" data-preserve-key="person:${row.id}" ${expanded.has('person:'+row.id)?'open':''}><summary>Замеры и история подтверждения</summary>${row.patterns.map(p=>{
    const agreement=finite(p.agreement),required=finite(p.state_confirmation?.ratio??options.ratio)??.75;
-   return `<div class="person-pattern-state"><b>${escape(labels[p.kind]||p.kind)}</b>${p.zone?` · <span data-i18n-ignore>${escape(p.zone)}</span>`:''}<p class="state-history"><span>Последнее подтверждённое состояние</span>: <b>${p.state==='clear'?(clearLabels[p.kind]||stateLabels.clear):stateLabels[p.state]}</b>${finite(p.confirmed_at_s)!==null?` · ${format(p.confirmed_at_s)}`:''}</p><p class="measurement-line"><span>Последний замер</span>: <b>${observationLabels[p.last]}</b>${p.observed!==null?` · ${format(p.observed)}`:''}${p.stale?' · <span>Данные устарели</span>':''}</p>${p.window!==null?`<p class="state-window"><span>Окно подтверждения</span>: <b>${p.window}</b> <span>с</span> · <span>доля времени не менее</span> <b>${Math.round(required*100)}%</b>${agreement!==null?` · <span>сейчас</span> <b>${Math.round(agreement*100)}%</b>`:''}${finite(p.state_confirmation?.nominal_window_s)!==null&&Number(p.state_confirmation.nominal_window_s)!==p.window?` · <span>задано</span> <b>${p.state_confirmation.nominal_window_s}</b> <span>с</span>`:''} · <span>минимум наблюдений</span> <b>${Number(p.state_confirmation?.min_samples??options.minSamples??3)}</b>${finite(p.clear_window_s)!==null?` · <span>окно снятия признака</span> <b>${p.clear_window_s}</b> <span>с</span>`:''}</p>`:''}</div>`;
+   return `<div class="person-pattern-state"><b>${escape(labels[p.kind]||p.kind)}</b>${p.zone?` · <span data-i18n-ignore>${escape(p.zone)}</span>`:''}<p class="state-history"><span>Последнее подтверждённое состояние</span>: <b>${p.historyState==='clear'?(clearLabels[p.kind]||stateLabels.clear):stateLabels[p.historyState]}</b>${p.historyAt!==null?` · ${format(p.historyAt)}`:''}</p><p class="measurement-line"><span>Последний признак правила</span>: <b>${observationLabels[p.last]}</b>${finite(p.last_sample_s??p.observed)!==null?` · ${format(p.last_sample_s??p.observed)}`:''}${p.stale?' · <span>Данные устарели</span>':''}</p>${p.window!==null?`<p class="state-window"><span>Окно подтверждения</span>: <b>${p.window}</b> <span>с</span> · <span>доля времени не менее</span> <b>${Math.round(required*100)}%</b>${agreement!==null?` · <span>сейчас</span> <b>${Math.round(agreement*100)}%</b>`:''}${finite(p.state_confirmation?.nominal_window_s)!==null&&Number(p.state_confirmation.nominal_window_s)!==p.window?` · <span>задано</span> <b>${p.state_confirmation.nominal_window_s}</b> <span>с</span>`:''} · <span>минимум наблюдений</span> <b>${Number(p.state_confirmation?.min_samples??options.minSamples??3)}</b>${finite(p.clear_window_s)!==null?` · <span>окно снятия признака</span> <b>${p.clear_window_s}</b> <span>с</span>`:''}</p>`:''}</div>`;
   }).join('')}</details></article>`;
  }
  function stateGroupMarkup(view,group,options={}){return (view[group]||[]).map(row=>stateCardMarkup(row,options)).join('')}
  function statesMarkup(states,assessments=[],options={}){
   const view=options.view||stateView(states,assessments,options),expanded=options.expandedKeys||new Set();if(!view.rows.length)return '';
   const group=(key,title)=>view[key].length?`<details class="state-id-group" data-state-group="${key}" data-preserve-key="group:${key}" ${expanded.has('group:'+key)?'open':''}><summary><span>${title}</span> · <b>${view[key].length}</b>${view[key].some(r=>r.violations)?` · <span class="state-violation-count"><span>Не снято</span>: ${view[key].reduce((n,r)=>n+r.violations,0)}</span>`:''}</summary><div class="state-group-body" data-state-group-body="${key}">${expanded.has('group:'+key)?stateGroupMarkup(view,key,options):''}</div></details>`:'';
-  return '<div class="confirmed-states"><div class="states-panel-head"><h3>Подтверждённые состояния по ID</h3><div class="states-counts"><span>В наблюдении</span>: <b>'+view.rows.filter(r=>r.current).length+'</b> · <span>Ожидают наблюдения</span>: <b>'+view.history.length+'</b>'+ (view.violations?' · <span class="state-violation-count"><span>Не снято</span>: '+view.violations+'</span>':'')+'</div></div><p class="hint state-compact-help">Неизвестный замер не снимает нарушение. История и параметры доступны внутри карточки.</p>'+(view.violations?'<p class="state-pending-ids"><span>Нарушения не сняты у ID</span>: <span data-i18n-ignore>'+view.violationIds.slice(0,12).map(id=>id===0?'0':'#'+id).join(', ')+(view.violationIds.length>12?' …':'')+'</span></p>':'')+(options.historical?'<p class="hint">Это последние состояния сохранённого сеанса, а не текущее наблюдение за камерой.</p>':'')+'<div class="state-primary-grid">'+view.primary.map(row=>stateCardMarkup(row,options)).join('')+'</div>'+group('more','Остальные люди в наблюдении')+group('history','Ранее наблюдавшиеся ID')+'<details class="state-reading-help" data-preserve-key="reading-help" '+(expanded.has('reading-help')?'open':'')+'><summary>Как читать состояния</summary><p class="hint">Подтверждённое состояние и последний замер показаны отдельно. Пропуск или неопределённый кадр не означает, что нарушение закончилось.</p><p class="hint">Доля относится ко времени в окне, а не к числу кадров. Это не точность модели и не вероятность нарушения. Неопределённые кадры не подтверждают безопасное состояние.</p></details></div>';
+  return '<div class="confirmed-states"><div class="states-panel-head"><h3>Подтверждённые состояния по ID</h3><div class="states-counts"><span>В наблюдении</span>: <b>'+view.rows.filter(r=>r.current).length+'</b> · <span>Ожидают наблюдения</span>: <b>'+view.history.length+'</b>'+ (view.violations?' · <span class="state-violation-count"><span>Не снято</span>: '+view.violations+'</span>':'')+'</div></div><p class="hint state-compact-help">Замер показывает находку на кадре. Подтверждение относится к временному правилу; проверка оператором выполняется отдельно.</p>'+(view.violations?'<p class="state-pending-ids"><span>Нарушения не сняты у ID</span>: <span data-i18n-ignore>'+view.violationIds.slice(0,12).map(id=>id===0?'0':'#'+id).join(', ')+(view.violationIds.length>12?' …':'')+'</span></p>':'')+(options.historical?'<p class="hint">Это последние состояния сохранённого сеанса, а не текущее наблюдение за камерой.</p>':'')+'<div class="state-primary-grid">'+view.primary.map(row=>stateCardMarkup(row,options)).join('')+'</div>'+group('more','Остальные люди в наблюдении')+group('history','ID без свежего замера')+'<details class="state-reading-help" data-preserve-key="reading-help" '+(expanded.has('reading-help')?'open':'')+'><summary>Как читать состояния</summary><p class="hint">Подтверждённое состояние и последний замер показаны отдельно. Пропуск или неопределённый кадр не означает, что нарушение закончилось.</p><p class="hint">Доля относится ко времени в окне, а не к числу кадров. Это не точность модели и не вероятность нарушения. Неопределённые кадры не подтверждают безопасное состояние.</p></details></div>';
  }
 
- return {episode,episodeMarkup,closureProofMarkup,policyMarkup,episodePolicyMarkup,patternKinds,confirmationConfig,mergeEvents,isActivation,personRows,stateView,stateRenderKey,stateCardMarkup,stateGroupMarkup,statesMarkup};
+ return {episode,episodeMarkup,closureProofMarkup,policyMarkup,episodePolicyMarkup,patternKinds,confirmationConfig,mergeEvents,isActivation,assessmentObservation,personRows,ruleEventHistory,stateView,stateRenderKey,stateCardMarkup,stateGroupMarkup,statesMarkup};
 });

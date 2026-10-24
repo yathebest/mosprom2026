@@ -79,3 +79,66 @@ test('polling time changes alone do not invalidate states; stale boundaries do',
  const key=now=>ui.stateRenderKey(ui.stateView(states,[],{now}),[],{});
  assert.equal(key(10),key(10.5));assert.equal(key(10.5),key(11));assert.notEqual(key(11),key(20));
 });
+
+test('fresh initial PPE observations collect confirmation instead of appearing wholly unknown',()=>{
+ for(const observed_state of ['violation','clear']){
+  const states={7:{no_helmet:{state:'unknown',observed_state,observation_fresh:true,observed_at_s:1,window_s:1.5,state_confirmation:{samples:2,min_samples:3}}}};
+  const view=ui.stateView(states,[],{now:1});assert.equal(view.rows[0].patterns[0].currentState,'pending');assert.equal(view.rows[0].patterns[0].state,'unknown');
+  const html=ui.statesMarkup(states,[],{now:1,labels:{no_helmet:'Без каски'}});assert.match(html,/Накопление подтверждения/);assert.match(html,observed_state==='violation'?/Каска отсутствует/:/Каска обнаружена/);assert.doesNotMatch(html,/class="confirmed-state confirmed-violation"/);assert.doesNotMatch(html,/class="confirmed-state confirmed-clear"/);
+ }
+});
+test('unknown after confirmation retains an explicit historical result without claiming a fresh measurement',()=>{
+ const states={7:{no_helmet:{state:'violation',observed_state:'unknown',observation_fresh:false,observed_at_s:10,last_sample_s:11,window_s:1.5,confirmed_at_s:9}}};
+ const view=ui.stateView(states,[],{now:11}),p=view.rows[0].patterns[0];assert.equal(p.currentState,'unknown');assert.equal(p.historyState,'violation');assert.equal(p.measurementAt,11);
+ const html=ui.statesMarkup(states,[],{now:11,expandedKeys:new Set(['group:history'])});assert.match(html,/Последнее подтверждение/);assert.match(html,/Нарушение подтверждено/);assert.match(html,/Нет свежего замера/);assert.doesNotMatch(html,/Накопление подтверждения/);
+});
+test('finished-session unknown cannot discard explicit assessment confirmation or become a current violation',()=>{
+ const states={7:{no_helmet:{state:'unknown',observed_state:'unknown',observation_fresh:false,confirmed_at_s:1.5,observed_at_s:2,last_sample_s:2,window_s:1.5}}};
+ const assessments=[{track_id:7,tracking:'measured',ppe:{helmet:{state:'missing',observed_state:'missing',fresh:true,observed_at_s:2,confirmed_state:'missing',confirmed_at_s:1.5}}}];
+ const view=ui.stateView(states,assessments,{now:2,historical:true}),p=view.rows[0].patterns[0];assert.equal(p.state,'unknown');assert.equal(p.historyOnly,true);assert.equal(p.historyState,'violation');assert.equal(view.violations,0);
+ const html=ui.statesMarkup(states,assessments,{now:2,historical:true});assert.match(html,/Последнее подтверждение/);assert.match(html,/Нарушение подтверждено/);assert.match(html,/последние состояния сохранённого сеанса/);
+ assessments[0].ppe.helmet.confirmed_state='unknown';assert.equal(ui.stateView(states,assessments,{now:2}).rows[0].patterns[0].historyState,'unknown');
+});
+test('cached PPE and predicted tracking cannot masquerade as a fresh worn state',()=>{
+ const assessments=[{track_id:7,tracking:'measured',ppe:{helmet:{state:'worn',observed_state:'worn',fresh:false,reason:'recent_observation',observed_at_s:2,confirmed_state:'worn',confirmed_at_s:1.5}}}];
+ const view=ui.stateView({},assessments,{now:2});assert.equal(view.rows[0].patterns[0].currentState,'unknown');assert.equal(view.rows[0].patterns[0].measurement,'unknown');
+ const html=ui.statesMarkup({},assessments,{now:2});assert.match(html,/Нет свежего замера/);assert.doesNotMatch(html,/class="confirmed-state confirmed-clear"/);
+});
+test('clear harness zone condition does not fabricate observed safety equipment',()=>{
+ const states={7:{'no_harness_at_height:Height':{state:'clear',observed_state:'clear',observation_fresh:true,observed_at_s:2,window_s:2}}};
+ const rows=[{track_id:7,tracking:'measured',ppe:{harness:{state:'missing',observed_state:'missing',fresh:true,observed_at_s:2,confirmed_state:'unknown'}}}];
+ const html=ui.statesMarkup(states,rows,{now:2});assert.match(html,/Признак нарушения в зоне снят/);assert.match(html,/Привязь отсутствует/);assert.doesNotMatch(html,/Привязь обнаружена в зоне высоты/);
+});
+
+test('FSM last-confirmed fields preserve non-PPE history after interrupt without changing current state',()=>{
+ const states={7:{possible_phone_use:{state:'unknown',observed_state:'unknown',observation_fresh:false,last_confirmed_state:'violation',last_confirmed_at_s:8,observed_at_s:9,last_sample_s:9,window_s:1}}};
+ const view=ui.stateView(states,[],{now:9});assert.equal(view.rows[0].patterns[0].state,'unknown');assert.equal(view.rows[0].patterns[0].historyState,'violation');assert.equal(view.rows[0].patterns[0].historyAt,8);assert.equal(view.violations,0);
+ const html=ui.statesMarkup(states,[],{now:9,expandedKeys:new Set(['group:history'])});assert.match(html,/Последнее подтверждение/);assert.match(html,/Нарушение подтверждено/);assert.match(html,/0:08.0/);
+});
+
+test('legacy historical event confirms only its exact job/person/pattern and keeps current state unknown',()=>{
+ const assessments=[1,2].map(track_id=>({track_id,tracking:'measured',ppe:{helmet:{state:'missing',observed_state:'missing',fresh:true,observed_at_s:2}}}));
+ const event={id:'legacy',job_id:'job1',track_id:1,kind:'no_helmet',zone:'',status:'new',start_s:.2,alert_s:1.6,payload:{}};
+ const options={historical:true,jobId:'job1',events:[event],now:2};const view=ui.stateView({},assessments,options),one=view.rows.find(r=>r.id===1).patterns[0],two=view.rows.find(r=>r.id===2).patterns[0];
+ assert.equal(one.state,'unknown');assert.equal(one.currentState,'unknown');assert.equal(one.historyState,'violation');assert.equal(one.historyAt,1.6);assert.equal(one.eventReview,'new');assert.equal(two.currentState,'pending');assert.equal(two.historyState,'unknown');assert.equal(view.violations,0);
+ const html=ui.statesMarkup({},assessments,options);assert.match(html,/Последнее подтверждение/);assert.match(html,/Нарушение подтверждено · 0:01.6/);assert.match(html,/Нужна проверка оператором/);assert.match(html,/Накопление подтверждения/);
+ for(const wrong of [{job_id:'other'},{track_id:9},{kind:'no_vest'},{zone:'another'}])assert.equal(ui.stateView({},assessments,{...options,events:[{...event,...wrong}]}).rows[0].patterns[0].historyState,'unknown');
+ assert.equal(ui.stateView({},assessments,{...options,historical:false}).rows[0].patterns[0].historyState,'unknown');assert.equal(ui.stateView({},assessments,{...options,jobId:undefined}).rows[0].patterns[0].historyState,'unknown');
+});
+test('explicit later confirmation beats legacy event and closed history needs validated closure boundaries',()=>{
+ const event={job_id:'j',track_id:1,kind:'possible_phone_use',zone:'',status:'new',start_s:1,alert_s:2,payload:{episode_state:'closed',end_s:3,closed_at_s:4}};
+ const state={1:{possible_phone_use:{state:'unknown',observed_state:'unknown',last_confirmed_state:'violation',last_confirmed_at_s:5}}};
+ assert.equal(ui.stateView(state,[],{historical:true,jobId:'j',events:[event]}).rows[0].patterns[0].historyState,'violation');
+ const confirmed=ui.ruleEventHistory([event],'j',1,'possible_phone_use').confirmed;assert.equal(confirmed.state,'clear');assert.equal(confirmed.at,4);
+ for(const payload of [{end_s:null,closed_at_s:4},{end_s:3,closed_at_s:2.5},{end_s:.5,closed_at_s:4}])assert.equal(ui.ruleEventHistory([{...event,payload:{episode_state:'closed',...payload}}],'j',1,'possible_phone_use').confirmed.state,'violation');
+});
+test('operator-rejected legacy event never promotes a confirmed or accepted state',()=>{
+ const event={job_id:'j',track_id:1,kind:'no_helmet',zone:'',status:'false',start_s:.2,alert_s:1.6};
+ const assessments=[{track_id:1,tracking:'measured',ppe:{helmet:{state:'missing',observed_at_s:2}}}];
+ const options={historical:true,jobId:'j',events:[event],now:2},view=ui.stateView({},assessments,options);assert.equal(view.rows[0].patterns[0].historyState,'unknown');assert.equal(view.violations,0);
+ const html=ui.statesMarkup({},assessments,options);assert.match(html,/Оператор отклонил событие/);assert.doesNotMatch(html,/Нарушение подтверждено/);assert.doesNotMatch(html,/Подтверждено оператором/);
+});
+test('freshness group title and rule observation details use unambiguous copy',()=>{
+ const states={1:{no_helmet:{state:'unknown',observed_state:'unknown',observed_at_s:1,last_sample_s:2,window_s:1}}};
+ const html=ui.statesMarkup(states,[],{now:20,expandedKeys:new Set(['group:history'])});assert.match(html,/ID без свежего замера/);assert.doesNotMatch(html,/Ранее наблюдавшиеся ID/);assert.match(html,/Последний признак правила/);assert.doesNotMatch(html,/<span>Последний замер<\/span>/);
+});
