@@ -27,8 +27,13 @@ aside nav button{font-size:14px;min-height:42px;color:#d0e0d5}
 .device-retry{margin-top:9px;padding:6px 8px;font-size:12px;background:transparent;border:1px solid #98b6a5;border-radius:6px;color:#edf6e9}
 .device-retry:hover{background:#2b534e}.device-retry:focus-visible{outline:2px solid #d3edaa}
 .security-card .actions button,.security-member small,.security-role small{font-size:13px;line-height:1.6}
-.security-audit{font-size:14px;line-height:1.6}.security-audit th{color:#244a40;font-weight:600;background:#f3f7ef}
-.security-audit td{vertical-align:top}.security-audit td:first-child{min-width:160px}.security-audit td:last-child{min-width:210px}
+main,.security-card{min-width:0}
+.security-table{min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.security-audit{width:100%;min-width:850px;table-layout:fixed;font-size:14px;line-height:1.6}
+.security-audit th,.security-audit td{word-break:normal;overflow-wrap:break-word}
+.security-audit th{color:#244a40;font-weight:600;background:#f3f7ef;white-space:nowrap}
+.security-audit th:nth-child(1){width:180px}.security-audit th:nth-child(2){width:180px}.security-audit th:nth-child(3){width:210px}
+.security-audit td{vertical-align:top}
 .security-audit time{display:block;color:#425b50;font-variant-numeric:tabular-nums}
 .audit-target{display:grid;gap:2px;margin-bottom:8px}.audit-target b{font-size:12px;color:#52685d}.audit-target span{font-weight:600}
 .audit-details{margin:0;display:grid;gap:6px}.audit-details>div{display:grid;grid-template-columns:minmax(75px,.8fr) minmax(110px,1.3fr);gap:10px}

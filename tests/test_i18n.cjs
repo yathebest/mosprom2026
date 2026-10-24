@@ -68,3 +68,38 @@ test('smoke and threshold copy states uncertainty rather than unmeasured accurac
  assert.match(i18n.t(ru,'en'),/unverified.*operator/i);
  assert.match(i18n.t('Ниже порог — больше кандидатов телефона, но больше ложных тревог. Выше — строже отбор, но можно пропустить маленький телефон. Значение 0,30 не означает точность 30%.','en'),/does not mean 30% accuracy/);
 });
+
+test('persisted English waits for deferred components and wizard labels return to Russian after rebuilding',()=>{
+ const keys=['document','NodeFilter','CustomEvent','MutationObserver','localStorage','LinQI18n','S'];
+ const saved=Object.fromEntries(keys.map(k=>[k,global[k]]));
+ const original=['Источник','Сценарии','Зоны','Проверка'];const english=['Source','Scenarios','Zones','Review'];
+ const listeners=new Map();
+ function element(nav=false){return {closest:selector=>nav&&selector.includes('nav')?{}:null,matches:()=>false,querySelectorAll:()=>[],getAttribute:()=>null,setAttribute(){}}}
+ let nodes=original.map(data=>({data,parentElement:element(true)}));
+ global.NodeFilter={SHOW_TEXT:4};global.S={cameras:[]};
+ global.CustomEvent=class{constructor(type,options){this.type=type;this.detail=options.detail}};
+ global.MutationObserver=class{observe(){}};
+ global.localStorage={getItem:()=> 'en',setItem(){}};
+ global.document={readyState:'interactive',body:element(),documentElement:{lang:'ru'},getElementById:()=>null,dispatchEvent(){},
+  addEventListener:(name,callback)=>listeners.set(name,callback),
+  createTreeWalker(){let i=-1;return {currentNode:null,nextNode(){this.currentNode=nodes[++i];return Boolean(this.currentNode)}}}};
+ try{
+  delete require.cache[require.resolve('../app/static/i18n.js')];
+  const localized=require('../app/static/i18n.js');
+  assert.deepEqual(nodes.map(n=>n.data),original,'a defer bundle must not translate before later components finish');
+  // Reproduce the old wizard construction: nodes are recreated from the current
+  // markup while the rest of the deferred application is still initializing.
+  nodes=nodes.map(n=>({data:n.data,parentElement:element(true)}));
+  listeners.get('DOMContentLoaded')();
+  assert.deepEqual(nodes.map(n=>n.data),english);
+  // The wizard now moves existing children into buttons. Their canonical
+  // originals and event-bound identity survive wrapping after localization.
+  const identities=nodes.slice();nodes.forEach(n=>{n.parentElement=element(true)});localized.apply();
+  assert.ok(nodes.every((n,i)=>n===identities[i]));
+  localized.setLanguage('ru');assert.deepEqual(nodes.map(n=>n.data),original);
+  localized.setLanguage('en');assert.deepEqual(nodes.map(n=>n.data),english);
+  localized.setLanguage('ru');assert.deepEqual(nodes.map(n=>n.data),original);
+ }finally{
+  Object.assign(global,saved);delete require.cache[require.resolve('../app/static/i18n.js')];
+ }
+});

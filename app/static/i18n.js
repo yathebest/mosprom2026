@@ -148,6 +148,10 @@
       setLanguage(selected);let queued=false;
       new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply()})}).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']});
     };
-    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+    // A defer script sees "interactive" while later defer scripts are still
+    // constructing components. Translating before they finish can leak English
+    // into cloned markup and lose the canonical Russian text-node sources.
+    const ready=document.readyState==='complete'||Boolean(root.performance?.getEntriesByType?.('navigation')?.[0]?.domContentLoadedEventEnd);
+    if(ready)start();else document.addEventListener('DOMContentLoaded',start,{once:true});
   }
 })(typeof globalThis!=='undefined'?globalThis:this);

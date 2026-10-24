@@ -43,7 +43,7 @@ function navigateStep(target){
  }
  setStep(target);return true;
 }
-$('steps').querySelectorAll('li').forEach((el,i)=>{const content=el.innerHTML;el.innerHTML=`<button type="button" class="wizard-step-link" data-wizard-step="${i}">${content}</button>`;el.querySelector('button').onclick=()=>navigateStep(i)});
+$('steps').querySelectorAll('li').forEach((el,i)=>{const button=document.createElement('button');button.type='button';button.className='wizard-step-link';button.dataset.wizardStep=String(i);while(el.firstChild)button.appendChild(el.firstChild);el.appendChild(button);button.onclick=()=>navigateStep(i)});
 $('back').onclick=()=>navigateStep(Math.max(0,S.step-1));
 $('next').onclick=()=>navigateStep(S.step+1);
 function config(){const c={...S.defaults,camera:$('camera').value.trim(),recorded_at:$('recorded-at').value?new Date($('recorded-at').value).toISOString():null,zones:$('check-zone').checked?S.zones:[],fast_motion:$('check-motion').checked,fall_detection:$('check-fall').checked,zone_hold:num('zone-hold'),speed_threshold:num('speed'),motion_hold:num('motion-hold'),sample_fps:num('sample-fps'),body_threshold:num('body-threshold'),body_hold:num('body-hold'),speed_threshold_m_s:num('metric-speed'),calibration:null};if($('calibration-on').checked){const w=num('ground-width'),h=num('ground-depth');c.calibration={image_points:S.ground,world_points:[[0,0],[w,0],[w,h],[0,h]]}}return c}
