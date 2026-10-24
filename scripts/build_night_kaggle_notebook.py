@@ -39,7 +39,12 @@ Dataset и output версии **361611151**. Без last.pt с optimizer зап
 cell('''
 import time
 NIGHT_START=time.monotonic()
-DEADLINE=NIGHT_START+285*60
+print('LINQ_NIGHT_WORKER_BOOTED',time.time(),flush=True)
+from datetime import datetime
+GLOBAL_STOP_UTC='2026-10-24T06:00:00+00:00'  # 09:00 Moscow; shared with the parallel fall job.
+remaining_seconds=datetime.fromisoformat(GLOBAL_STOP_UTC).timestamp()-time.time()
+assert remaining_seconds>30*60,'The approved overnight deadline has passed; set a new explicit budget.'
+DEADLINE=NIGHT_START+min(270*60,remaining_seconds)
 import subprocess,sys
 subprocess.run([sys.executable,'-m','pip','install','--quiet',
  'ultralytics==8.4.88','onnx==1.19.1','protobuf==5.29.5','onnxruntime==1.29.0',

@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import zipfile
 
 from training_checkpoint import atomic_copy
 
@@ -24,6 +25,12 @@ def snapshot(root, destination):
         if source.name.endswith(('-previous.pt','resume-previous.pt')):continue
         target=destination/source.relative_to(root)
         atomic_copy(source,target)
+        if target.suffix=='.pt':
+            try:
+                with zipfile.ZipFile(target) as archive:
+                    if archive.testzip() is not None:raise ValueError('Checkpoint CRC mismatch')
+            except (zipfile.BadZipFile,ValueError,EOFError):
+                target.unlink();continue  # A non-atomic library best/last write may still be in progress.
         files.append({'path':str(source.relative_to(root)),
                       'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'bytes':target.stat().st_size})
     (destination/'backup-manifest.json').write_text(json.dumps({'created_utc':time.time(),'files':files},indent=2))
@@ -59,11 +66,18 @@ def main():
             print('REMOTE_BACKUP_UNAVAILABLE',type(error).__name__,'No credential or response body logged.',flush=True)
             raise SystemExit(2)
         return
+    seen=set();last_upload=0
     while True:
+        checkpoints={str(p.relative_to(root)) for p in root.rglob('*.pt')
+                     if p.name=='resume-last.pt' or p.name.endswith(('classifier-last.pt','temporal-last.pt'))}
+        if not checkpoints or (not(checkpoints-seen) and time.monotonic()-last_upload<args.interval):
+            time.sleep(20);continue
         command=[sys.executable,__file__,'--root',str(root),'--handle',args.handle,'--once']
-        try:subprocess.run(command,timeout=300,check=False)
+        try:
+            result=subprocess.run(command,timeout=300,check=False)
+            if result.returncode==0:seen=checkpoints;last_upload=time.monotonic()
         except subprocess.TimeoutExpired:print('REMOTE_BACKUP_TIMEOUT; training continues',flush=True)
-        time.sleep(args.interval)
+        time.sleep(20 if last_upload else 60)
 
 
 if __name__=='__main__':main()

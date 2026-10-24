@@ -81,6 +81,16 @@ def train_detector(args):
                     resume_target=trainer.last.with_name('resume-last.pt')
                     if resume_target.exists():atomic_copy(resume_target,resume_target.with_name('resume-previous.pt'))
                     atomic_copy(trainer.last,resume_target)
+                    import torch
+                    check=torch.load(resume_target,map_location='cpu',weights_only=False)
+                    if not check.get('optimizer'):raise ValueError('Checkpoint lost optimizer before export')
+                    proof={'saved_epoch_index':int(check['epoch']),'optimizer_present':True,
+                           'bytes':resume_target.stat().st_size,
+                           'sha256':hashlib.sha256(resume_target.read_bytes()).hexdigest()}
+                    del check
+                    target=resume_target.parent/'checkpoint-state.json';temporary=target.with_suffix('.tmp')
+                    temporary.write_text(json.dumps(proof,indent=2));temporary.replace(target)
+                    print('PROJECT_CHECKPOINT_VERIFIED',args.task,json.dumps(proof),flush=True)
             model.add_callback('on_model_save',preserve_resume)
         model.train(data=str(data_file),epochs=args.epochs,
                     imgsz=args.imgsz,batch=args.batch,device=args.device,seed=42,
@@ -183,6 +193,7 @@ def train_classifier(args):
                     'architecture':args.classifier,'freeze_early':args.classifier_freeze_early,
                     'torch_rng':torch.get_rng_state(),
                     'cuda_rng':torch.cuda.get_rng_state_all() if device.type=='cuda' else []},last,previous=True)
+        print('PROJECT_CHECKPOINT_SAVED',args.task,'classifier',epoch+1,last.stat().st_size,flush=True)
         actual_epochs=epoch+1
         if time.monotonic()>=deadline:
             print('Training time budget reached; selecting validated checkpoint and exporting',flush=True)

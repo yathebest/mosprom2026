@@ -28,7 +28,8 @@ def run(args):
         requested=set(args.jobs)
         queues=[[job for job in queue if '-'.join(job) in requested] for queue in queues]
     checkpoint_weights={};lineage={}
-    if bounded and not args.checkpoint_root:
+    if args.fresh and args.checkpoint_root:raise ValueError('Fresh training must not use previous task checkpoints')
+    if bounded and not args.checkpoint_root and not args.fresh:
         raise ValueError('Fast continuation requires --checkpoint-root; refusing to restart trained tasks from stock weights')
     if args.checkpoint_root:
         from ultralytics import YOLO
@@ -66,7 +67,7 @@ def run(args):
     manifest=Path(args.data)/'manifest.jsonl'
     identity={'data':str(Path(args.data).resolve()),'epochs':args.epochs,'classifier_epochs':args.classifier_epochs,
               'classifier':args.classifier,'batch':args.batch,'classifier_batch':args.classifier_batch,'imgsz':args.imgsz,
-              'fast':args.fast,'night':args.night,'job_minutes':args.job_minutes,'max_minutes':args.max_minutes,
+              'fast':args.fast,'night':args.night,'fresh':args.fresh,'job_minutes':args.job_minutes,'max_minutes':args.max_minutes,
               'checkpoint_lineage':lineage,
               'trainer_sha256':hashlib.sha256(script.read_bytes()).hexdigest(),
               'data_manifest_sha256':hashlib.sha256(manifest.read_bytes()).hexdigest() if manifest.exists() else 'bounded-smoke-subset'}
@@ -88,6 +89,9 @@ def run(args):
             log=output/(key+'.log')
             budget=({'detect-people':20,'detect-head_ppe':175,'detect-vest_ppe':105,
                      'classify-head_ppe':55,'classify-vest_ppe':40}.get(key,args.job_minutes) if args.night else args.job_minutes)
+            if args.night and args.fresh:
+                budget={'detect-people':45,'detect-head_ppe':320,'detect-vest_ppe':170,
+                        'classify-head_ppe':70,'classify-vest_ppe':50}[key]
             budget=min(budget,max(1,(deadline-time.monotonic())/60-15)) if bounded else budget
             epochs=25 if args.night and task=='people' else args.epochs
             cmd=[sys.executable,str(script),'--data',args.data,'--output',args.output,'--task',task,
@@ -142,6 +146,7 @@ if __name__=='__main__':
     p.add_argument('--classifier',choices=['resnet50','resnet152'],default='resnet152')
     p.add_argument('--fast',action='store_true',help='Freeze pretrained early layers and limit each training stage')
     p.add_argument('--night',action='store_true',help='Five tasks: short person continuation, PPE detectors, ResNet50 classifiers')
+    p.add_argument('--fresh',action='store_true',help='New task training from official pretrained weights, without earlier task checkpoints')
     p.add_argument('--job-minutes',type=float,default=15)
     p.add_argument('--max-minutes',type=float,default=75,help='Fast-mode overall worker deadline, including setup/export')
     p.add_argument('--checkpoint-root',help='Saved training-output folder; required for fast continuation')

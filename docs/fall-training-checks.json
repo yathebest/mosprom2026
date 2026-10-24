@@ -1,0 +1,15 @@
+{
+  "technical_smoke_only": true,
+  "dataset_zip_crc": "passed all 33331 entries",
+  "author_archive_md5": "c784167d08f2fa94e3afd36cec758e1f",
+  "notebook_schema_and_python_ast": "passed",
+  "export_parity": {
+    "technical_smoke_only": true,
+    "max_absolute_errors": {
+      "encoder": 1.5497207641601562e-06,
+      "head": 3.2782554626464844e-07
+    }
+  },
+  "fresh_initialization_verified_locally": true,
+  "production_weights_installed": false
+}

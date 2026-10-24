@@ -1,0 +1,81 @@
+{
+  "unique_rgb_source_videos": 2083,
+  "previous_urfd_source_videos": 70,
+  "expansion_factor_source_videos": 29.757142857142856,
+  "clips": 2083,
+  "frames_per_clip": 16,
+  "splits": {
+    "train": {
+      "clips": 1485,
+      "fall": 701,
+      "adl": 784,
+      "figshare_subjects": [
+        "figshare-sbj-01",
+        "figshare-sbj-02",
+        "figshare-sbj-03",
+        "figshare-sbj-04",
+        "figshare-sbj-05",
+        "figshare-sbj-06",
+        "figshare-sbj-07",
+        "figshare-sbj-10",
+        "figshare-sbj-12",
+        "figshare-sbj-13",
+        "figshare-sbj-14",
+        "figshare-sbj-15",
+        "figshare-sbj-16",
+        "figshare-sbj-18",
+        "figshare-sbj-20",
+        "figshare-sbj-24",
+        "figshare-sbj-26",
+        "figshare-sbj-27",
+        "figshare-sbj-28",
+        "figshare-sbj-29"
+      ]
+    },
+    "val": {
+      "clips": 215,
+      "fall": 109,
+      "adl": 106,
+      "figshare_subjects": [
+        "figshare-sbj-17",
+        "figshare-sbj-21",
+        "figshare-sbj-23",
+        "figshare-sbj-25"
+      ]
+    },
+    "test": {
+      "clips": 383,
+      "fall": 216,
+      "adl": 167,
+      "figshare_subjects": [
+        "figshare-sbj-08",
+        "figshare-sbj-09",
+        "figshare-sbj-11",
+        "figshare-sbj-19",
+        "figshare-sbj-22"
+      ]
+    }
+  },
+  "excluded": [
+    {
+      "path": "VideoDataset/Fall/SBJ_02_LOC2/ACT1_L_1/20240912_101331.mp4",
+      "reason": "exact duplicate RGB video"
+    }
+  ],
+  "manifest_sha256": "48ce931fcf4170d6394fd1f6a56bd71dd97b4c719ee8aa5c5413ac4540cf203e",
+  "figshare_subject_disjoint_verified": true,
+  "urfd_split": "original frozen video split; subject IDs unavailable",
+  "frame_onset_labels_available": "URFD only; Figshare evaluation is clip classification, not event timing",
+  "sources": [
+    {
+      "url": "https://api.figshare.com/v2/articles/28596332",
+      "license": "CC BY 4.0",
+      "author": "Ivan Ursul",
+      "version": 2
+    },
+    {
+      "url": "https://fenix.ur.edu.pl/~mkepski/ds/uf.html",
+      "license": "CC BY-NC-SA 4.0"
+    }
+  ]
+}

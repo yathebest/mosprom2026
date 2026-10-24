@@ -11,9 +11,71 @@
 
 ## Запуск в Kaggle
 
-### Ночное продолжение на 4–5 часов
+### Актуальный свежий запуск на 6–7 часов — 24 октября
 
-Актуальный рецепт: `notebooks/LinQ-PPE-Kaggle-Night.ipynb`, генератор
+По последнему решению команды прежние task checkpoints **не используются**.
+`notebooks/LinQ-PPE-Kaggle-Fresh.ipynb` начинает задачи от официальных
+YOLO12m COCO / ResNet50 ImageNet. Это новая тренировка задач, а не случайная
+инициализация всей нейросети. Старые рецепты ниже оставлены как история.
+
+Основной приватный batch: [LinQ Night Training 2026, версия 361639587](https://www.kaggle.com/code/yathebest/linq-night-training-2026/log?scriptVersionId=361639587).
+GPU0: people до 45 минут / 25 эпох → vest detector до 170 минут / 60 эпох →
+head classifier до 70 минут / 16 эпох. GPU1: head detector до 320 минут / 60 эпох →
+vest classifier до 50 минут / 16 эпох. Используются все исходные splits PPE.
+Фактический конец стадии определяется первым достигнутым ограничением.
+Общий дедлайн notebook — **11:15 МСК 24.10.2026**, максимум 400 минут с начала
+bootstrap; глобальный остаток ограничивает новые стадии и оставляет резерв.
+Очередь Kaggle и аварии не позволяют обещать точный срок или завершение всех эпох.
+
+Падения — отдельный независимый CPU batch `notebooks/LinQ-Fall-Kaggle.ipynb`:
+[LinQ Fall Training 2026, версия 361641698](https://www.kaggle.com/code/yathebest/linq-fall-training-2026/log?scriptVersionId=361641698).
+Новый ResNet18 ImageNet + GRU учится на **2 083 уникальных исходных видео**
+(2 013 Figshare + 70 URFD), в 29,8 раза больше прежних 70. Подготовлены
+16 последовательных RGB-кадров каждого клипа. До 30 эпох временной головы,
+затем до 4 эпох / 30 минут layer4; CPU-бюджет до 100 минут в пределах общего
+дедлайна. Генераторы notebook: `build_fresh_kaggle_notebook.py` и
+`build_fall_kaggle_notebook.py` в `scripts/`.
+
+Figshare: [авторский набор Ivan Ursul](https://figshare.com/articles/dataset/Sensor-Based_Fall_Detection_Dataset_with_2017_Activities_from_29_Subjects/28596332),
+CC BY 4.0, официальный MD5 архива проверен. 29 участников разделены 20/4/5
+между train/val/test, один точный дубликат исключён. URFD сохраняет прежнее
+разделение целых видео; независимость участников URFD не доказана.
+[URFD](https://fenix.ur.edu.pl/~mkepski/ds/uf.html) имеет CC BY-NC-SA 4.0.
+Лицензии источников сохраняются отдельно; общий архив не переобъявляется CC BY.
+У Figshare нет разметки момента начала падения: итоговые новые метрики будут
+метриками **классификации клипов**, а не event F1 или задержкой тревоги.
+Test не используется для выбора порога; порог выбирается на validation.
+
+Приватный Dataset [LinQ Fall Expanded 2026](https://www.kaggle.com/datasets/yathebest/linq-fall-expanded-2026)
+содержит 33 331 файл. ZIP проверен полностью по CRC;
+SHA-256 `84ca56f11718e9ad6d43a2968ebe7b043c39e048d0ee918c6300a627c24894a8`.
+Сводка и splits — `docs/fall-dataset-summary.json`.
+
+Детекторы сохраняют `resume-last.pt` с optimizer и `checkpoint-state.json`
+(эпоха, размер, SHA-256); классификаторы — `*-classifier-last.pt`;
+падения — `fall-temporal-last.pt`. Защищённая предыдущая копия остаётся.
+Логи `PROJECT_CHECKPOINT_VERIFIED` / `FALL_CHECKPOINT_SAVED` означают реальное
+сохранение эпохи. При ограничении времени последний checkpoint может относиться
+к неполной эпохе: это явно отмечено в метаданных.
+
+Официальный `kagglehub.dataset_upload` создаёт приватные внешние снимки:
+`yathebest/linq-fresh-checkpoints-20261024` для PPE и
+`yathebest/linq-fall-checkpoints-20261024` для падений. Первый checkpoint каждой
+новой задачи загружается сразу, далее интервал 30 минут. Проверяются CRC PT и
+SHA-256 файлов снимка. Успешная metadata-проба доказывает доступ к загрузке,
+но сохранение весов подтверждается только снимком с фактическими PT-файлами.
+Авария до первого upload может потерять текущую эпоху; автоматический перезапуск
+всей VM не реализован. После Save & Run All закрытие браузера не отменяет batch.
+
+Итоговые архивы: `linq-night-trained-models.zip` и
+`linq-fall-trained-models.zip`. Падения экспортируют отдельно ResNet18 encoder
+и GRU head: LinQ-поддержка GRU не заявляется, временная часть работает на CPU.
+Новые веса не устанавливаются на сайт автоматически; требуются независимая
+проверка целевых видео, компиляция и запуск на железе LinQ.
+
+### Ночное продолжение на 4–5 часов (история, отменено)
+
+Прежний рецепт: `notebooks/LinQ-PPE-Kaggle-Night.ipynb`, генератор
 `scripts/build_night_kaggle_notebook.py`. Полная версия №1 остановлена после просьбы
 сократить время. Kaggle опубликовал её outputs с задержкой; архив скачан и проверен
 локально. В checkpoints фактически завершены **17 эпох people и 3 эпохи head_ppe**,

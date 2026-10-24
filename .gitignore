@@ -36,7 +36,9 @@ data/models/ppe-torso*
 training-output/
 night-training-output/
 fast-training-output/
+fall-training-output/
 smoke-output/
 linq-ppe-training-data.zip
 linq-night-trained-models.zip
 linq-fast-trained-models.zip
+linq-fall-trained-models.zip

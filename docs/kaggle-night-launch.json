@@ -2,31 +2,48 @@
   "account": "yathebest",
   "visibility": "private",
   "version": 2,
-  "version_id": 361631539,
-  "url": "https://www.kaggle.com/code/yathebest/linq-ppe-full-training-2026?scriptVersionId=361631539",
-  "verified_at_local": "2026-10-24T04:00:36.944607+03:00",
-  "status": "starting_worker_not_yet_verified",
+  "version_id": 361639587,
+  "url": "https://www.kaggle.com/code/yathebest/linq-night-training-2026/log?scriptVersionId=361639587",
+  "verified_at_utc": "2026-10-24T01:49:30.472360+00:00",
+  "status": "training_epoch_2_people_epoch_1_head_observed",
   "execution": "Save & Run All (Commit), independent batch",
   "gpu_setting": "GPU T4 x2",
-  "checkpoint_source_version": 361611151,
-  "restored_input_epochs_expected": {
-    "people": 17,
-    "head_ppe": 3
-  },
-  "runtime_restoration_verified": false,
-  "remote_backup_verified": false,
-  "people_added_training_minutes": 20,
-  "detector_total_epoch_caps": {
-    "people": 25,
-    "head_ppe": 40,
-    "vest_ppe": 40
-  },
+  "initialization": "official YOLO12m COCO and ResNet50 ImageNet; no previous task checkpoints",
+  "deadline_local": "2026-10-24T11:15:00+03:00",
+  "notebook_max_minutes": 400,
+  "checkpoint_source_version": null,
+  "remote_backup_handle": "yathebest/linq-fresh-checkpoints-20261024",
+  "remote_metadata_probe_verified": true,
+  "remote_model_backup_verified": true,
+  "backup_evidence": "Kaggle Dataset version 2, 486.05 MB; successful resume-last.pt and checkpoint-state.json upload; dataset version created at elapsed 693.3 seconds",
+  "data": "full original PPE splits",
   "classifier": "resnet50",
-  "classifier_max_epochs": 12,
-  "data": "full original splits",
-  "notebook_sha256": "2ab5cd9be8c1be0cf53ed362c8b069836a5daed5a98e8fcc1d49919ec7647b4a",
+  "people_minutes": 45,
+  "detector_epoch_caps": {
+    "people": 25,
+    "head_ppe": 60,
+    "vest_ppe": 60
+  },
+  "classifier_epoch_caps": 16,
   "quality_measured": false,
   "trained_weights_installed": false,
-  "warning": "Save & Run All created. Version History says Starting; viewer says Running but has no first logs. GPU execution, restoration and remote backup are not yet verified.",
-  "input_source_version_verified_in_saved_metadata": 361611151
+  "notebook_sha256": "fdcfdabf29b37ef33c7d85d3da1226cf05b86d6f55222abbe1024178fa825ed1",
+  "previous_version_361631539": "cancelled; no longer active",
+  "fall_training": {
+    "version_id": 361641698,
+    "url": "https://www.kaggle.com/code/yathebest/linq-fall-training-2026/log?scriptVersionId=361641698",
+    "execution": "independent CPU Save & Run All",
+    "status": "submitted_worker_logs_not_yet_visible",
+    "dataset": "yathebest/linq-fall-expanded-2026",
+    "clips": 2083,
+    "max_minutes": 100,
+    "remote_backup_handle": "yathebest/linq-fall-checkpoints-20261024",
+    "remote_backup_verified": false,
+    "notebook_sha256": "d3d20c0fe8a83f2c12bcf035e57b87a1197beb79805855b541dac001dd1286cd"
+  },
+  "local_fall_fallback": {
+    "status": "head_30_epochs_checkpointed_finetune_running",
+    "path": "data/cache/fall-fresh-local",
+    "test_measured": false
+  }
 }
