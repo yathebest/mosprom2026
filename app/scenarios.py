@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 
 from .core import Gate
+from .temporal_state import TemporalGate,PatternStates
 from .scenario_models import iou
 
 PPE={
@@ -17,33 +18,9 @@ PPE={
 EQUIPMENT={'excavator','excavators','wheel_loader','dump_truck','truck','mini_van','vehicle','machinery','car','bus','motorcycle'}
 
 
-class EvidenceGate(Gate):
-    """Independent measurements confirm an episode; unknown is not clearance."""
-    def __init__(self):
-        super().__init__();self.samples=0;self.clear_since=None
-
-    def update(self,now,condition,confirm,release,gap):
-        if self.last_seen is not None and now<=self.last_seen:return None
-        previous_seen=self.last_seen
-        self.last_seen=now
-        if condition is None:
-            if self.last_true is not None and now-self.last_true>gap:
-                self.since=None;self.samples=0
-            self.clear_since=None
-            return None
-        if condition:
-            if self.last_true is not None and now-self.last_true>gap:
-                self.since=None;self.samples=0
-            if self.since is None:self.since=now;self.samples=0
-            self.samples+=1;self.last_true=now;self.clear_since=None
-            if not self.active and self.samples>=3 and now-self.since>=confirm-1e-8:
-                self.active=True;self.sequence+=1
-                return self.since,self.sequence
-        else:
-            self.since=None;self.samples=0
-            if self.clear_since is None or (previous_seen is not None and now-previous_seen>gap):self.clear_since=now
-            if now-self.clear_since>=release:self.active=False
-        return None
+class EvidenceGate(TemporalGate):
+    """Compatibility name for the common 75%-time / three-sample state machine."""
+    pass
 
 
 def ppe_measurement(matches,positive,negative,threshold,margin):
@@ -110,7 +87,8 @@ def person_for(observation,people,region='body'):
 
 class ScenarioRules:
     def __init__(self,config):
-        self.config=config;self.gates={};self.outside=set();self.last_seen={}
+        self.config=config;self.temporal=PatternStates(config);self.gates=self.temporal.gates;self.outside=set();self.last_seen={}
+        self.event_updates=[];self.state_rows={}
         self.equipment={};self.next_equipment_id=1;self.ppe_status={}
         self.ppe_details={};self.ppe_memory={}
         self.incidents=[];self.boxes={}
@@ -134,13 +112,15 @@ class ScenarioRules:
 
     def step(self,people,objects,now,width,height,base_details=None):
         cfg=self.config;base_details=base_details or {};events=[];active={}
-        predicted={p.track_id for p in people if not p.observed}
-        for key,gate in self.gates.items():
-            if key[0] in predicted:gate.since=None
+        handoffs=self.temporal.begin(people,now);self.event_updates=self.temporal.event_updates
+        for new,old in handoffs.items():
+            if old in self.last_seen:self.last_seen[new]=self.last_seen.pop(old)
+            self.outside={(new if tid==old else tid,name) for tid,name in self.outside}
+            for key in [key for key in self.ppe_memory if key[0]==old]:self.ppe_memory[(new,key[1])]=self.ppe_memory.pop(key)
         proposals=list(objects)
         objects=[o for o in objects if o.confidence>=(cfg.phone_confidence if o.label=='cell_phone' else cfg.object_confidence)]
         people=[p for p in people if p.track_id>0 and p.observed]
-        eligible={p.track_id for p in people if p.alert_eligible}
+        eligible={p.track_id for p in people if p.alert_eligible and p.confidence>=cfg.confidence}
         assigned={}
         for key,(positive,negative,_,_) in PPE.items():
             assigned[key]={}
@@ -157,30 +137,21 @@ class ScenarioRules:
             if item['tid'] in visible:item.update(last=now,box=self.boxes[item['tid']])
         self.incidents=[x for x in self.incidents if now-x['last']<=15]
         def emit(tid,kind,zone,condition,hold,score,reason,obj=None,extra=None):
-            evidence=kind in {'no_helmet','no_vest','no_mask','no_harness_at_height','possible_phone_use','possible_smoking'}
-            gate=self.gates.setdefault((tid,kind,zone),EvidenceGate() if evidence else Gate())
             measured=condition if condition is None else bool(condition)
-            if tid and tid not in eligible:measured=False
+            if tid and tid not in eligible:measured=None
             release=max(3.,cfg.release_hold) if kind in {'possible_phone_use','possible_smoking'} else cfg.release_hold
-            fired=gate.update(now,measured,hold,release,cfg.observation_gap)
+            gate,fired=self.temporal.observe(tid,kind,zone,measured,hold,release,cfg.observation_gap)
             if gate.active:active.setdefault(tid,[]).append(kind)
             if fired:
-                # An ID switch must not create a new incident for the same
-                # spatially continuous worker. Never merge visible neighbours.
-                duplicate=next((x for x in self.incidents if tid and x['tid'] not in visible
-                    and x['kind']==kind and x['zone']==zone and now-x['last']<=3
-                    and iou(x['box'],self.boxes[tid])>=.55),None)
-                if duplicate:
-                    duplicate.update(tid=tid,last=now,box=self.boxes[tid]);return
-                if tid:self.incidents.append({'tid':tid,'kind':kind,'zone':zone,'last':now,'box':self.boxes[tid]})
                 start,sequence=fired
                 event={'track_id':tid,'kind':kind,'zone':zone,'start_s':round(start,3),'alert_s':round(now,3),
                        'sequence':sequence,'score':round(float(score),4),'reason':reason,
                        'confirmation_s':round(now-start,3),'source':'scenario_rules','scope':'person' if tid else 'scene',
-                       'experimental':True}
+                       'experimental':True,**gate.last_transition}
                 if obj:event.update(evidence_label=obj.label,evidence_model=obj.model,evidence_box=list(obj.box))
                 if extra:event.update(extra)
                 events.append(event)
+            return gate
         equipment=self.update_equipment([o for o in objects if o.label in EQUIPMENT],now) if cfg.proximity_detection else []
         homography=None
         if cfg.calibration:
@@ -198,7 +169,8 @@ class ScenarioRules:
                 head_pixels=round(min(person.box[2]-person.box[0],person.height*.22),1)
                 if key in ('helmet','mask') and head_pixels<12:
                     state='unknown';reason_code='insufficient_pixels'
-                fresh=state!='unknown'
+                if tid not in eligible:state='unknown';reason_code='weak_observation'
+                fresh=state!='unknown';observed_state=state if fresh else 'unknown'
                 memory_key=(tid,key)
                 if fresh:self.ppe_memory[memory_key]=(now,state)
                 previous=self.ppe_memory.get(memory_key)
@@ -208,19 +180,32 @@ class ScenarioRules:
                 self.ppe_details[tid][key]={'state':state,'reason':reason_code,'fresh':fresh,
                                           'head_pixels_estimate':head_pixels,
                                           'observed_at_s':now if fresh else previous[0] if previous else None}
-                region=next((z.name for z in zones if z.kind=='height'),'') if key=='harness' else ''
-                condition=(state=='missing' and (bool(region) if key=='harness' else True)) if fresh else None
                 obj=max(missing,key=lambda o:o.confidence,default=None)
-                reason=(f'{title}: модель явно обнаружила отсутствие экипировки; подтверждение {cfg.ppe_hold:g} с.'+
+                reason=(f'{title}: свежие измерения подтверждают отсутствие экипировки во временном окне.'+
                         (' Человек находится в размеченной зоне работы на высоте.' if key=='harness' else ''))
-                emit(tid,kind,region,condition,cfg.ppe_hold,obj.confidence if obj else 0,reason,obj,
-                     {'ppe_assessment':dict(self.ppe_details[tid][key])})
+                contexts=[z for z in cfg.zones if z.kind=='height'] if key=='harness' else [None]
+                if not contexts:contexts=[None]
+                gates=[]
+                for context_zone in contexts:
+                    region=context_zone.name if context_zone else ''
+                    in_context=key!='harness' or context_zone is not None and context_zone in zones
+                    condition=(state=='missing' if fresh else None) if in_context else (False if context_zone else None)
+                    gate=emit(tid,kind,region,condition,cfg.ppe_hold,obj.confidence if obj else 0,reason,obj,
+                              {'ppe_assessment':dict(self.ppe_details[tid][key])})
+                    gates.append(gate)
+                    if gate.last_transition and gate.last_transition['episode_state']=='open':
+                        events[-1]['ppe_assessment'].update(confirmed_state='missing',state_confirmation=gate.confirmation())
+                gate=next((g for g in gates if g.active),gates[0])
+                confirmed={'unknown':'unknown','violation':'missing','clear':'worn'}[gate.state]
+                if key=='harness' and confirmed=='worn' and state!='worn':confirmed='unknown'
+                self.ppe_details[tid][key].update(observed_state=observed_state,confirmed_state=confirmed,
+                    confirmed_at_s=gate.confirmed_at_s,state_confirmation=gate.confirmation(),episode_id=gate.episode_id)
             for zone in cfg.zones:
                 if zone.kind not in ('barrier','under_load','under_conveyor'):continue
                 inside=zone in zones;key=(tid,zone.name)
                 if not inside:self.outside.add(key)
                 kind={'barrier':'barrier_crossing','under_load':'under_load','under_conveyor':'under_conveyor'}[zone.kind]
-                condition=inside and (key in self.outside if zone.kind=='barrier' else True)
+                condition=(None if inside and key not in self.outside else inside) if zone.kind=='barrier' else inside
                 reason={'barrier':'Наблюдался переход в область за размеченной границей ограждения.',
                         'under_load':'Человек находится в размеченной запретной области под грузом.',
                         'under_conveyor':'Человек находится в размеченной запретной области под конвейером.'}[zone.kind]
@@ -236,7 +221,17 @@ class ScenarioRules:
                 context=(not cfg.phone_work_context_only or base_details.get(tid,{}).get('speed',0)>=.12
                          or any(z.kind=='equipment' for z in zones))
                 obj=max(phones,key=lambda o:o.confidence,default=None)
-                emit(tid,'possible_phone_use','',(bool(obj) and context) if wrists else None,cfg.object_hold,obj.confidence if obj else 0,
+                both_hands=(person.keypoints is not None and all(person.keypoints[i,2]>=.5 for i in (9,10)))
+                ambiguous=any(o.label=='cell_phone' and
+                    (point_box_distance(((o.box[0]+o.box[2])/2,(o.box[1]+o.box[3])/2),person.box)==0
+                     or o.owner_box is not None and iou(o.owner_box,person.box)>=.3) for o in proposals)
+                speed_known=base_details.get(tid,{}).get('speed_ready','speed' in base_details.get(tid,{}))
+                context_known=not cfg.phone_work_context_only or speed_known or any(z.kind=='equipment' for z in zones)
+                if obj and context:condition=True
+                elif context_known and not context:condition=False
+                elif not context_known or not both_hands or person.height<120 or ambiguous:condition=None
+                else:condition=False
+                emit(tid,'possible_phone_use','',condition,cfg.object_hold,obj.confidence if obj else 0,
                      'Телефон устойчиво обнаружен рядом с измеренной рукой. Использование требует проверки по клипу.',obj)
             if cfg.smoking_detection:
                 # Smoke/dust alone is not smoking. Require a localized smoking
@@ -247,7 +242,10 @@ class ScenarioRules:
                          and (o.box[1]+o.box[3])/2<=person.box[1]+person.height*.55
                          and not any(z.kind=='smoking_allowed' for z in zones)]
                 obj=max(smoking,key=lambda o:o.confidence,default=None)
-                emit(tid,'possible_smoking','',bool(obj),cfg.object_hold,obj.confidence if obj else 0,
+                head_visible=person.keypoints is not None and int((person.keypoints[:5,2]>=.4).sum())>=3
+                allowed=any(z.kind=='smoking_allowed' for z in zones)
+                smoking_condition=False if allowed else (None if person.height<cfg.smoking_min_person_height else True if obj else False if head_visible else None)
+                emit(tid,'possible_smoking','',smoking_condition,cfg.object_hold,obj.confidence if obj else 0,
                      'Повторно обнаружен визуальный признак курения рядом с человеком. Проверьте клип: жест сам по себе не доказывает курение.',obj)
             if cfg.load_posture_detection:
                 bent=False;carried=[]
@@ -261,7 +259,8 @@ class ScenarioRules:
                              and any(point_box_distance(w,o.box)<person.height*.2 for w in wrists)]
                 obj=max(carried,key=lambda o:o.confidence,default=None)
                 moving=base_details.get(tid,{}).get('speed',0)>.1
-                emit(tid,'unsafe_load_posture','',bent and bool(obj) and moving,cfg.object_hold,obj.confidence if obj else 0,
+                measurable=k is not None and all(k[i,2]>=.4 for i in (5,6,11,12))
+                emit(tid,'unsafe_load_posture','',(bent and bool(obj) and moving) if measurable else None,cfg.object_hold,obj.confidence if obj else 0,
                      'Сильный наклон туловища при движении с распознанной ручной кладью. Экспериментальный признак; масса и произвольные коробки не определяются.',obj)
             if cfg.proximity_detection:
                 candidates=[]
@@ -283,6 +282,12 @@ class ScenarioRules:
                      obj.confidence if obj else person.confidence,reason,obj,
                      {'distance_m':best[0] if best and metric else None,'distance_heights':best[0] if best and not metric else None,
                       'context_source':'operator_polygon' if zone else 'detected_moving_equipment'})
+            if cfg.proximity_detection and tid in eligible:
+                for previous in [key for key in self.gates if key[0]==tid and key[1]=='equipment_proximity' and key[2]
+                                 and key not in self.temporal.updated]:
+                    matching=next((z for z in cfg.zones if z.name==previous[2] and z.kind=='equipment'),None)
+                    if matching is not None and matching not in zones:
+                        emit(tid,'equipment_proximity',previous[2],False,cfg.object_hold,person.confidence,'Человек наблюдается вне размеченной области оборудования.')
         scene_specs=[('fire',cfg.fire_detection,{'fire','flame','flames'},'fire_allowed','Обнаружены признаки открытого огня вне разрешённой области.'),
                      ('smoke',cfg.smoke_detection,{'smoke'},'fire_allowed','Обнаружены признаки дыма. Пар/пыль могут давать ошибки.'),
                      ]
@@ -294,9 +299,12 @@ class ScenarioRules:
         expired={tid for tid,last in self.last_seen.items() if now-last>15}
         self.last_seen={tid:t for tid,t in self.last_seen.items() if tid not in expired}
         self.outside={key for key in self.outside if key[0] not in expired}
-        self.gates={key:gate for key,gate in self.gates.items() if key[0] not in expired}
         self.ppe_memory={key:value for key,value in self.ppe_memory.items() if now-value[0]<=max(2,cfg.ppe_memory_s)}
+        self.state_rows=self.temporal.end(now);self.event_updates=self.temporal.event_updates
         return events,active
+
+    def finish(self,now,reason='interrupted'):
+        updates=self.temporal.finish(now,reason);self.state_rows=self.temporal.state_rows;return updates
 
 
 def base_config(config):

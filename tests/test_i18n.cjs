@@ -103,3 +103,21 @@ test('persisted English waits for deferred components and wizard labels return t
   Object.assign(global,saved);delete require.cache[require.resolve('../app/static/i18n.js')];
  }
 });
+
+test('live mutations localize only affected subtrees and ignore their own translated text',()=>{
+ const keys=['document','NodeFilter','CustomEvent','MutationObserver','requestAnimationFrame','localStorage'];const saved=Object.fromEntries(keys.map(k=>[k,global[k]]));
+ let observe,queue=[],visited=[];
+ const element=()=>({nodes:[],parentElement:null,isConnected:true,closest(){return null},matches(){return false},querySelectorAll(){return []},getAttribute(){return null},contains(other){for(let p=other;p;p=p.parentElement)if(p===this)return true;return false}});
+ const body=element(),live=element(),history=element();live.parentElement=body;history.parentElement=body;
+ const liveText={data:'Прямой эфир',parentElement:live},oldText={data:'Журнал событий',parentElement:history};live.nodes=[liveText];history.nodes=[oldText];body.nodes=[liveText,oldText];
+ global.localStorage={getItem:()=> 'en',setItem(){}};global.NodeFilter={SHOW_TEXT:4};global.CustomEvent=class{};
+ global.MutationObserver=class{constructor(fn){observe=fn}observe(){}};global.requestAnimationFrame=fn=>queue.push(fn);
+ global.document={readyState:'complete',body,documentElement:{lang:'ru'},getElementById:()=>null,dispatchEvent(){},createTreeWalker(scope){visited.push(scope);let i=-1;return {currentNode:null,nextNode(){this.currentNode=scope.nodes[++i];return Boolean(this.currentNode)}}}};
+ try{
+  delete require.cache[require.resolve('../app/static/i18n.js')];require('../app/static/i18n.js');
+  assert.equal(oldText.data,'Event log');visited=[];liveText.data='Анализ записей';
+  observe([{type:'characterData',target:liveText}]);assert.equal(queue.length,1);queue.shift()();
+  assert.deepEqual(visited,[live]);assert.equal(liveText.data,'Video analysis');assert.equal(oldText.data,'Event log');
+  observe([{type:'characterData',target:liveText}]);assert.equal(queue.length,0,'the observer must not schedule a second pass for its own translation');
+ }finally{for(const key of keys){if(saved[key]===undefined)delete global[key];else global[key]=saved[key]}delete require.cache[require.resolve('../app/static/i18n.js')]}
+});

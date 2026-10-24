@@ -12,13 +12,15 @@ def test_temporal_clip_score_alone_does_not_create_fall_alert():
 
 def test_temporal_score_and_rgb_posture_confirm_one_fall_episode():
     rules=Rules(RunConfig(fall_detection=True,body_hold=.2,fast_motion=False))
+    for t in np.arange(0,2.5,.1):
+        assert not rules.step([],float(t),100,100,{'lying_probability':.02,'fall_probability':.02})[0]
     scene={'lying_probability':.95,'fall_probability':.97,'fall_threshold':.54}
     events=[]
-    for t in [0,.1,.2,.3,.4]:events.extend(rules.step([],t,100,100,scene)[0])
+    for t in [2.5,2.6,2.7,2.8,2.9]:events.extend(rules.step([],t,100,100,scene)[0])
     assert len(events)==1
     assert events[0]['kind']=='possible_fall'
     assert events[0]['source']=='rgb_temporal_fusion'
-    assert events[0]['score']==.97 and events[0]['alert_s']==.2
+    assert events[0]['score']==.97 and events[0]['alert_s']==2.7
 
 
 def test_temporal_warmup_preserves_existing_person_down_rule():

@@ -14,22 +14,23 @@ def scene_events(values):
 
 
 def test_scene_fall_is_one_episode_even_if_person_remains_down():
-    events=scene_events([.01]*8+[.99]*100)
+    events=scene_events([.01]*25+[.99]*100)
     assert [e['kind'] for e in events]==['possible_fall']
-    assert events[0]['alert_s']==1.3
+    assert events[0]['alert_s']==3.0
 
 
 def test_scene_slow_change_is_down_not_observed_fall():
-    events=scene_events([.01]*8+[.5]*20+[.99]*100)
+    events=scene_events([.01]*25+[.5]*20+[.99]*100)
     assert [e['kind'] for e in events]==['person_down']
 
 
 def test_scene_brief_spike_cannot_confirm():
-    assert scene_events([.01]*8+[.99]*2+[.01]*50)==[]
+    assert scene_events([.01]*25+[.99]*2+[.01]*50)==[]
 
 
 def test_scene_second_fall_after_recovery_rearms():
-    events=scene_events([.01]*8+[.99]*15+[.01]*30+[.99]*15)
+    # Both falls start after a confirmed normal state, including the first.
+    events=scene_events([.01]*25+[.99]*15+[.01]*30+[.99]*15)
     assert [e['kind'] for e in events]==['possible_fall']*2
     assert [e['sequence'] for e in events]==[1,2]
 

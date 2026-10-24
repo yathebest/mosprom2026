@@ -85,13 +85,16 @@ def test_single_horizontal_frame_is_not_a_fall():
 
 def test_fall_requires_observed_transition_and_persistent_horizontal_pose():
     engine=Rules(RunConfig(fast_motion=False,fall_detection=True))
-    engine.step([p((30,0,60,100),kpts=keypoints())],0,100,100)
+    # A measured upright frame is not a confirmed upright state. Establish
+    # the normal state before testing the actual upright -> down transition.
+    for t in np.arange(0,2.5,.1):
+        assert not engine.step([p((30,0,60,100),kpts=keypoints())],float(t),100,100)[0]
     events=[]
-    for t in np.arange(.1,7,.1):
+    for t in np.arange(2.5,9,.1):
         fired,_=engine.step([p((30,20,95,60),kpts=keypoints(True))],float(t),100,100)
         events.extend(fired)
     assert [e['kind'] for e in events]==['possible_fall']
-    assert events[0]['alert_s']==1.1
+    assert events[0]['alert_s']==3.5
 
 
 def test_already_lying_person_is_not_reported_as_observed_fall():

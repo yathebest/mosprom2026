@@ -7,6 +7,7 @@ from typing import Literal
 import cv2
 import numpy as np
 from pydantic import BaseModel, Field, model_validator
+from .temporal_state import PatternStates
 
 
 class GroundCalibration(BaseModel):
@@ -93,6 +94,9 @@ class RunConfig(BaseModel):
     ppe_conflict_margin: float = Field(default=.15,ge=.05,le=.5)
     proximity_heights: float = Field(default=.6,ge=.1,le=5)
     proximity_m: float = Field(default=3.0,ge=.3,le=15)
+    state_confirmation_ratio: float = Field(default=.75,ge=.75,le=1.)
+    state_min_samples: int = Field(default=3,ge=3,le=30)
+    state_windows: dict[str,float] = Field(default_factory=dict,max_length=32)
 
     @model_validator(mode="after")
     def names_unique(self):
@@ -104,6 +108,11 @@ class RunConfig(BaseModel):
             raise ValueError("Имена зон должны различаться")
         if self.observation_gap < 1/self.sample_fps:
             raise ValueError("Допустимый пропуск наблюдений меньше шага обработки")
+        allowed={'danger_zone','fast_motion','possible_fall','person_down','no_helmet','no_vest','no_mask',
+                 'no_harness_at_height','possible_phone_use','possible_smoking','fire','smoke',
+                 'equipment_proximity','barrier_crossing','under_load','under_conveyor','unsafe_load_posture'}
+        if set(self.state_windows)-allowed or any(not math.isfinite(v) or not .2<=v<=60 for v in self.state_windows.values()):
+            raise ValueError('Окна подтверждения должны задавать известные паттерны и длительность 0.2–60 с')
         return self
 
 
@@ -190,11 +199,30 @@ class Rules:
     def __init__(self, config: RunConfig):
         self.config = config
         self.tracks: dict[int, TrackState] = {}
-        self.gates: dict[tuple, Gate] = {}
-        self.scene = {"upright_since":None,"last_upright":None,"fall_candidate":False,"high_since":None}
+        self.temporal=PatternStates(config);self.gates=self.temporal.gates
+        self.event_updates=[];self.state_rows={}
+        self.scene = {"upright_since":None,"last_upright":None,"fall_candidate":False,"high_since":None,"owner":None}
+
+    def _body_kind(self, tid, proposed, lying):
+        body=[(key[1],gate) for key,gate in self.gates.items()
+              if key[0]==tid and key[1] in ('possible_fall','person_down')]
+        active=next((kind for kind,gate in body if gate.active),None)
+        if active is not None:return active
+        # Keep observing recovery on the gate that owned the last posture
+        # episode. Switching immediately after clear discards its standing
+        # evidence and can mislabel a second observed fall as person_down.
+        # Select a new kind only when a new lying observation begins.
+        if not lying and body:
+            return max(body,key=lambda item:item[1].last_observed_s
+                       if item[1].last_observed_s is not None else -math.inf)[0]
+        return proposed
 
     def step(self, people: list[Person], now: float, width: int, height: int, scene_state=None):
         events, details = [], {}
+        handoffs=self.temporal.begin(people,now);self.event_updates=self.temporal.event_updates
+        for new,old in handoffs.items():
+            if old in self.tracks:self.tracks[new]=self.tracks.pop(old)
+            if self.scene.get('owner')==old:self.scene['owner']=new
         cfg = self.config
         homography=None
         if cfg.calibration:
@@ -205,11 +233,9 @@ class Rules:
             tid = person.track_id
             if tid < 0:
                 continue
-            if not person.observed:
-                for key,gate in self.gates.items():
-                    if key[0]==tid:gate.since=None
+            if not person.observed or not person.alert_eligible or person.confidence<cfg.confidence:
                 details[tid] = {"speed":0, "speed_m_s":None, "posture":"unknown",
-                                "active":[], "tracking":"predicted"}
+                                "active":[key[1] for key,gate in self.gates.items() if key[0]==tid and gate.active], "tracking":"predicted" if not person.observed else "weak"}
                 continue
             state = self.tracks.setdefault(tid, TrackState())
             if state.history and now-state.last_seen > cfg.observation_gap:
@@ -222,8 +248,10 @@ class Rules:
             while len(state.history)>1 and now-state.history[0][0] > 1.0:
                 state.history.popleft()
             speed = 0.0
+            speed_ready=False
             speed_m_s = None
             if len(state.history)>=3 and now-state.history[0][0] >= .4:
+                speed_ready=True
                 arr = np.asarray(state.history)
                 ts = arr[:,0]-arr[:,0].mean()
                 velocity = (ts[:,None]*(arr[:,1:3]-arr[:,1:3].mean(0))).sum(0)/max(float(ts@ts),1e-9)
@@ -240,7 +268,10 @@ class Rules:
             elif pose == "lying":
                 if state.lying_since is None:
                     state.lying_since = now
-                    state.fall_candidate = state.last_upright is not None and now-state.last_upright <= 1.2
+                    standing_confirmed=any(key[0]==tid and key[1] in ('possible_fall','person_down') and gate.state=='clear'
+                                           and gate.observed_state=='clear' and gate.agreement>=cfg.state_confirmation_ratio
+                                           and gate.sample_count>=cfg.state_min_samples for key,gate in self.gates.items())
+                    state.fall_candidate = standing_confirmed and state.last_upright is not None and now-state.last_upright <= 1.2
             else:
                 state.lying_since = None
                 state.fall_candidate = False
@@ -251,17 +282,16 @@ class Rules:
                 conditions.append(("danger_zone",zone.name,inside,cfg.zone_hold))
             if cfg.fast_motion:
                 fast = speed_m_s>=cfg.speed_threshold_m_s if speed_m_s is not None else speed>=cfg.speed_threshold
-                conditions.append(("fast_motion","",fast,cfg.motion_hold))
+                conditions.append(("fast_motion","",fast if speed_ready else None,cfg.motion_hold))
             if cfg.fall_detection and not scene_state:
-                conditions.extend([
-                    ("possible_fall","",pose=="lying" and state.fall_candidate,cfg.fall_hold),
-                    ("person_down","",pose=="lying" and not state.fall_candidate,cfg.lying_hold),
-                ])
+                proposed='possible_fall' if state.fall_candidate else 'person_down'
+                kind=self._body_kind(tid,proposed,pose=='lying')
+                conditions.append((kind,'',True if pose=='lying' else False if pose=='upright' else None,
+                                   cfg.fall_hold if kind=='possible_fall' else cfg.lying_hold))
             active = []
             for kind,zone,condition,hold in conditions:
                 key = (tid,kind,zone)
-                gate = self.gates.setdefault(key,Gate())
-                fired = gate.update(now,condition and person.alert_eligible,hold,cfg.release_hold,cfg.observation_gap)
+                gate,fired=self.temporal.observe(tid,kind,zone,condition,hold,cfg.release_hold,cfg.observation_gap)
                 if gate.active:
                     active.append(kind)
                 if fired:
@@ -272,8 +302,9 @@ class Rules:
                                    "speed_heights_s":round(speed,3),"speed_m_s":speed_m_s,"posture":pose,
                                    "reason":(f"Нахождение в зоне «{zone}» не менее {hold:g} с" if kind=="danger_zone" else
                                               f"Условие «{kind}» устойчиво не менее {hold:g} с"),
-                                   "confirmation_s":round(now-started,3),"source":"person_tracking"})
-            details[tid] = {"speed":speed,"speed_m_s":speed_m_s,"posture":pose,"active":active,
+                                   "confirmation_s":round(now-started,3),"source":"person_tracking","scope":"person",
+                                   **gate.last_transition})
+            details[tid] = {"speed":speed,"speed_m_s":speed_m_s,"speed_ready":speed_ready,"posture":pose,"active":active,
                             "tracking":"measured" if person.alert_eligible else "weak"}
         # Absent tracks cannot accumulate confirmation time, and memory is bounded.
         for tid,state in list(self.tracks.items()):
@@ -282,6 +313,13 @@ class Rules:
                 for key in [k for k in self.gates if k[0]==tid]:
                     del self.gates[key]
         if cfg.fall_detection and scene_state is not None:
+            eligible=[p for p in people if p.track_id>0 and p.observed and p.alert_eligible and p.confidence>=cfg.confidence]
+            visible=[p for p in people if p.track_id>0 and p.observed]
+            candidate_tid=eligible[0].track_id if len(eligible)==1 and len(visible)==1 else 0
+            locked=next((key[0] for key,gate in self.gates.items() if key[1] in ('possible_fall','person_down') and gate.active
+                         and (self.scene.get('owner') is None or key[0]==self.scene['owner'])),None)
+            scene_tid=locked if locked is not None else candidate_tid
+            association_valid=scene_tid==0 or candidate_tid==scene_tid
             probability=float(scene_state.get("lying_probability",0))
             high=probability>=cfg.body_threshold
             temporal=scene_state.get('fall_probability')
@@ -289,7 +327,7 @@ class Rules:
                            and (high or any(d['posture']=='lying' and d['tracking']=='measured'
                                             for d in details.values())))
             high=high or temporal_high
-            strong_upright=probability<.1
+            strong_upright=probability<.1 and not high and "lying_probability" in scene_state
             if strong_upright:
                 if self.scene["upright_since"] is None:
                     self.scene["upright_since"]=now
@@ -301,23 +339,34 @@ class Rules:
                 if self.scene["high_since"] is None:
                     self.scene["high_since"]=now
                     previous=self.scene["last_upright"]
-                    self.scene["fall_candidate"]=previous is not None and now-previous<=cfg.body_transition_max_s
+                    standing_confirmed=any(key[0]==scene_tid and key[1] in ('possible_fall','person_down') and gate.state=='clear'
+                                           and gate.observed_state=='clear' and gate.agreement>=cfg.state_confirmation_ratio
+                                           and gate.sample_count>=cfg.state_min_samples for key,gate in self.gates.items())
+                    self.scene["fall_candidate"]=standing_confirmed and previous is not None and now-previous<=cfg.body_transition_max_s
                 self.scene["upright_since"]=None
             else:
                 self.scene["upright_since"]=None
                 self.scene["high_since"]=None
-            previous_fall=self.gates.get((0,"possible_fall",""))
-            kind="possible_fall" if temporal_high or self.scene["fall_candidate"] or (previous_fall and previous_fall.active) else "person_down"
-            for event_kind in ("possible_fall","person_down"):
+            proposed="possible_fall" if self.scene["fall_candidate"] else "person_down"
+            kind=self._body_kind(scene_tid,proposed,high)
+            for event_kind in (kind,):
                 hold=cfg.body_hold if event_kind=="possible_fall" else cfg.lying_hold
-                gate=self.gates.setdefault((0,event_kind,""),Gate())
-                fired=gate.update(now,high and kind==event_kind,hold,cfg.release_hold,cfg.observation_gap)
+                measured=(True if high else False if strong_upright else None) if association_valid else None
+                gate,fired=self.temporal.observe(scene_tid,event_kind,'',measured,hold,cfg.release_hold,cfg.observation_gap)
                 if fired:
+                    self.scene['owner']=scene_tid
                     started,sequence=fired
-                    events.append({"track_id":0,"kind":event_kind,"zone":"","start_s":round(started,3),
+                    events.append({"track_id":scene_tid,"kind":event_kind,"zone":"","start_s":round(started,3),
                         "alert_s":round(now,3),"sequence":sequence,"score":float(temporal) if temporal_high else probability,
                         "posture":"lying","source":"rgb_temporal_fusion" if temporal_high else "rgb_scene_classifier",
-                        "confirmation_s":round(now-started,3),
+                        "confirmation_s":round(now-started,3),"scope":"person" if scene_tid else "scene",**gate.last_transition,
                         "reason":(f"Временная модель падения и положение человека подтверждают событие в течение {hold:g} с. Требуется проверка оператором."
                                   if temporal_high else f"RGB-модель: вероятность горизонтального положения ≥ {cfg.body_threshold:.2f} в течение {hold:g} с. Требуется проверка оператором.")})
+        if not any(gate.active for key,gate in self.gates.items() if key[1] in ('possible_fall','person_down')):self.scene['owner']=None
+        self.state_rows=self.temporal.end(now);self.event_updates=self.temporal.event_updates
+        for tid,rows in self.state_rows.items():
+            if tid in details:details[tid]['patterns']=rows
         return events,details
+
+    def finish(self,now,reason='interrupted'):
+        updates=self.temporal.finish(now,reason);self.state_rows=self.temporal.state_rows;return updates

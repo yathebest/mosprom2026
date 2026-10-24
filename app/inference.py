@@ -16,6 +16,14 @@ class Backend(Protocol):
 
 
 class YoloBackend:
+    def _model_predict(self,model,*args,**kwargs):
+        from .scenario_models import accelerator_lane
+        with accelerator_lane(self.device.startswith('cuda')):
+            results=model.predict(*args,**kwargs)
+            # Materialize device results before yielding the lane to ONNX.
+            # All box/keypoint coordinates retain their original FP32 values.
+            return [result.cpu() for result in results]
+
     def __init__(self, model: Path, confidence: float, fall_detection=False,config=None):
         import torch
         import cv2
@@ -80,7 +88,9 @@ class YoloBackend:
 
     def predict_temporal(self,bgr,now):
         if self.temporal_fall is None:return
-        probability=self.temporal_fall.predict(bgr,now)
+        from .scenario_models import accelerator_lane
+        with accelerator_lane(getattr(self,'device','cpu').startswith('cuda')):
+            probability=self.temporal_fall.predict(bgr,now)
         state=dict(self.scene_state or {})
         state.update(fall_probability=probability,
                      fall_threshold=self.temporal_fall.threshold,
@@ -89,11 +99,13 @@ class YoloBackend:
 
     def predict_people(self, bgr):
         if self.body:
-            self.scene_state={"lying_probability":self.body.predict(bgr),"scope":"scene"}
+            from .scenario_models import accelerator_lane
+            with accelerator_lane(self.device.startswith('cuda')):
+                self.scene_state={"lying_probability":self.body.predict(bgr),"scope":"scene"}
         # Low confidence detections are retained for ByteTrack's second pass.
         rotations = [0,1,3] if self.rotated_search else [0]
         views = [np.ascontiguousarray(np.rot90(bgr,k)) for k in rotations]
-        results = self.model.predict(views,conf=.1,imgsz=640,rect=False,device=self.device,verbose=False)
+        results = self._model_predict(self.model,views,conf=.1,imgsz=640,rect=False,device=self.device,verbose=False)
         h,w = bgr.shape[:2]
         candidates = []
         for k,result in zip(rotations,results):
@@ -117,7 +129,7 @@ class YoloBackend:
             strong=[]
             for detector in self.person_models:
                 size=max(self.imgsz,960) if self.distant_people and w>=1600 and detector is self.person_models[-1] else self.imgsz
-                detected=detector.predict(bgr,classes=[0],conf=.1,imgsz=size,
+                detected=self._model_predict(detector,bgr,classes=[0],conf=.1,imgsz=size,
                                           device=self.device,verbose=False)[0]
                 for row in detected.boxes.data.cpu().numpy():
                     box=tuple(map(float,row[:4]));matches=[p for p in candidates if iou(p.box,box)>.3]
@@ -125,7 +137,7 @@ class YoloBackend:
                     strong.append(Person(box,float(row[4]),pose))
             candidates=suppress_duplicates(strong+[p for p in candidates if not any(iou(p.box,s.box)>.3 for s in strong)])
             if self.distant_people and w>=1600:
-                ordinary=self.person_models[-1].predict(bgr,classes=[0],conf=max(.4,self.confidence),
+                ordinary=self._model_predict(self.person_models[-1],bgr,classes=[0],conf=max(.4,self.confidence),
                     imgsz=self.imgsz,device=self.device,verbose=False)[0]
                 for row in ordinary.boxes.data.cpu().numpy():
                     box=tuple(map(float,row[:4]))
@@ -147,8 +159,13 @@ class YoloBackend:
                 for y in ys:
                     for x in xs:
                         crops.append(bgr[y:y+tile,x:x+tile]);origins.append((x,y))
-                outputs=self.person_models[-1].predict(crops,classes=[0],conf=max(.55,self.confidence),
-                    imgsz=640,rect=False,device=self.device,verbose=False)
+                # Every original tile is still analyzed at 640 FP32. A bounded
+                # batch prevents a transient eight-image workspace competing
+                # with all resident PPE sessions on an 8 GB laptop GPU.
+                outputs=[]
+                for offset in range(0,len(crops),2):
+                    outputs.extend(self._model_predict(self.person_models[-1],crops[offset:offset+2],classes=[0],
+                        conf=max(.55,self.confidence),imgsz=640,rect=False,device=self.device,verbose=False))
                 for result,(x,y),crop in zip(outputs,origins,crops):
                     ch,cw=crop.shape[:2]
                     for row in result.boxes.data.cpu().numpy():
@@ -178,10 +195,14 @@ class YoloBackend:
                         (self.refine_torso_pose and np.any(p.keypoints[[5,6,11,12],2]<.55)))
             selected=sorted((p for p in candidates if needs_pose(p) and p.height>=64
                              and p.confidence>=self.confidence),key=lambda p:p.height,reverse=True)[:4]
+            crop_specs=[];pose_crops=[]
             for p in selected:
                 a,b,c,d=p.box;pad=p.height*.1
                 x1,y1=max(0,int(a-pad)),max(0,int(b-pad));x2,y2=min(w,int(c+pad)),min(h,int(d+pad))
-                result=self.model.predict(bgr[y1:y2,x1:x2],conf=.25,imgsz=640,rect=False,device=self.device,verbose=False)[0]
+                pose_crops.append(bgr[y1:y2,x1:x2]);crop_specs.append((p,x1,y1))
+            outputs=self._model_predict(self.model,pose_crops,conf=.25,imgsz=640,rect=False,
+                                        device=self.device,verbose=False) if pose_crops else []
+            for result,(p,x1,y1) in zip(outputs,crop_specs):
                 if result.keypoints is not None and len(result.boxes):
                     from .scenario_models import iou
                     matches=[]

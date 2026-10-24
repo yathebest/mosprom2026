@@ -5,11 +5,38 @@ from pathlib import Path
 import re
 import os
 import sys
+import threading
+from collections import deque
+from contextlib import nullcontext
 
 import cv2
 import numpy as np
 
 _DLL_HANDLES=[]
+
+
+class FairInferenceLane:
+    """FIFO device admission: a fast producer cannot bypass a queued worker."""
+    def __init__(self):self.condition=threading.Condition();self.queue=deque()
+    def __enter__(self):
+        ticket=object()
+        with self.condition:
+            self.queue.append(ticket)
+            try:
+                while self.queue[0] is not ticket:self.condition.wait()
+            except BaseException:
+                self.queue.remove(ticket);self.condition.notify_all();raise
+        return self
+    def __exit__(self,*exc):
+        with self.condition:
+            self.queue.popleft();self.condition.notify_all()
+
+
+_ACCELERATOR_LANE=FairInferenceLane()
+
+
+def accelerator_lane(enabled=True):
+    return _ACCELERATOR_LANE if enabled else nullcontext()
 
 
 def onnx_session(path,threads=4):
@@ -26,6 +53,10 @@ def onnx_session(path,threads=4):
             providers=[('CUDAExecutionProvider',{'cudnn_conv_algo_search':'HEURISTIC',
                         'cudnn_conv_use_max_workspace':'0','gpu_mem_limit':1024**3}),*providers]
     options=ort.SessionOptions();options.intra_op_num_threads=min(threads,2);options.inter_op_num_threads=1
+    # Each model owns a pool. Idle polling across five CUDA sessions otherwise
+    # competes with capture, JPEG encoding and PyTorch's CPU preprocessing.
+    options.add_session_config_entry('session.intra_op.allow_spinning','0')
+    options.add_session_config_entry('session.inter_op.allow_spinning','0')
     return ort.InferenceSession(str(path),sess_options=options,providers=providers)
 
 
@@ -118,7 +149,8 @@ class OnnxDetector:
     def predict(self,bgr):
         h,w=bgr.shape[:2]
         tensor,(r,left,top)=letterbox_tensor(bgr,self.size,self.dtype)
-        output=self.session.run(None,{self.input_name:tensor})[0]
+        with accelerator_lane(self.provider=='CUDAExecutionProvider'):
+            output=self.session.run(None,{self.input_name:tensor})[0]
         raw=np.asarray(output)[0]
         if raw.shape[0]==4+len(self.names):raw=raw.T
         if raw.shape[1]!=4+len(self.names):raise ValueError('Unsupported ONNX detection output shape')
@@ -142,6 +174,7 @@ class CropClassifier:
     """Optional locally trained classifier, with preprocessing in ONNX metadata."""
     def __init__(self,path,region):
         self.session=onnx_session(path,2)
+        self.provider=self.session.get_providers()[0]
         meta=self.session.get_modelmeta().custom_metadata_map
         import json
         self.labels=json.loads(meta['class_names']);self.region=region;self.name=path.stem
@@ -171,7 +204,9 @@ class CropClassifier:
         crop=np.asarray(Image.fromarray(frame[y1:y2,x1:x2,::-1]).resize(
             (self.size,self.size),Image.Resampling.BILINEAR))
         tensor=np.ascontiguousarray(crop.transpose(2,0,1)[None],dtype=np.float32)/255
-        logits=np.asarray(self.session.run(None,{self.input_name:(tensor-self.mean)/self.std})[0])[0]
+        with accelerator_lane(self.provider=='CUDAExecutionProvider'):
+            output=self.session.run(None,{self.input_name:(tensor-self.mean)/self.std})[0]
+        logits=np.asarray(output)[0]
         values=np.exp(logits-logits.max());scores=values/values.sum();index=int(scores.argmax())
         label=self.labels[index]
         if scores[index]<self.threshold or label=='unknown':return None

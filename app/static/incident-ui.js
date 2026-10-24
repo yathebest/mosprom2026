@@ -1,0 +1,117 @@
+/* Confirmed state and episode presentation. Inference and lifecycle decisions
+   remain on the server; clip bounds and missing people never close an event. */
+(function(root,factory){const api=factory();root.IncidentUI=api;if(typeof module==='object'&&module.exports)module.exports=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
+ 'use strict';
+ const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const finite=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value))?Number(value):null;
+ const time=value=>{const s=finite(value);return s===null?'—':`${Math.floor(s/60)}:${(s%60).toFixed(1).padStart(4,'0')}`};
+ const stateLabels={unknown:'Пока не определено',violation:'Нарушение подтверждено',clear:'Признак нарушения снят'};
+ const clearLabels={no_helmet:'Каска обнаружена',no_vest:'Жилет обнаружен',no_mask:'Защита лица обнаружена',no_harness_at_height:'Привязь обнаружена в зоне высоты'};
+ const observationLabels={unknown:'Не определено',violation:'Признак нарушения',clear:'Признака нарушения нет'};
+ const normalizeState=value=>({violation:'violation',clear:'clear',unknown:'unknown',missing:'violation',worn:'clear'})[value]||'unknown';
+ function episode(event){
+  const p=event?.payload||{},start=finite(event?.start_s??p.start_s),end=finite(p.end_s??event?.end_s);
+  const claimed=p.episode_state||event?.episode_state||'unknown';
+  const closed=claimed==='closed'&&end!==null&&start!==null&&end>=start;
+  const duration=closed?(finite(p.duration_s??event?.duration_s)??end-start):null;
+  const observed=finite(p.observed_until_s??event?.observed_until_s);
+  return {id:p.episode_id||event?.episode_id||null,state:closed?'closed':claimed==='interrupted'?'interrupted':claimed==='open'?'open':'unknown',
+   start,end:closed?end:null,duration:duration!==null&&duration>=0?duration:null,
+   observedUntil:observed,observedDuration:start!==null&&observed!==null&&observed>=start?observed-start:null,
+   closedAt:closed?finite(p.closed_at_s??event?.closed_at_s):null,
+   endImage:closed?(p.end_image||event?.end_image||null):null,
+   closureReason:p.closure_reason||event?.closure_reason||null,confirmation:p.state_confirmation||{}};
+ }
+ function episodeMarkup(event,format=time){
+  const e=episode(event),status={closed:'Эпизод завершён',open:'Эпизод продолжается',interrupted:'Наблюдение прервано',unknown:'Завершение не зафиксировано'}[e.state];
+  return `<section class="episode-summary" data-episode-state="${e.state}"><span class="episode-badge episode-${e.state}">${status}</span><dl class="episode-times"><div><dt>Начало эпизода</dt><dd>${e.start===null?'—':format(e.start)}</dd></div><div><dt>Завершение эпизода</dt><dd>${e.end===null?'Не подтверждено завершение':format(e.end)}</dd></div><div><dt>Длительность эпизода</dt><dd>${e.duration===null?'Пока неизвестна':format(e.duration)}</dd></div></dl>${e.end===null&&e.observedDuration!==null?`<p class="episode-observed"><span>Признак наблюдался до</span> <b>${format(e.observedUntil)}</b> <span>от начала записи; это не время завершения.</span></p>`:''}${e.closedAt!==null?`<p class="episode-observed"><span>Отсутствие нарушения подтверждено в</span> <b>${format(e.closedAt)}</b></p>`:''}${e.state==='interrupted'?'<p class="episode-observed">Остановка источника или потеря наблюдения не доказывает, что нарушение закончилось.</p>':''}</section>`;
+ }
+ function closureProofMarkup(event,format=time){
+  const e=episode(event);if(!e.endImage)return '';
+  return `<section class="episode-end-proof"><h3>Кадр подтверждённого завершения</h3><img src="/media/${escape(e.endImage)}" alt="Кадр подтверждённого завершения эпизода" loading="lazy"><p class="hint"><span>Граница эпизода</span> <b>${format(e.end)}</b>${e.closedAt!==null?` · <span>кадр подтверждения</span> <b>${format(e.closedAt)}</b>`:''}</p></section>`;
+ }
+ function policyMarkup(policy={}){
+  const window=finite(policy.window_s),nominal=finite(policy.nominal_window_s),ratio=finite(policy.ratio),samples=finite(policy.min_samples);
+  if(window===null&&ratio===null&&samples===null)return '';
+  return `<div class="state-policy"><b>Как подтверждено состояние</b><p>${window!==null?`<span>Фактическое окно</span>: <b>${window}</b> <span>с</span>. `:''}${nominal!==null&&nominal!==window?`<span>Заданное окно</span>: <b>${nominal}</b> <span>с</span>. `:''}${ratio!==null?`<span>Доля времени с согласованным признаком</span>: <b>${Math.round(ratio*100)}%</b>. `:''}${samples!==null?`<span>Минимум свежих наблюдений</span>: <b>${samples}</b>.`:''}</p>${policy.cadence_limited?'<p class="hint">При редких свежих наблюдениях окно увеличено, чтобы получить достаточно измерений.</p>':''}<p class="hint">Доля времени в окне — правило подтверждения, а не точность нейросети. Результат требует проверки оператором.</p></div>`;
+ }
+ function episodePolicyMarkup(event){const p=event?.payload||{},start=p.start_state_confirmation||p.state_confirmation;return `<h3>Подтверждение начала</h3>${policyMarkup(start)}${episode(event).state==='closed'?`<h3>Подтверждение завершения</h3>${policyMarkup(p.state_confirmation)}`:''}`}
+ const patternKinds=['danger_zone','fast_motion','possible_fall','person_down','no_helmet','no_vest','no_mask','no_harness_at_height','possible_phone_use','possible_smoking','fire','smoke','equipment_proximity','barrier_crossing','under_load','under_conveyor','unsafe_load_posture'];
+ function confirmationConfig({ratio=.75,minSamples=3,windows={}}={}){
+  ratio=finite(ratio);minSamples=finite(minSamples);
+  if(ratio===null||ratio<.75||ratio>1)throw new Error('Доля времени должна быть от 75 до 100%.');
+  if(minSamples===null||!Number.isInteger(minSamples)||minSamples<3||minSamples>30)throw new Error('Нужно от 3 до 30 свежих наблюдений.');
+  const overrides={};for(const [kind,value] of Object.entries(windows)){
+   if(value===''||value===null||value===undefined)continue;
+   const n=finite(value);if(!patternKinds.includes(kind)||n===null||n<.2||n>60)throw new Error('Окно сценария должно быть от 0,2 до 60 секунд.');overrides[kind]=n;
+  }
+  return {state_confirmation_ratio:ratio,state_min_samples:minSamples,state_windows:overrides};
+ }
+ function mergeEvents(current,incoming){
+  const old=new Map((current||[]).map(e=>[String(e.id),e])),updates=new Map((incoming||[]).map(e=>[String(e.id),e]));
+  const additions=(incoming||[]).filter(e=>!old.has(String(e.id)));
+  return additions.concat((current||[]).map(e=>{const update=updates.get(String(e.id));return update?{...e,...update,payload:{...(e.payload||{}),...(update.payload||{})}}:e}));
+ }
+ function isActivation(event){
+  const state=event?.payload?.episode_state||event?.episode_state;
+  return !['closed','interrupted'].includes(state)&&event?.payload?.transition!=='clear';
+ }
+ function personRows(states,assessments=[]){
+  const rows=new Map();
+  for(const [id,patterns] of Object.entries(states||{})){
+   if(!patterns||typeof patterns!=='object')continue;
+   rows.set(String(id),{id:Number(id),tracking:null,patterns:Object.entries(patterns).map(([key,value])=>({key,...value,state:normalizeState(value?.state),observed_state:normalizeState(value?.observed_state)}))});
+  }
+  for(const a of assessments||[]){
+   const id=String(a.track_id),row=rows.get(id)||{id:Number(a.track_id),tracking:a.tracking,patterns:[]};row.tracking=a.tracking;row.assessed=true;
+   for(const [key,value] of Object.entries(a.ppe||{})){
+    const pattern={helmet:'no_helmet',vest:'no_vest',mask:'no_mask',harness:'no_harness_at_height'}[key]||key;
+    if(row.patterns.some(p=>p.key===pattern||p.key.startsWith(pattern+':')))continue;
+    row.patterns.push({key:pattern,state:normalizeState(value.confirmed_state),observed_state:normalizeState(value.observed_state??value.state),
+     confirmed_at_s:value.confirmed_at_s,observed_at_s:value.observed_at_s,window_s:value.state_confirmation?.window_s,
+     agreement:value.agreement??value.state_confirmation?.agreement,state_confirmation:value.state_confirmation,reason:value.reason});
+   }
+   rows.set(id,row);
+  }
+  return Array.from(rows.values()).sort((a,b)=>a.id-b.id);
+ }
+ function stateView(states,assessments=[],options={}){
+  const now=finite(options.now),rows=personRows(states,assessments).map(row=>{
+   row.patterns=row.patterns.map(p=>{
+    const colon=p.key.indexOf(':'),kind=colon<0?p.key:p.key.slice(0,colon),zone=colon<0?'':p.key.slice(colon+1);
+    const observed=finite(p.observed_at_s??p.last_observed_s??p.last_seen_s),window=finite(p.window_s??p.state_confirmation?.window_s);
+    const stale=Boolean(p.stale)||(now!==null&&observed!==null&&now-observed>Math.max(3,(window??1)*2));
+    const last=stale||p.observation_fresh===false||['weak','predicted'].includes(row.tracking)?'unknown':p.observed_state;
+    const pending=last!=='unknown'&&p.state!=='unknown'&&last!==p.state,currentState=last==='unknown'?'unknown':pending?'pending':p.state;
+    return {...p,kind,zone,observed,window,stale,last,currentState};
+   });
+   const recentSample=row.patterns.some(p=>{const sample=finite(p.last_sample_s??p.observed);return sample===null||now===null||now-sample<=Math.max(3,(p.window??1)*2)});row.current=Boolean(row.assessed&&row.tracking!=='predicted'&&recentSample)||row.patterns.some(p=>!p.stale&&p.observation_fresh!==false&&p.observed!==null&&row.tracking!=='predicted');
+   row.violations=row.patterns.filter(p=>p.state==='violation').length;
+   return row;
+  });
+  const current=rows.filter(r=>r.current).sort((a,b)=>Boolean(b.violations)-Boolean(a.violations)||a.id-b.id),history=rows.filter(r=>!r.current).sort((a,b)=>Boolean(b.violations)-Boolean(a.violations)||b.id-a.id);
+  const limit=Number.isInteger(options.limit)?Math.max(1,options.limit):4;
+  return {rows,primary:current.slice(0,limit),more:current.slice(limit),history,violations:rows.reduce((n,r)=>n+r.violations,0),violationIds:rows.filter(r=>r.violations).map(r=>r.id)};
+ }
+ function stateRenderKey(view,assessments=[],options={}){
+  return JSON.stringify([Boolean(options.historical),options.ratio??.75,view.rows.map(r=>[r.id,r.current,r.tracking,r.patterns.map(p=>[p.key,p.state,p.observed_state,p.currentState,p.stale,p.confirmed_at_s,p.observed,p.window,p.clear_window_s,p.agreement,p.state_confirmation,p.episode_id])]),assessments.map(r=>[r.track_id,r.tracking,r.visibility?.small_objects,Object.entries(r.ppe||{}).map(([k,v])=>[k,v.observed_state||v.state,v.reason,v.observed_at_s])])]);
+ }
+ function stateCardMarkup(row,options={}){
+  const format=options.format||time,labels=options.labels||{},expanded=options.expandedKeys||new Set(),name=row.id===0?'Сцена':`Человек #${row.id}`;
+  return `<article class="person-state-card" data-person-state-id="${row.id}"><h4>${name}${row.violations?` <span class="state-violation-count"><span>Не снято</span>: ${row.violations}</span>`:''}</h4><div class="person-state-brief">${row.patterns.map(p=>{
+   const text=p.currentState==='unknown'?'Текущее состояние не определено':p.currentState==='pending'?'Проверяем изменение состояния':p.state==='clear'?(clearLabels[p.kind]||stateLabels.clear):stateLabels[p.state];
+   return `<div class="person-state-brief-row" data-current-state="${p.currentState}"><span><b>${escape(labels[p.kind]||p.kind)}</b>${p.zone?` · <span data-i18n-ignore>${escape(p.zone)}</span>`:''}</span><span class="confirmed-state confirmed-${p.currentState}">${text}</span></div>`;
+  }).join('')}</div><details class="person-state-measurements" data-preserve-key="person:${row.id}" ${expanded.has('person:'+row.id)?'open':''}><summary>Замеры и история подтверждения</summary>${row.patterns.map(p=>{
+   const agreement=finite(p.agreement),required=finite(p.state_confirmation?.ratio??options.ratio)??.75;
+   return `<div class="person-pattern-state"><b>${escape(labels[p.kind]||p.kind)}</b>${p.zone?` · <span data-i18n-ignore>${escape(p.zone)}</span>`:''}<p class="state-history"><span>Последнее подтверждённое состояние</span>: <b>${p.state==='clear'?(clearLabels[p.kind]||stateLabels.clear):stateLabels[p.state]}</b>${finite(p.confirmed_at_s)!==null?` · ${format(p.confirmed_at_s)}`:''}</p><p class="measurement-line"><span>Последний замер</span>: <b>${observationLabels[p.last]}</b>${p.observed!==null?` · ${format(p.observed)}`:''}${p.stale?' · <span>Данные устарели</span>':''}</p>${p.window!==null?`<p class="state-window"><span>Окно подтверждения</span>: <b>${p.window}</b> <span>с</span> · <span>доля времени не менее</span> <b>${Math.round(required*100)}%</b>${agreement!==null?` · <span>сейчас</span> <b>${Math.round(agreement*100)}%</b>`:''}${finite(p.state_confirmation?.nominal_window_s)!==null&&Number(p.state_confirmation.nominal_window_s)!==p.window?` · <span>задано</span> <b>${p.state_confirmation.nominal_window_s}</b> <span>с</span>`:''} · <span>минимум наблюдений</span> <b>${Number(p.state_confirmation?.min_samples??options.minSamples??3)}</b>${finite(p.clear_window_s)!==null?` · <span>окно снятия признака</span> <b>${p.clear_window_s}</b> <span>с</span>`:''}</p>`:''}</div>`;
+  }).join('')}</details></article>`;
+ }
+ function stateGroupMarkup(view,group,options={}){return (view[group]||[]).map(row=>stateCardMarkup(row,options)).join('')}
+ function statesMarkup(states,assessments=[],options={}){
+  const view=options.view||stateView(states,assessments,options),expanded=options.expandedKeys||new Set();if(!view.rows.length)return '';
+  const group=(key,title)=>view[key].length?`<details class="state-id-group" data-state-group="${key}" data-preserve-key="group:${key}" ${expanded.has('group:'+key)?'open':''}><summary><span>${title}</span> · <b>${view[key].length}</b>${view[key].some(r=>r.violations)?` · <span class="state-violation-count"><span>Не снято</span>: ${view[key].reduce((n,r)=>n+r.violations,0)}</span>`:''}</summary><div class="state-group-body" data-state-group-body="${key}">${expanded.has('group:'+key)?stateGroupMarkup(view,key,options):''}</div></details>`:'';
+  return '<div class="confirmed-states"><div class="states-panel-head"><h3>Подтверждённые состояния по ID</h3><div class="states-counts"><span>В наблюдении</span>: <b>'+view.rows.filter(r=>r.current).length+'</b> · <span>Ожидают наблюдения</span>: <b>'+view.history.length+'</b>'+ (view.violations?' · <span class="state-violation-count"><span>Не снято</span>: '+view.violations+'</span>':'')+'</div></div><p class="hint state-compact-help">Неизвестный замер не снимает нарушение. История и параметры доступны внутри карточки.</p>'+(view.violations?'<p class="state-pending-ids"><span>Нарушения не сняты у ID</span>: <span data-i18n-ignore>'+view.violationIds.slice(0,12).map(id=>id===0?'0':'#'+id).join(', ')+(view.violationIds.length>12?' …':'')+'</span></p>':'')+(options.historical?'<p class="hint">Это последние состояния сохранённого сеанса, а не текущее наблюдение за камерой.</p>':'')+'<div class="state-primary-grid">'+view.primary.map(row=>stateCardMarkup(row,options)).join('')+'</div>'+group('more','Остальные люди в наблюдении')+group('history','Ранее наблюдавшиеся ID')+'<details class="state-reading-help" data-preserve-key="reading-help" '+(expanded.has('reading-help')?'open':'')+'><summary>Как читать состояния</summary><p class="hint">Подтверждённое состояние и последний замер показаны отдельно. Пропуск или неопределённый кадр не означает, что нарушение закончилось.</p><p class="hint">Доля относится ко времени в окне, а не к числу кадров. Это не точность модели и не вероятность нарушения. Неопределённые кадры не подтверждают безопасное состояние.</p></details></div>';
+ }
+
+ return {episode,episodeMarkup,closureProofMarkup,policyMarkup,episodePolicyMarkup,patternKinds,confirmationConfig,mergeEvents,isActivation,personRows,stateView,stateRenderKey,stateCardMarkup,stateGroupMarkup,statesMarkup};
+});

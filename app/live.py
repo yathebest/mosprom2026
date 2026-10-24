@@ -19,7 +19,7 @@ from . import storage as db
 from .core import Rules
 from .inference import create_backend,PeopleTracker
 from .streams import open_capture
-from .video import MODEL,draw,ffmpeg_path
+from .video import MODEL,draw,ffmpeg_path,state_snapshot,finish_rules,persist_episode_updates
 from .scenarios import ScenarioRules,base_config,annotate_objects,assessment_rows
 from .preview_motion import PreviewMotion
 
@@ -73,6 +73,8 @@ class LiveSession:
         self.ring=deque();self.latencies=[];self.clip_futures=[];self.backend=None;self.backend_name=None
         self.created=time.monotonic()
         self.assessments=[]
+        self.people_states={};self.scenario_states={};self.states_updated_s=0.
+        self.effective_observation_gap_s=max(2.5,config.observation_gap)
         self.frame_lock=threading.RLock()
         self.display_frames=queue.Queue(maxsize=1);self.scenario_frames=queue.Queue(maxsize=1)
         self.record_frames=queue.Queue(maxsize=1);self.record_times=deque(maxlen=150)
@@ -178,11 +180,15 @@ class LiveSession:
         for event in events:
             arrived=time.monotonic()-self.first_mono
             event.update(live=True,clip_state='capturing',processing_delay_s=round(max(0,arrived-event['alert_s']),3),
+                clip_scope='incident_excerpt',
                 occurred_at=(self.frame_origin+timedelta(seconds=event['alert_s'])).isoformat(),
                 priority=next((z.priority for z in self.config.zones if z.name==event.get('zone')),None))
             image=f'runs/{self.id}/evidence_{uuid.uuid4().hex}.jpg'
             cv2.imwrite(str(db.DATA/image),annotated)
-            saved_id=db.add_event(self.id,self.config.camera,event,image)
+            saved_id,created=db.add_event(self.id,self.config.camera,event,image,return_created=True)
+            if not created:
+                (db.DATA/image).unlink(missing_ok=True)
+                continue
             with self.frame_lock:
                 self.pending.append({'id':saved_id,'frames':[(t,b) for t,b in self.ring if source_time-PRE_SECONDS<=t<=source_time+POST_SECONDS],
                     'until':source_time+POST_SECONDS,'alert_s':event['alert_s']})
@@ -192,8 +198,9 @@ class LiveSession:
     def analyze_scenarios(self):
         # Slower object models have their own latest-frame queue. Each result
         # enters the rule engine exactly once, at its source timestamp.
-        cfg=self.config.model_copy(update={'observation_gap':max(2.5,self.config.observation_gap)})
+        cfg=self.config.model_copy(update={'observation_gap':self.effective_observation_gap_s})
         rules=ScenarioRules(cfg)
+        now=observed_now=0.
         try:
             while not self.stop_event.is_set():
                 try:now,frame,people,details=self.scenario_frames.get(timeout=.2)
@@ -202,19 +209,27 @@ class LiveSession:
                 self.scenario_latencies.append((time.perf_counter()-start)*1000)
                 self.scenario_latencies=self.scenario_latencies[-300:]
                 events,active=rules.step(people,objects,now,frame.shape[1],frame.shape[0],details)
+                observed_now=now
+                updates=list(getattr(rules,'event_updates',[]))
+                with self.frame_lock:
+                    self.scenario_states=state_snapshot(rules);self.states_updated_s=max(self.states_updated_s,now)
                 self.assessments=assessment_rows(people,rules.ppe_details)
                 self.scenario_visual={'time':now,'objects':objects,'details':rules.ppe_details,'status':rules.ppe_status}
                 self.scenario_count+=1;self.scenario_times.append(time.monotonic())
                 self.scenario_age_ms=round((time.monotonic()-self.first_mono-now)*1000,1)
                 for tid,kinds in active.items():
                     if tid in details:details[tid]['active'].extend(kinds)
-                if events:
+                if events or updates:
                     annotated=draw(frame,people,details,self.config,now)
                     annotated=annotate_objects(annotated,objects,rules.ppe_status,people,rules.ppe_details)
                     self.record_events(events,annotated,now)
+                    persist_episode_updates(self.id,updates,annotated)
         except Exception:
             logging.exception('Live scenario inference failed: %s',self.id)
             self.error='Ошибка анализа СИЗ и объектов. Запустите эфир заново.';self.stop_event.set()
+        finally:
+            persist_episode_updates(self.id,finish_rules(rules,observed_now,'processing_failed' if self.error else 'stream_stopped'))
+            with self.frame_lock:self.scenario_states=state_snapshot(rules)
 
     def read_network(self):
         cap=None
@@ -232,7 +247,14 @@ class LiveSession:
             if cap is not None:cap.release()
 
     def report(self):
+        with self.frame_lock:
+            states={tid:dict(rows) for tid,rows in self.people_states.items()}
+            for tid,rows in self.scenario_states.items():states.setdefault(tid,{}).update(rows)
         return {'id':self.id,'camera':self.config.camera,'state':self.state,'error':self.error,
+                'current_states':states,'current_states_updated_s':self.states_updated_s,
+                'effective_observation_gap_s':self.effective_observation_gap_s,
+                'effective_people_observation_gap_s':self.effective_observation_gap_s,
+                'effective_scenario_observation_gap_s':self.effective_observation_gap_s,
                 'config':self.config.model_dump(),'job_id':self.id,
                 'source_type':self.source_type,'started_at':self.started.isoformat(),
                 'elapsed_s':round(self.elapsed,2),'processed_frames':self.processed,
@@ -297,6 +319,7 @@ class LiveSession:
             self.clip_futures=[f for f in self.clip_futures if not f.done()]
 
     def run(self):
+        rules=scenarios=None;separated=False;now=0.;rule_time=scenario_time=0.
         try:
             renderer=threading.Thread(target=self.render_frames,name='display-'+self.id[:6],daemon=True)
             renderer.start();self.helpers.append(renderer)
@@ -307,13 +330,16 @@ class LiveSession:
             self.backend=create_backend(MODEL,self.config.confidence,self.config.fall_detection,config=self.config)
             self.backend_name=self.backend.name
             tracker=PeopleTracker(SAMPLE_FPS,self.config.confidence,max_gap=3.)
-            rules=Rules(base_config(self.config))
+            # LIVE sampling follows actual inference cadence, not the requested
+            # 10 FPS ceiling. Three source-timed measurements are still required;
+            # projected/predicted boxes never become evidence for this allowance.
+            cfg=self.config.model_copy(update={'observation_gap':self.effective_observation_gap_s})
+            rules=Rules(base_config(cfg))
             separated=callable(getattr(self.backend,'predict_people',None)) and callable(getattr(self.backend,'predict_scenarios',None))
-            scenarios=ScenarioRules(self.config)
+            scenarios=ScenarioRules(cfg)
             if separated:
                 helper=threading.Thread(target=self.analyze_scenarios,name='objects-'+self.id[:6],daemon=True)
                 helper.start();self.helpers.append(helper)
-            self.state='running';db.update_job(self.id,status='running')
             while not self.stop_event.is_set():
                 try:captured,frame=self.frames.get(timeout=.25)
                 except queue.Empty:
@@ -332,6 +358,10 @@ class LiveSession:
                 people=tracker.update(people,frame.shape,now)
                 scene=dict(getattr(self.backend,'scene_state',None) or {}) or None
                 events,details=rules.step(people,now,w,h,scene)
+                rule_time=now
+                updates=list(getattr(rules,'event_updates',[]))
+                with self.frame_lock:
+                    self.people_states=state_snapshot(rules);self.states_updated_s=max(self.states_updated_s,now)
                 scene_alerts=[key[1] for key,gate in rules.gates.items() if key[0]==0 and gate.active]
                 if separated:
                     # Clone mutable arrays/details before passing ownership to
@@ -342,13 +372,24 @@ class LiveSession:
                 else:
                     objects=getattr(self.backend,'objects_state',[])
                     extra,active=scenarios.step(people,objects,now,w,h,details)
+                    scenario_time=now
+                    updates.extend(getattr(scenarios,'event_updates',[]))
+                    with self.frame_lock:self.scenario_states=state_snapshot(scenarios)
                     events.extend(extra);self.assessments=assessment_rows(people,scenarios.ppe_details)
+                    for tid,kinds in active.items():
+                        if tid in details:details[tid]['active'].extend(kinds)
                     self.scenario_visual={'time':now,'objects':objects,'details':scenarios.ppe_details,'status':scenarios.ppe_status}
                 preview_scale=min(1,960/max(h,w))
                 small=cv2.resize(frame,(round(w*preview_scale),round(h*preview_scale))) if preview_scale<1 else frame
                 self.visual={'time':now,'people':people,'details':details,'scene':scene,'scene_alerts':scene_alerts,
                              'gray':cv2.cvtColor(small,cv2.COLOR_BGR2GRAY),'width':w}
-                if events:self.record_events(events,draw(frame,people,details,self.config,now,scene,scene_alerts),now)
+                if events or updates:
+                    annotated=draw(frame,people,details,self.config,now,scene,scene_alerts)
+                    if not separated:annotated=annotate_objects(annotated,objects,scenarios.ppe_status,people,scenarios.ppe_details)
+                    self.record_events(events,annotated,now)
+                    persist_episode_updates(self.id,updates,annotated)
+                if self.state=='starting':
+                    self.state='running';db.update_job(self.id,status='running')
                 self.processed+=1;self.analysis_times.append(time.monotonic())
                 self.analysis_age_ms=round((time.monotonic()-captured)*1000,1)
         except Exception as exc:
@@ -356,6 +397,11 @@ class LiveSession:
             self.error='Ошибка прямого эфира: '+type(exc).__name__
         finally:
             self.state='stopping';self.stop_event.set();self.url=None
+            reason='processing_failed' if self.error else 'stream_stopped'
+            persist_episode_updates(self.id,finish_rules(rules,rule_time,reason)+([] if separated else finish_rules(scenarios,scenario_time,reason)))
+            with self.frame_lock:
+                self.people_states=state_snapshot(rules)
+                if not separated:self.scenario_states=state_snapshot(scenarios)
             for helper in self.helpers:helper.join(timeout=30)
             self.queue_finished_clips(self.elapsed,force=True)
             for future in list(self.clip_futures):

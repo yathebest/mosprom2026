@@ -28,7 +28,11 @@ def test_short_unknown_ppe_gap_bridges_but_never_confirms_itself():
     assert not rules.step([worker()],[no_helmet()],0,100,200)[0]
     assert not rules.step([worker()],[],.2,100,200)[0]
     assert not rules.step([worker()],[no_helmet()],.3,100,200)[0]
-    events=rules.step([worker()],[no_helmet()],.4,100,200)[0]
+    # Unknown time contributes zero support: the former .4s assertion used
+    # contiguous-hold semantics and is intentionally replaced by 75% time.
+    assert not rules.step([worker()],[no_helmet()],.4,100,200)[0]
+    assert not rules.step([worker()],[no_helmet()],.5,100,200)[0]
+    events=rules.step([worker()],[no_helmet()],.6,100,200)[0]
     assert len(events)==1
     # Repeated missing evidence is not clearance and must not re-arm an episode.
     for t in [1.,2.,3.,4.]:assert not rules.step([worker()],[],t,100,200)[0]
@@ -46,8 +50,9 @@ def test_reset_confirmation_requires_three_new_measurements():
     gate=EvidenceGate()
     assert gate.update(0,True,.1,.5,1) is None
     assert gate.update(.2,True,.1,.5,1) is None
-    # Predicted tracks reset the start; earlier samples must not leak through.
-    gate.since=None
+    # An explicit unknown observation, not mutation of a legacy private hold
+    # field, interrupts time support and requires three fresh measurements.
+    assert gate.update(.25,None,.1,.5,1) is None
     assert gate.update(.3,True,.1,.5,1) is None
     assert gate.update(.5,True,.1,.5,1) is None
     assert gate.update(.6,True,.1,.5,1) is not None
@@ -85,6 +90,9 @@ def test_phone_occlusion_does_not_repeat_an_alert_and_long_clearance_rearms():
     for t in [.6,.8,1.]:events+=rules.step([p],[],t,100,200)[0]
     for t in [1.2,1.4,1.6]:events+=rules.step([p],[phone],t,100,200)[0]
     assert len(events)==1
+    # New safe-state policy requires both hands actually visible before the
+    # absence of a phone can close an interval. One occluded hand is unknown.
+    p.keypoints[10]=[50,60,.9]
     for t in np.arange(2.,6.6,.5):events+=rules.step([p],[],float(t),100,200)[0]
     for t in [7.,7.2,7.4]:events+=rules.step([p],[phone],t,100,200)[0]
     assert len(events)==2

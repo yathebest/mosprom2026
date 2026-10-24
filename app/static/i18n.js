@@ -106,9 +106,9 @@
     if(element.matches('option')&&element.value&&element.parentElement?.matches('#live-template,#template,#filter-camera,#filter-zone,#clip-camera'))return true;
     return users.has(normalize(text));
   }
-  function apply(scope){
+  function apply(scope,knownUsers){
     if(typeof document==='undefined')return;
-    scope=scope||document.body;if(!scope)return;const users=userValues();
+    scope=scope||document.body;if(!scope)return;const users=knownUsers||userValues();
     const walker=document.createTreeWalker(scope,NodeFilter.SHOW_TEXT);const nodes=[];
     while(walker.nextNode())nodes.push(walker.currentNode);
     for(const node of nodes){
@@ -145,8 +145,19 @@
     document.documentElement.lang=selected;
     const start=()=>{
       for(const id of ['interface-language','auth-interface-language']){const select=document.getElementById(id);if(select){select.value=selected;select.addEventListener('change',()=>setLanguage(select.value))}}
-      setLanguage(selected);let queued=false;
-      new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply()})}).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']});
+      setLanguage(selected);let queued=false;const pending=new Set();
+      new MutationObserver(records=>{
+        for(const record of records){
+          if(record.type==='characterData'&&canonical.get(record.target)?.rendered===record.target.data)continue;
+          if(record.type==='attributes'){const prior=attributeValues.get(record.target)?.[record.attributeName];if(prior?.rendered===record.target.getAttribute(record.attributeName))continue;}
+          if(record.type==='childList'&&!record.addedNodes.length)continue;
+          const scope=record.type==='characterData'?record.target.parentElement:record.target;if(!scope||ignored(scope))continue;
+          // Render only changed subtrees. A LIVE clock must not walk hidden history.
+          if([...pending].some(parent=>parent===scope||parent.contains?.(scope)))continue;
+          for(const child of pending)if(scope.contains?.(child))pending.delete(child);pending.add(scope);
+        }
+        if(queued||!pending.size)return;queued=true;requestAnimationFrame(()=>{queued=false;const roots=[...pending];pending.clear();const users=userValues();for(const scope of roots)if(scope.isConnected!==false)apply(scope,users)});
+      }).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']});
     };
     // A defer script sees "interactive" while later defer scripts are still
     // constructing components. Translating before they finish can leak English

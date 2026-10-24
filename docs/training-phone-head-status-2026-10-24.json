@@ -1,0 +1,31 @@
+{
+  "observed_at_utc": "2026-10-24T15:18:43.073Z",
+  "source": "https://www.kaggle.com/code/yathebest/linq-phone-head-fresh-logged-2026?scriptVersionId=361832495",
+  "kernel_version": 361832495,
+  "initialization": "Fresh COCO YOLO12m, not resumed",
+  "cigarette_training_repeated": false,
+  "checkpoint": {
+    "epoch_index": 0,
+    "optimizer_present": true,
+    "optimizer_parameter_states": 381,
+    "bytes": 162420971,
+    "sha256": "6f3420ee801d93061dc4ec632665cf896446bbc94ca57cb5c5eb6ec311a716c7"
+  },
+  "latest_progress": {
+    "stage": "batch",
+    "pid": 63,
+    "sequence": 877,
+    "epoch": 2,
+    "batches_completed": 232,
+    "batch_current": 232,
+    "batches_total": 1169,
+    "phase": "completed",
+    "heartbeat_utc": "2026-10-24T15:18:24.866897+00:00",
+    "elapsed_s": 2038.5,
+    "stage_elapsed_s": 205.3,
+    "last_work_age_s": 0.0
+  },
+  "checkpoint_completed_epochs": 1,
+  "backup_scope": "Epoch optimizer checkpoints in /kaggle/working; normal completed notebook outputs. Destruction of the VM is not covered by remote backup.",
+  "snapshot_not_live": true
+}

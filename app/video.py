@@ -5,6 +5,8 @@ import shutil
 import subprocess
 import threading
 import time
+import uuid
+from copy import deepcopy
 from datetime import datetime,timedelta,timezone
 
 import cv2
@@ -18,6 +20,31 @@ from .scenarios import ScenarioRules,base_config,annotate_objects,assessment_row
 
 MODEL = db.DATA / "models" / "yolov8n-pose.pt"
 CANCEL: dict[str,threading.Event] = {}
+
+
+def state_snapshot(*rules):
+    rows={}
+    for rule in rules:
+        for tid,patterns in getattr(rule,'state_rows',{}).items():
+            rows.setdefault(tid,{}).update(deepcopy(patterns))
+    return rows
+
+
+def finish_rules(rule, now, reason):
+    finish=getattr(rule,'finish',None)
+    return list(finish(now,reason) or []) if callable(finish) else []
+
+
+def persist_episode_updates(job_id, updates, annotated=None):
+    """Save closure proof on its confirming frame; never create an alert."""
+    for original in updates:
+        update=dict(original);image=None
+        if update.get('episode_state')=='closed' and annotated is not None:
+            image=f'runs/{job_id}/end_{uuid.uuid4().hex}.jpg'
+            if cv2.imwrite(str(db.DATA/image),annotated):update['end_image']=image
+            else:image=None
+        changed=db.update_episode(job_id,update)
+        if image and not changed:(db.DATA/image).unlink(missing_ok=True)
 
 
 def ffmpeg_path():
@@ -95,6 +122,7 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
     folder = db.DATA/"runs"/job_id
     source = folder/"source.video"
     cap,writer,source_writer = None,None,None
+    rules=scenario_rules=None;now=0.;rule_time=scenario_time=0.;finished=False;latest_assessments=[];alerts=0
     try:
         if cancel.is_set():
             db.update_job(job_id,status="cancelled")
@@ -157,8 +185,12 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
                 x,y=person.foot
                 density[min(17,max(0,int(y/h*18))),min(31,max(0,int(x/w*32)))]+=1
             events,details = rules.step(people,now,w,h,getattr(backend,"scene_state",None))
+            rule_time=now
+            lifecycle_updates=list(getattr(rules,'event_updates',[]))
             observations=getattr(backend,'objects_state',[])
             extra_events,extra_active=scenario_rules.step(people,observations,now,w,h,details)
+            scenario_time=now
+            lifecycle_updates.extend(getattr(scenario_rules,'event_updates',[]))
             latest_assessments=assessment_rows(people,scenario_rules.ppe_details)
             events.extend(extra_events)
             for tid,kinds in extra_active.items():
@@ -176,20 +208,28 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
                     pass  # A Windows browser may briefly hold the prior JPEG open.
             for event in events:
                 event.update(clip_state='waiting_for_video_end',clip_start_s=max(0,event['alert_s']-3),
+                             clip_scope='incident_excerpt',
                              clip_end_s=min(meta['duration_s'],event['alert_s']+4),
                              clip_alert_offset_s=min(3,event['alert_s']))
                 event['priority']=next((z.priority for z in config.zones if z.name==event.get('zone')),None)
                 if config.recorded_at:
                     event['occurred_at']=(datetime.fromisoformat(config.recorded_at)+timedelta(seconds=event['alert_s'])).isoformat()
-                alerts += 1
-                rel_image = f"runs/{job_id}/evidence_{alerts}.jpg"
+                rel_image = f"runs/{job_id}/evidence_{uuid.uuid4().hex}.jpg"
                 cv2.imwrite(str(db.DATA/rel_image),annotated)
-                event_id = db.add_event(job_id,config.camera,event,rel_image)
-                inference_events.append((event_id,event))
+                event_id,created = db.add_event(job_id,config.camera,event,rel_image,return_created=True)
+                if created:
+                    inference_events.append((event_id,event));alerts+=1
+                else:
+                    (db.DATA/rel_image).unlink(missing_ok=True)
+            persist_episode_updates(job_id,lifecycle_updates,annotated)
             processed += 1
             total_latencies.append((time.perf_counter()-frame_start)*1000)
             if processed%5==0:
-                db.update_job(job_id,progress=round(decoded/count,4),stats={'latest_assessments':latest_assessments})
+                db.update_job(job_id,progress=round(decoded/count,4),stats={'latest_assessments':latest_assessments,
+                              'current_states':state_snapshot(rules,scenario_rules),'current_states_updated_s':now})
+        reason='cancelled' if cancel.is_set() else 'video_ended'
+        persist_episode_updates(job_id,finish_rules(rules,rule_time,reason)+finish_rules(scenario_rules,scenario_time,reason))
+        finished=True
         wall = time.perf_counter()-started
         cap.release();cap=None
         if source_writer is not None:
@@ -231,6 +271,7 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
         truncated = decoded<count and not cancel.is_set()
         stats = {"backend":backend.name,"model":getattr(backend,"model_id","external-adapter"),"input_frames":count,
                  "latest_assessments":latest_assessments,
+                 "current_states":state_snapshot(rules,scenario_rules),"current_states_updated_s":now,
                  "decoded_frames":decoded,"processed_frames":processed,"stride":stride,
                  "sample_fps":fps/stride,"inference_p50_ms":round(float(np.median(latencies)),2),
                  "live_source":live,"source_timing":"CFR frame_index / declared_fps",
@@ -257,6 +298,15 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
     except Exception as exc:
         db.update_job(job_id,status="failed",error=f"{type(exc).__name__}: {str(exc)[:600]}")
     finally:
+        if not finished:
+            persist_episode_updates(job_id,finish_rules(rules,rule_time,'cancelled' if cancel.is_set() else 'processing_failed')+
+                                    finish_rules(scenario_rules,scenario_time,'cancelled' if cancel.is_set() else 'processing_failed'))
+        if rules is not None:
+            saved=db.job(job_id)
+            if saved:
+                db.update_job(job_id,stats={**(saved.get('stats') or {}),'latest_assessments':latest_assessments,
+                                           'events':alerts,
+                                           'current_states':state_snapshot(rules,scenario_rules),'current_states_updated_s':max(rule_time,scenario_time)})
         if cap is not None:
             cap.release()
         if writer is not None:
