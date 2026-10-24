@@ -1,0 +1,40 @@
+/* Readable secondary copy and controls at ordinary browser zoom. */
+:root{--text:#455f57;--muted:#566d62;--line:#d4dfd5}
+body{font-size:14px;line-height:1.6}
+small,.hint,.scope,.caption,.eyebrow,.field,.review-item span,.metric>span,.metric small,.job-body small,.callout span,.kpi>span,.kpi small,.bar-label,.facts,.process p,.plain,.padded p,.padded dd,.journey small,.source-info,.security-muted{font-size:13px;line-height:1.6;color:#52685d}
+.lede{font-size:15px;color:#455f57}
+.btn,.btn.small,.btn.ghost.small,.event-actions .btn,.result-side .btn,.event-actions select,.filters input,.filters select,.extra-filters input,.extra-filters select,.tools .btn,.downloads,.pagination,.quiet{font-size:13px;line-height:1.45}
+.btn.small,.event-actions .btn,.event-actions select,.tools .btn{min-height:36px}
+.form-grid label,.form-grid input,.form-grid select,.live-controls label,.live-controls input,.live-controls select{font-size:14px}
+.event h3,.job-body strong,.review-item strong{font-size:15px;line-height:1.5}
+.event p,.event .reason,.empty p,.job-empty,.process p,.scenario>span:not(.scenario-icon),.scenario small,.demo p,.demo>small,.journey strong{font-size:13px;line-height:1.6;color:#52685d}
+.pill,.job-thumb .pill,.tag,.priority,.pipeline,.canvas-label{font-size:12px;line-height:1.45}
+.pipeline{color:#52685d}.pipeline .done{color:#3c672e}
+.tag,.pill.amber,.security-status.pending{background:#fff1cb;color:#70521c}
+.tag.confirmed{background:#e5f2df;color:#305c30}.tag.false{background:#faece2;color:#794226}.tag.forwarded{background:#e3f0ef;color:#235b63}
+.kpis,.columns{gap:18px}.kpi small{color:#52685d}.kpi>span{color:#4e6559}
+.facts span,.facts b{color:#486152}.facts b{font-weight:600}
+.empty,.empty b,.job-empty{color:#52685d}.quality-banner p{font-size:13px;color:#75571d}
+.evidence-data{font-size:14px}.evidence-data>div>span{font-size:13px;color:#52685d}.evidence-data strong{color:#365b43}
+.evidence h3{font-size:15px}.insight-card .hint,.insight-card .facts,.insight-card p{font-size:13px}
+footer{font-size:13px;line-height:1.6;font-weight:500;color:#52685d;flex-wrap:wrap;gap:8px 22px}
+aside .brand small{font-size:12px;color:#c3d8cd;letter-spacing:.1px}
+aside .nav-caption,.workspace-panel small{font-size:11px;color:#c1d6c7;letter-spacing:.8px}
+aside nav button{font-size:14px;min-height:42px;color:#d0e0d5}
+.side-note p,.side-note small,#device{font-size:12px;color:#c3d8cd;line-height:1.6}
+.side-note strong{font-size:13px}.account-chip{font-size:13px}.account-chip span{color:#c3d8cd}
+.workspace-panel strong{font-size:14px}.workspace-panel button{font-size:13px;min-height:38px}
+.device-retry{margin-top:9px;padding:6px 8px;font-size:12px;background:transparent;border:1px solid #98b6a5;border-radius:6px;color:#edf6e9}
+.device-retry:hover{background:#2b534e}.device-retry:focus-visible{outline:2px solid #d3edaa}
+.security-card .actions button,.security-member small,.security-role small{font-size:13px;line-height:1.6}
+.security-audit{font-size:14px;line-height:1.6}.security-audit th{color:#244a40;font-weight:600;background:#f3f7ef}
+.security-audit td{vertical-align:top}.security-audit td:first-child{min-width:160px}.security-audit td:last-child{min-width:210px}
+.security-audit time{display:block;color:#425b50;font-variant-numeric:tabular-nums}
+.audit-target{display:grid;gap:2px;margin-bottom:8px}.audit-target b{font-size:12px;color:#52685d}.audit-target span{font-weight:600}
+.audit-details{margin:0;display:grid;gap:6px}.audit-details>div{display:grid;grid-template-columns:minmax(75px,.8fr) minmax(110px,1.3fr);gap:10px}
+.audit-details dt{color:#52685d}.audit-details dd{margin:0;color:#244a40;overflow-wrap:anywhere}
+.live-metrics,.live-session,.clip-count,.clip-row small,.live-view>.callout,.mode-switch button span{font-size:13px}
+.extra-scenario small,.scenario-extension .hint{font-size:13px;color:#52685d}
+.live-screen p{color:#c3d8cd}.mode-switch button.selected span{color:#e1eedf}
+@media(max-width:850px){aside nav{gap:7px}aside nav button{font-size:13px;min-height:40px}.brand small{font-size:12px}footer{margin-top:28px}}
+@media(max-width:600px){header{font-size:12px}.heading>.btn{font-size:13px}.caption,.metric>span,.metric small,.job-body small,.job-body strong,.pagination,.downloads,.event p,.event .reason,.event-actions select,.event-actions .btn,.job-thumb .pill,.tag{font-size:12px}.steps{flex-wrap:wrap;gap:8px 14px;padding-block:10px}.steps li,.steps li.current{font-size:12px;padding:0}.steps b{font-size:12px}.event{grid-template-columns:72px minmax(0,1fr)}.event-actions{grid-column:1/-1;flex-wrap:wrap}.event-actions select{width:auto;flex:1;min-width:140px}.evidence-data{grid-template-columns:1fr}.security-card{padding:17px}.audit-details>div{grid-template-columns:1fr;gap:0}footer{font-size:13px}}

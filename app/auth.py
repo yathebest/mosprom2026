@@ -436,7 +436,36 @@ def audit_log(request: Request):
         query='SELECT * FROM audit';args=[]
         if not user['platform_admin'] or user['organization_id']:
             query+=' WHERE organization_id=?';args.append(user['organization_id'])
-        return [dict(r) for r in c.execute(query+' ORDER BY id DESC LIMIT 300',args)]
+        rows=[dict(r) for r in c.execute(query+' ORDER BY id DESC LIMIT 300',args)]
+        for row in rows:
+            # Resolve labels only inside the enterprise that owns this audit
+            # entry. A guessed foreign target ID must never reveal its name.
+            row['target_context']=audit_target_context(c,row)
+            try:details=json.loads(row['details'])
+            except (TypeError,ValueError):details={}
+            keys={'role','cameras','active','from','reason','name','email','expires_at','delivery','status'}
+            row['details_data']={key:value for key,value in details.items() if key in keys} if isinstance(details,dict) else {}
+        return rows
+
+
+def audit_target_context(conn,row):
+    action=row['action'];target=row.get('target');org=row.get('organization_id')
+    if action=='platform.context' and not target:return {}
+    if action.startswith('member.'):
+        person=conn.execute('SELECT name FROM users WHERE id=? AND organization_id=? AND platform_admin=0',(target,org)).fetchone()
+        return {'type':'member','name':person['name'] if person else None}
+    if action.startswith('organization.') or (action=='platform.context' and target):
+        enterprise=conn.execute('SELECT name FROM organizations WHERE id=? AND id=?',(target,org)).fetchone()
+        return {'type':'organization','name':enterprise['name'] if enterprise else None}
+    if action.startswith('invitation.'):
+        invitation=conn.execute('SELECT email FROM admin_invitations WHERE id=? AND organization_id=?',(target,org)).fetchone()
+        return {'type':'invitation','email':invitation['email'] if invitation else None}
+    if action.startswith('event.'):
+        event=conn.execute('SELECT events.camera,events.kind FROM events JOIN jobs ON jobs.id=events.job_id WHERE events.id=? AND jobs.organization_id=?',(target,org)).fetchone()
+        return {'type':'event',**dict(event)} if event else {'type':'event'}
+    if action.startswith('auth.') or action.startswith('platform.'):
+        return {'type':'account','name':row.get('actor_name')}
+    return {}
 
 
 def endpoint_permission(path,method):

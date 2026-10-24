@@ -12,3 +12,21 @@ aside{position:fixed;inset:0 auto 0 0;width:235px;background:#133438;padding:31p
 @media(max-width:600px){.live-source{flex-direction:column;gap:12px}.triage-row{padding:15px;gap:10px;flex-wrap:wrap}.triage-row>div{min-width:60%}.triage-row>.btn{margin-left:auto}.insights{grid-template-columns:1fr}.scenario small,.hint,.job-body small,.lede{font-size:12px}.event p,.event .reason{font-size:11px}}
 
 .readiness{margin-top:24px}.readiness h3{margin-top:25px}.readiness-row{display:flex;gap:20px;align-items:start;padding:15px 0;border-bottom:1px solid var(--line)}.readiness-row>.pill{min-width:140px;justify-content:center}.readiness-row p{margin:5px 0 0}.readiness-row b{font-size:13px}@media(max-width:600px){.readiness-row{flex-direction:column;gap:10px}.readiness-row>.pill{min-width:0}}
+
+/* Native navigation controls remain keyboard accessible. */
+header{position:relative}
+.wizard-step-link{display:inline-flex;align-items:center;gap:9px;padding:7px 2px;min-height:36px;border:0;border-radius:5px;background:transparent;color:inherit;font:inherit;text-align:left}
+.wizard-step-link:hover:not(:disabled){color:#234d3b;text-decoration:underline;text-underline-offset:4px}
+.wizard-step-link:focus-visible,.breadcrumb-home:focus-visible,.breadcrumb-current:focus-visible{outline:2px solid #547b43;outline-offset:4px}
+.breadcrumb-home,.breadcrumb-current{padding:5px 2px;background:transparent;border:0;border-radius:4px;color:#476052;font:inherit;text-align:left}
+.breadcrumb-home:hover,.breadcrumb-current:hover{color:#173f32;text-decoration:underline;text-underline-offset:4px}
+.breadcrumb-menu{position:absolute;left:0;top:calc(100% - 5px);min-width:240px;max-width:min(380px,90vw);padding:7px;background:white;border:1px solid #c8d7c9;border-radius:10px;box-shadow:0 12px 32px #173d3229;z-index:12}
+.breadcrumb-menu button,.breadcrumb-menu a{display:block;width:100%;border:0;background:transparent;padding:10px 12px;border-radius:6px;text-align:left;font-size:14px;color:#244a3b}
+.breadcrumb-menu button:hover,.breadcrumb-menu a:hover,.breadcrumb-menu button:focus-visible{background:#eef4e8}
+.zone-point-tools{display:grid;gap:8px;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#f7faf3}
+.zone-point-list{display:flex;flex-wrap:wrap;gap:6px}
+.zone-point-list button{border:1px solid #bfceba;background:white;border-radius:5px;padding:6px 9px;font-size:13px;color:#36563f;min-height:34px}
+.zone-point-list button:hover{border-color:#845746;background:#fff0e8;color:#78432c}
+.zone-actions{display:flex;gap:7px;flex-wrap:wrap}
+.zone-actions button{padding:6px 8px;border:1px solid #bfd0b6;border-radius:5px;background:white;font-size:13px;min-height:34px;color:#36563f}
+.zone-actions button:hover{background:#edf4e6}

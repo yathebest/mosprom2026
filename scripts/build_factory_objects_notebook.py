@@ -11,9 +11,11 @@ def cell(code):return {'cell_type':'code','execution_count':None,'metadata':{},'
 
 def main():
     files={name:(ROOT/'scripts'/name).read_text(encoding='utf-8') for name in [
-        'train_fpi_objects.py','train_cigarette_candidate.py','training_checkpoint.py','backup_training.py']}
+        'train_fpi_objects.py','train_cigarette_candidate.py','training_checkpoint.py','training_observability.py','backup_training.py']}
     setup="""import os, sys, subprocess, json, time, zipfile
 from pathlib import Path
+OVERALL_STARTED=time.monotonic()
+os.environ['PYTHONUNBUFFERED']='1'
 os.environ['OMP_NUM_THREADS']='2'
 os.environ['MKL_NUM_THREADS']='2'
 subprocess.run([sys.executable,'-m','pip','install','-q','ultralytics==8.4.88','onnx==1.19.1','kagglehub==1.0.3'],check=True)
@@ -21,6 +23,7 @@ import torch
 assert torch.cuda.is_available(), 'Enable a GPU before Save & Run All'
 print('CUDA_DEVICES',torch.cuda.device_count(),[torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())],flush=True)
 PROGRAM=Path('/kaggle/working/factory-program');PROGRAM.mkdir(exist_ok=True)
+sys.path.insert(0,str(PROGRAM))
 OUTPUT=Path('/kaggle/working/factory-object-training');OUTPUT.mkdir(exist_ok=True)
 """
     install='PROGRAM_FILES='+repr(files)+'\nfor name,body in PROGRAM_FILES.items():\n    (PROGRAM/name).write_text(body,encoding="utf-8")\n'
@@ -54,28 +57,44 @@ if remote_verified:
 else:
     print('REMOTE_BACKUP_NOT_AVAILABLE: epoch optimizer checkpoints remain in /kaggle/working and completed notebook outputs; a destroyed VM is NOT covered.',flush=True)
 """
-    run="""commands={
- 'phone-head':[sys.executable,str(PROGRAM/'train_fpi_objects.py'),'--data',str(INPUT/'fpi'),'--weights',str(INPUT/'weights/yolo12m.pt'),'--output',str(OUTPUT/'phone-head-experiment'),'--epochs','40','--minutes','210','--batch','16','--device','0'],
+    run=r"""import re
+from training_observability import bounded_tail
+PHONE_HEAD_ONLY=True  # Cigarette already completed; this run starts fresh phone/head only.
+commands={
+ 'phone-head':[sys.executable,'-u',str(PROGRAM/'train_fpi_objects.py'),'--data',str(INPUT/'fpi'),'--weights',str(INPUT/'weights/yolo12m.pt'),'--output',str(OUTPUT/'phone-head-experiment'),'--epochs','40','--minutes','210','--batch','16','--device','0','--local-data','/kaggle/temp/linq-factory-fpi','--io-workers','8','--loader-workers','2'],
  'cigarette':[sys.executable,str(PROGRAM/'train_cigarette_candidate.py'),'--data',str(INPUT/'cigdet'),'--weights',str(INPUT/'weights/cigarette-start.pt'),'--output',str(OUTPUT/'cigarette-experiment'),'--epochs','80','--minutes','40','--batch','16','--device','1' if torch.cuda.device_count()>1 else '0']}
-processes={};handles={};reported={};statuses={}
+if PHONE_HEAD_ONLY:commands.pop('cigarette',None)
+processes={};handles={};reported={};statuses={};started_at={};last_log={}
 def start(name):
-    handles[name]=(OUTPUT/(name+'.log')).open('w')
+    handles[name]=(OUTPUT/(name+'.log')).open('w');started_at[name]=time.monotonic()
     processes[name]=subprocess.Popen(commands[name],stdout=handles[name],stderr=subprocess.STDOUT,cwd=PROGRAM)
     print('TRAINING_PROCESS_STARTED',name,processes[name].pid,flush=True)
 start('phone-head')
-if torch.cuda.device_count()>1:start('cigarette')
-deadline=time.monotonic()+5*3600
+if 'cigarette' in commands and torch.cuda.device_count()>1:start('cigarette')
+deadline=OVERALL_STARTED+5*3600
 try:
     while len(statuses)<len(commands):
         if time.monotonic()>deadline:raise TimeoutError('Overall five-hour wall limit reached; existing checkpoints retained')
         for name,process in list(processes.items()):
             if name in statuses:continue
+            progress_path=OUTPUT/('phone-head-experiment' if name=='phone-head' else 'cigarette-experiment')/'training-progress.json'
+            if progress_path.exists():
+                try:progress=json.loads(progress_path.read_text());print('TRAINING_HEARTBEAT',name,json.dumps(progress),flush=True)
+                except (OSError,ValueError):print('PROGRESS_SNAPSHOT_PENDING',name,flush=True)
+            else:print('PROCESS_HEARTBEAT',name,'elapsed_s',round(time.monotonic()-started_at[name]),'waiting for first stage record',flush=True)
+            # Seek only the final 2 KiB. Never read the entire growing tqdm log.
+            tail=bounded_tail(OUTPUT/(name+'.log'),2048)
+            tail=re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]','',tail)
+            parts=[line.strip() for line in tail.replace('\r','\n').splitlines() if line.strip()]
+            latest=parts[-1][-600:] if parts else ''
+            if latest and latest!=last_log.get(name):
+                last_log[name]=latest;print('PROCESS_LOG_TAIL',name,latest,flush=True)
             if process.poll() is not None:
                 statuses[name]={'exit_code':process.returncode};handles[name].flush()
                 print('TRAINING_PROCESS_FINISHED',name,process.returncode,flush=True)
                 if process.returncode:
-                    lines=(OUTPUT/(name+'.log')).read_text(errors='replace').splitlines()
-                    print('ERROR_TAIL',name,'\\n'.join(lines[-12:]),flush=True)
+                    lines=bounded_tail(OUTPUT/(name+'.log'),8192).splitlines()
+                    print('ERROR_TAIL',name,'\n'.join(lines[-12:]),flush=True)
         for csv in OUTPUT.rglob('results.csv'):
             lines=csv.read_text(errors='replace').splitlines()
             if len(lines)>1 and reported.get(str(csv))!=lines[-1]:
@@ -84,7 +103,7 @@ try:
             body=proof.read_text()
             if reported.get(str(proof))!=body:
                 reported[str(proof)]=body;print('CHECKPOINT_SAVED',str(proof.relative_to(OUTPUT)),body,flush=True)
-        if torch.cuda.device_count()==1 and 'phone-head' in statuses and 'cigarette' not in processes:start('cigarette')
+        if 'cigarette' in commands and torch.cuda.device_count()==1 and 'phone-head' in statuses and 'cigarette' not in processes:start('cigarette')
         time.sleep(20)
 finally:
     for name,process in processes.items():

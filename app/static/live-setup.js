@@ -65,7 +65,7 @@ $('live-preview').onclick=async()=>{
   finally{$('live-preview').disabled=liveSetupLocked();renderCameraControls()}
 };
 function updateLiveZoneControls(){
-  const locked=liveSetupLocked(),hasFrame=Boolean(L.image),points=L.points.length;
+  const locked=liveSetupLocked(),hasFrame=Boolean(L.image),points=L.points.length;renderLivePointTools();
   $('live-zone-placeholder').hidden=hasFrame;$('live-zone-canvas').hidden=!hasFrame;
   $('live-zone-count').textContent=`${L.zones.length} / 8 зон`;
   $('live-zone-progress').textContent=locked?'Правила закреплены на время эфира':points>=3?`${points} точек · можно сохранить зону`:`${points} точек · нужно не менее 3`;
@@ -75,7 +75,7 @@ function updateLiveZoneControls(){
   $('live-zone-get-frame').disabled=locked;
   if($('live-zone-kind'))$('live-zone-kind').disabled=locked;
   $('live-zone-canvas').setAttribute('aria-disabled',String(locked));
-  $('live-zone-list').querySelectorAll('button').forEach(el=>el.disabled=locked);
+  $('live-zone-list').querySelectorAll('button').forEach(el=>el.disabled=locked);$('live-point-tools').querySelectorAll('button').forEach(el=>el.disabled=locked);$('live-save-zone').textContent=L.editingZone===null?'Сохранить зону':'Сохранить изменения зоны';
 }
 paintLiveZones=function(){
   const c=$('live-zone-canvas'),ctx=c.getContext('2d');
@@ -89,10 +89,11 @@ paintLiveZones=function(){
       points.forEach(([x,y],i)=>{ctx.beginPath();ctx.arc(x*c.width,y*c.height,Math.max(4,c.width/120),0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.font=`bold ${Math.max(14,c.width/40)}px Segoe UI`;ctx.fillText(String(i+1),x*c.width+8,y*c.height-8)});
       if(name){ctx.font=`bold ${Math.max(15,c.width/35)}px Segoe UI`;ctx.fillStyle=color;ctx.fillText(name,points[0][0]*c.width+8,Math.max(24,points[0][1]*c.height-10))}
     }
-    L.zones.forEach(z=>polygon(z.points,'#c7ef8a',z.name));polygon(L.points,'#ffda7a','Новая зона');
+    L.zones.forEach((z,i)=>{if(i!==L.editingZone)polygon(z.points,'#c7ef8a',z.name)});polygon(L.points,'#ffda7a','Новая зона');
   }
-  $('live-zone-list').innerHTML=L.zones.length?L.zones.map((z,i)=>`<div class="zone-item"><span><b>${esc(z.name)}</b><small>${esc(zoneKinds[z.kind||'danger_zone'])} · ${z.points.length} точки</small></span><button data-live-remove="${i}" aria-label="Удалить ${esc(z.name)}">✕</button></div>`).join(''):'<p class="hint zone-empty">Сохранённых зон пока нет.</p>';
-  $('live-zone-list').querySelectorAll('[data-live-remove]').forEach(el=>el.onclick=()=>{if(liveSetupLocked())return;L.zones.splice(Number(el.dataset.liveRemove),1);paintLiveZones()});
+  $('live-zone-list').innerHTML=L.zones.length?L.zones.map((z,i)=>`<div class="zone-item"><span><b>${esc(z.name)}</b><small>${esc(zoneKinds[z.kind||'danger_zone'])} · ${z.points.length} точки</small></span><div class="zone-actions"><button type="button" data-live-edit="${i}" aria-label="Изменить зону ${esc(z.name)}">Изменить</button><button type="button" data-live-remove="${i}" aria-label="Удалить ${esc(z.name)}">✕</button></div></div>`).join(''):'<p class="hint zone-empty">Сохранённых зон пока нет.</p>';
+  $('live-zone-list').querySelectorAll('[data-live-remove]').forEach(el=>el.onclick=()=>{if(liveSetupLocked())return;const index=Number(el.dataset.liveRemove),editingName=L.editingZone!==null?L.zones[L.editingZone]?.name:null,draftName=$('live-zone-name').value;L.zones.splice(index,1);L.zones=ZoneNavigation.renumber(L.zones);if(L.editingZone===index)resetLiveZoneDraft();else if(L.editingZone!==null&&L.editingZone>index)L.editingZone--;$('live-zone-name').value=L.editingZone!==null?(draftName===editingName?L.zones[L.editingZone].name:draftName):ZoneNavigation.nextName(L.zones);paintLiveZones()});
+  $('live-zone-list').querySelectorAll('[data-live-edit]').forEach(el=>el.onclick=()=>{if(liveSetupLocked())return;const index=Number(el.dataset.liveEdit),z=L.zones[index];L.editingZone=index;L.points=structuredClone(z.points);$('live-zone-name').value=z.name;$('live-zone-kind').value=z.kind||'danger_zone';paintLiveZones();focusLiveZones();toast('Зона открыта для изменения. Удалите нужные точки по номерам, затем сохраните зону.')});
   updateLiveZoneControls();
 };
 $('live-zone-canvas').onclick=e=>{
@@ -105,8 +106,9 @@ const previousSaveLiveZone=$('live-save-zone').onclick;
 $('live-save-zone').onclick=()=>{const count=L.zones.length;previousSaveLiveZone();if(L.zones.length>count)toast('Зона сохранена и включена. Можно добавить ещё одну или начать эфир.')};
 const previousLiveStart=$('live-start').onclick;
 $('live-start').onclick=()=>{
+  if(L.points.length||L.editingZone!==null){focusLiveZones();toast('Сначала сохраните новую или изменённую зону. Чтобы оставить прежние правила, отмените изменение.');return}
   if($('live-zone-on').checked&&!L.zones.length){focusLiveZones();toast('Ниже отметьте минимум 3 точки на кадре и нажмите «Сохранить зону».');return}
-  if($('live-extra-harness').checked&&!L.zones.some(z=>z.kind==='height')){focusLiveZones();toast('Добавьте зону с назначением «Работа на высоте».');return}
+  if($('live-extra-harness').checked&&!L.zones.some(z=>z.kind==='height')){focusLiveZones();toast('Выбран сценарий «Работа на высоте без привязи». Добавьте зону с назначением «Работа на высоте», чтобы указать участок проверки, или отключите этот сценарий.');return}
   return previousLiveStart();
 };
 const previousLiveStatus=renderLiveStatus;
@@ -121,3 +123,11 @@ const previousLiveStop=$('live-stop').onclick;
 $('live-stop').onclick=()=>{if(L.current?.id===L.browserSession)stopWebcam();return previousLiveStop()};
 window.addEventListener('pagehide',()=>stopWebcam());
 cameraMode();paintLiveZones();
+
+function renderLivePointTools(){
+ if(!$('live-point-tools'))$('live-zone-canvas').closest('.live-zone-stage').insertAdjacentHTML('afterend','<div id="live-point-tools" class="zone-point-tools"><p class="hint">Любую вершину можно удалить кнопкой с её номером или правой кнопкой по точке на кадре. Для сохранённой зоны сначала выберите «Изменить».</p><div id="live-point-list" class="zone-point-list"></div><button id="live-edit-cancel" type="button" class="btn ghost small" hidden>Отменить изменение</button></div>');
+ const pointSignature=String(L.points.length);if($('live-point-list').dataset.signature!==pointSignature){$('live-point-list').dataset.signature=pointSignature;$('live-point-list').innerHTML=L.points.map((_,i)=>`<button type="button" class="btn ghost small" data-live-point="${i}" aria-label="Удалить точку ${i+1}">Точка ${i+1} · удалить</button>`).join('');
+ $('live-point-list').querySelectorAll('[data-live-point]').forEach(el=>el.onclick=()=>{if(liveSetupLocked())return;L.points=ZoneNavigation.removePoint(L.points,Number(el.dataset.livePoint));paintLiveZones()});}
+ $('live-edit-cancel').hidden=L.editingZone===null;$('live-edit-cancel').onclick=()=>{if(liveSetupLocked())return;resetLiveZoneDraft();paintLiveZones()};
+}
+$('live-zone-canvas').addEventListener('contextmenu',e=>{e.preventDefault();if(liveSetupLocked())return;const r=e.target.getBoundingClientRect(),point=[(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height],index=ZoneNavigation.nearestPoint(L.points,point,r.width,r.height);if(index>=0){L.points=ZoneNavigation.removePoint(L.points,index);paintLiveZones()}else toast('Нажмите на вершину незавершённого полигона. Для сохранённой зоны сначала выберите «Изменить».')});
