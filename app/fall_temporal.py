@@ -41,21 +41,32 @@ class TemporalFallClassifier:
         if checkpoint.get('architecture')!='resnet18-gru-v1':raise ValueError('Unsupported temporal fall model')
         self.model=TemporalFallNet();self.model.load_state_dict(checkpoint['state_dict'])
         self.model.to(device).eval();self.device=device
-        self.threshold=float(checkpoint['threshold']);self.frames=deque(maxlen=16)
-        self.last_sample=None;self.window_s=2.0
+        self.threshold=float(checkpoint['threshold']);self.frames=deque(maxlen=64)
+        self.last_sample=None;self.window_s=15/8
         self.mean=np.array([.485,.456,.406],np.float32)[:,None,None]
         self.std=np.array([.229,.224,.225],np.float32)[:,None,None]
 
     @torch.inference_mode()
     def predict(self,bgr,now=None):
         now=time.monotonic() if now is None else now
-        if self.last_sample is not None and (now<self.last_sample or now-self.last_sample>.5):
+        if self.last_sample is not None and (now<self.last_sample or now-self.last_sample>2.0):
             self.frames.clear();self.last_sample=None
-        if self.last_sample is not None and now-self.last_sample<.125:return None
+        if self.last_sample is not None and now-self.last_sample<1/16:return None
         rgb=Image.fromarray(np.ascontiguousarray(bgr[:,:,::-1])).resize((224,224),Image.Resampling.BILINEAR)
         x=np.asarray(rgb,dtype=np.float32).transpose(2,0,1)/255
         x=torch.from_numpy(np.ascontiguousarray((x-self.mean)/self.std))[None].to(self.device)
-        self.frames.append(self.model.encode(x)[0]);self.last_sample=now
-        if len(self.frames)<16:return None
-        logits=self.model.classify_features(torch.stack(list(self.frames))[None])
+        self.frames.append((now,self.model.encode(x)[0]));self.last_sample=now
+        # Resample source timestamps, so slow live inference and 10 FPS video
+        # both cover the same window. Sparse features are interpolated; a long
+        # capture outage must warm up again rather than joining two incidents.
+        while len(self.frames)>2 and self.frames[1][0]<now-self.window_s:
+            self.frames.popleft()
+        if len(self.frames)<3 or now-self.frames[0][0]<self.window_s:return None
+        times=torch.tensor([t for t,_ in self.frames],device=self.device,dtype=torch.float64)
+        features=torch.stack([f for _,f in self.frames])
+        targets=torch.linspace(now-self.window_s,now,16,device=self.device,dtype=torch.float64)
+        right=torch.searchsorted(times,targets).clamp(1,len(times)-1);left=right-1
+        weight=((targets-times[left])/(times[right]-times[left])).to(features.dtype)[:,None]
+        sequence=features[left]*(1-weight)+features[right]*weight
+        logits=self.model.classify_features(sequence[None])
         return float(logits.softmax(1)[0,1].cpu())

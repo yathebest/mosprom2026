@@ -1,0 +1,72 @@
+{
+  "kaggle_version": 361639587,
+  "artifacts": {
+    "person-yolo12m.pt": {
+      "sha256": "014bba5070722b4a95c6fbb5658707c0ac00ef2dd0499a10d50cd63ec5ddce32",
+      "bytes": 40740014
+    },
+    "person-yolo12m.onnx": {
+      "sha256": "a7a027419a46770aa8c6d91e1293d7286e6bb84f94ae21f82f1ac2d2168acfa3",
+      "bytes": 80720068
+    },
+    "ppe-head.onnx": {
+      "sha256": "7b823854a1fc2d4c50ff44a7becad93c2f82f860d9e806508c7067a7fb4a0fcc",
+      "bytes": 80723172
+    },
+    "ppe-vest.onnx": {
+      "sha256": "715bd7d536032c1dea7c31362bdc79d27c80dd3982074c5b1e50388cfa917dab",
+      "bytes": 80723166
+    },
+    "ppe-head-classifier.onnx": {
+      "sha256": "802ae6e545c9956ce2ce41d3f43adcd2020821a2603c7da80d0e36b7a43c5b73",
+      "bytes": 93966968
+    },
+    "ppe-torso-classifier.onnx": {
+      "sha256": "ce213c91fc02fe85a10f8d3bbd9d3b6c3e1288566ab8d049d6b16556c3ad046b",
+      "bytes": 93966963
+    },
+    "people-metrics.json": {
+      "sha256": "bce6044a0518061c4758bf2001f1d47e664139e3f8046fe1a2e216ce30c011f8",
+      "bytes": 528
+    },
+    "head_ppe-metrics.json": {
+      "sha256": "01abb83632163ef7bb06514ea72583234265c42903bd1a7ac155636ba9c51883",
+      "bytes": 531
+    },
+    "vest_ppe-metrics.json": {
+      "sha256": "7d78d6b936a47dd35e020afbf2349f0294fa6e03091c83c5f1764328586151e3",
+      "bytes": 531
+    },
+    "head_ppe-classifier-metrics.json": {
+      "sha256": "7d6412252a957592fb6dee02b61d9390d3b32948c5af878a93ec148382615d19",
+      "bytes": 958
+    },
+    "vest_ppe-classifier-metrics.json": {
+      "sha256": "bdf2421c5f1ec10cb120adb6ea11bebfc1ec9803242b20953d7853c67460f242",
+      "bytes": 966
+    },
+    "training-progress.json": {
+      "sha256": "429a32b8f1afa502604fd824a9960633e5cafe7ee6d41d0f901a7f905051fcfa",
+      "bytes": 1453
+    }
+  },
+  "temporal_fall_sha256": "00ab3d9a001be26b23eaf5d3b66b6182aa953de8b12dc07183fbe0f383ca2581",
+  "models_installed": true,
+  "ppe_ui_verification": {
+    "job_id": "f40249d0c6344854bd821c7cac5f4ac9",
+    "example": "Repeated public source portrait; integration only, not independent evaluation",
+    "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + person-yolo12m.pt + COCO person ensemble + ONNX CUDA scenarios + trained PPE classifiers + RGB ResNet18 + temporal ResNet18/GRU",
+    "model": "yolov8n-pose+person-yolo12m+yolo12m-coco-ensemble+ppe-safetyvision+ppe-head+ppe-vest+ppe-head-classifier+ppe-torso-classifier+fall-resnet18+fall-temporal",
+    "processed_frames": 70,
+    "events": [
+      "no_helmet",
+      "no_vest"
+    ],
+    "clips_created": 2,
+    "processing_fps": 1.29
+  },
+  "tests": "44 passed: trained integration, rules, detection upgrade, scenarios",
+  "fall_ui_verification": "pending",
+  "live_ui_verification": "pending",
+  "linq_hardware_verified": false
+}

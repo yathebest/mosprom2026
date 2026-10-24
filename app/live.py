@@ -153,6 +153,8 @@ class LiveSession:
                 self.last_processed=captured;self.elapsed=captured-self.first_mono
                 now=self.elapsed;h,w=frame.shape[:2]
                 began=time.perf_counter();people=self.backend.predict(frame)
+                if callable(getattr(self.backend,'predict_temporal',None)):
+                    self.backend.predict_temporal(frame,now)
                 self.latencies.append((time.perf_counter()-began)*1000)
                 if len(self.latencies)>3000:self.latencies=self.latencies[-3000:]
                 people=tracker.update(people,frame.shape,now)

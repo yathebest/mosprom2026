@@ -59,7 +59,10 @@ def health():
     return {"ok":True,"model_ready":video.MODEL.exists(),"backend":"LinQ adapter" if os.getenv("LINQ_ADAPTER") else "PyTorch",
             "device":torch.cuda.get_device_name(0) if cuda else "CPU","cuda":cuda,
             "linq_verified":False,"version":"0.3.0","max_parallel":MAX_PARALLEL,
-            "fall_model_ready":(db.DATA/'models/fall-resnet18.pt').exists()}
+            "fall_model_ready":(db.DATA/'models/fall-resnet18.pt').exists(),
+            "trained_models":{name:(db.DATA/'models'/name).exists() for name in (
+                'person-yolo12m.pt','ppe-head.onnx','ppe-vest.onnx',
+                'ppe-head-classifier.onnx','ppe-torso-classifier.onnx','fall-temporal.pt')}}
 
 
 @app.get("/api/samples")

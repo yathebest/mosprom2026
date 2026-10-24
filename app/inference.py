@@ -28,15 +28,22 @@ class YoloBackend:
         if os.getenv('SAFETY_PERSON_MODEL') and not people_path.exists():
             raise FileNotFoundError('Configured person model does not exist')
         self.person_model=YOLO(str(people_path),task='detect') if people_path.exists() else None
+        self.person_models=[self.person_model] if self.person_model else []
+        stock_path=model.parent/'yolo12m.pt'
+        if people_path.name=='person-yolo12m.pt' and stock_path.exists():
+            self.person_models.append(YOLO(str(stock_path),task='detect'))
         if self.person_model:
             self.name+=' + '+people_path.name
+        if len(self.person_models)>1:self.name+=' + COCO person ensemble'
         self.imgsz=int(os.getenv('SAFETY_IMAGE_SIZE','640'))
         self.reflections=[z for z in config.zones if z.kind=='reflection'] if config else []
         self.confidence = confidence
         self.model_id = model.stem+('+'+people_path.stem if self.person_model else '')
+        if len(self.person_models)>1:self.model_id+='+yolo12m-coco-ensemble'
         self.rotated_search = os.getenv("SAFETY_ROTATED_SEARCH","0")=="1"
         self.scene_state = None
         self.body = None
+        self.temporal_fall = None
         self.objects_state=[]
         self.objects=None
         if config is not None:
@@ -46,12 +53,30 @@ class YoloBackend:
                 devices={m.provider.replace('ExecutionProvider','') for m in self.objects.models}
                 self.name+=' + ONNX '+('/'.join(sorted(devices)))+' scenarios'
                 self.model_id+='+'+'+'.join(m.name for m in self.objects.models)
+            if self.objects.classifiers:
+                self.name+=' + trained PPE classifiers'
+                self.model_id+='+'+'+'.join(m.name for m in self.objects.classifiers)
         body_path=model.parent/'fall-resnet18.pt'
         if fall_detection and body_path.exists():
             from .body_classifier import BodyClassifier
             self.body=BodyClassifier(body_path,self.device)
             self.name += " + RGB ResNet18"
             self.model_id += "+fall-resnet18"
+        temporal_path=model.parent/'fall-temporal.pt'
+        if fall_detection and temporal_path.exists():
+            from .fall_temporal import TemporalFallClassifier
+            self.temporal_fall=TemporalFallClassifier(temporal_path,self.device)
+            self.name += ' + temporal ResNet18/GRU'
+            self.model_id += '+fall-temporal'
+
+    def predict_temporal(self,bgr,now):
+        if self.temporal_fall is None:return
+        probability=self.temporal_fall.predict(bgr,now)
+        state=dict(self.scene_state or {})
+        state.update(fall_probability=probability,
+                     fall_threshold=self.temporal_fall.threshold,
+                     temporal_ready=probability is not None)
+        self.scene_state=state
 
     def predict(self, bgr):
         if self.body:
@@ -80,13 +105,14 @@ class YoloBackend:
         candidates=suppress_duplicates(candidates)
         if self.person_model:
             from .scenario_models import iou
-            detected=self.person_model.predict(bgr,classes=[0],conf=.1,imgsz=self.imgsz,
-                                               device=self.device,verbose=False)[0]
             strong=[]
-            for row in detected.boxes.data.cpu().numpy():
-                box=tuple(map(float,row[:4]));matches=[p for p in candidates if iou(p.box,box)>.3]
-                pose=max(matches,key=lambda p:iou(p.box,box)).keypoints if matches else None
-                strong.append(Person(box,float(row[4]),pose))
+            for detector in self.person_models:
+                detected=detector.predict(bgr,classes=[0],conf=.1,imgsz=self.imgsz,
+                                          device=self.device,verbose=False)[0]
+                for row in detected.boxes.data.cpu().numpy():
+                    box=tuple(map(float,row[:4]));matches=[p for p in candidates if iou(p.box,box)>.3]
+                    pose=max(matches,key=lambda p:iou(p.box,box)).keypoints if matches else None
+                    strong.append(Person(box,float(row[4]),pose))
             candidates=suppress_duplicates(strong+[p for p in candidates if not any(iou(p.box,s.box)>.3 for s in strong)])
         if self.reflections:
             from .scenarios import contains

@@ -4,8 +4,8 @@
   "version": 2,
   "version_id": 361639587,
   "url": "https://www.kaggle.com/code/yathebest/linq-night-training-2026/log?scriptVersionId=361639587",
-  "verified_at_utc": "2026-10-24T01:49:30.472360+00:00",
-  "status": "training_epoch_2_people_epoch_1_head_observed",
+  "verified_at_utc": "2026-10-24T08:27:08.056189+00:00",
+  "status": "successful_all_five_tasks_completed",
   "execution": "Save & Run All (Commit), independent batch",
   "gpu_setting": "GPU T4 x2",
   "initialization": "official YOLO12m COCO and ResNet50 ImageNet; no previous task checkpoints",
@@ -15,7 +15,7 @@
   "remote_backup_handle": "yathebest/linq-fresh-checkpoints-20261024",
   "remote_metadata_probe_verified": true,
   "remote_model_backup_verified": true,
-  "backup_evidence": "Kaggle Dataset version 2, 486.05 MB; successful resume-last.pt and checkpoint-state.json upload; dataset version created at elapsed 693.3 seconds",
+  "backup_evidence": "Final notebook output: REMOTE_BACKUP_UPLOAD_CONFIRMED, DOWNLOAD linq-night-trained-models.zip, ALL_FIVE_DONE True; viewer marks run successful.",
   "data": "full original PPE splits",
   "classifier": "resnet50",
   "people_minutes": 45,
@@ -25,25 +25,88 @@
     "vest_ppe": 60
   },
   "classifier_epoch_caps": 16,
-  "quality_measured": false,
-  "trained_weights_installed": false,
+  "quality_measured": true,
+  "trained_weights_installed": true,
   "notebook_sha256": "fdcfdabf29b37ef33c7d85d3da1226cf05b86d6f55222abbe1024178fa825ed1",
   "previous_version_361631539": "cancelled; no longer active",
   "fall_training": {
     "version_id": 361641698,
     "url": "https://www.kaggle.com/code/yathebest/linq-fall-training-2026/log?scriptVersionId=361641698",
     "execution": "independent CPU Save & Run All",
-    "status": "submitted_worker_logs_not_yet_visible",
+    "status": "failed_before_execution_dataset_mount",
     "dataset": "yathebest/linq-fall-expanded-2026",
     "clips": 2083,
     "max_minutes": 100,
     "remote_backup_handle": "yathebest/linq-fall-checkpoints-20261024",
     "remote_backup_verified": false,
-    "notebook_sha256": "d3d20c0fe8a83f2c12bcf035e57b87a1197beb79805855b541dac001dd1286cd"
+    "notebook_sha256": "d3d20c0fe8a83f2c12bcf035e57b87a1197beb79805855b541dac001dd1286cd",
+    "error": "ERRORED_MOUNTING_DATASET: retry budget exhausted (30 attempts); dataset loading failed 3 load attempts",
+    "output_bytes": 0
   },
   "local_fall_fallback": {
-    "status": "head_30_epochs_checkpointed_finetune_running",
+    "status": "completed_exported_candidate",
     "path": "data/cache/fall-fresh-local",
-    "test_measured": false
-  }
+    "test_measured": true,
+    "metrics": {
+      "architecture": "resnet18-gru-v1",
+      "threshold_selected_on_validation": 0.5399999999999999,
+      "validation_clip": {
+        "precision": 0.990909090909091,
+        "recall": 1.0,
+        "f1": 0.9954337899543378,
+        "tp": 109,
+        "fp": 1,
+        "fn": 0,
+        "tn": 105
+      },
+      "test_clip": {
+        "precision": 0.9594594594594594,
+        "recall": 0.9861111111111112,
+        "f1": 0.9726027397260274,
+        "tp": 213,
+        "fp": 9,
+        "fn": 3,
+        "tn": 158
+      },
+      "test_by_source": {
+        "urfd-rgb-preview": {
+          "precision": 0.5263157894736842,
+          "recall": 1.0,
+          "f1": 0.6896551724137931,
+          "tp": 10,
+          "fp": 9,
+          "fn": 0,
+          "tn": 1
+        },
+        "figshare-28596332-v2": {
+          "precision": 1.0,
+          "recall": 0.9854368932038835,
+          "f1": 0.9926650366748166,
+          "tp": 203,
+          "fp": 0,
+          "fn": 3,
+          "tn": 157
+        }
+      },
+      "data_manifest_sha256": "48ce931fcf4170d6394fd1f6a56bd71dd97b4c719ee8aa5c5413ac4540cf203e",
+      "split_counts": {
+        "train": 1485,
+        "val": 215,
+        "test": 383
+      },
+      "elapsed_minutes": 45.422483078333364,
+      "event_timing_metrics": "not measured on Figshare: onset labels unavailable",
+      "linq_encoder": "ResNet18 family; new weights require compilation and hardware test",
+      "temporal_head": "small GRU on CPU; no LinQ GRU support claimed",
+      "deployment": "candidate only; do not replace the evaluated baseline automatically"
+    },
+    "warning": "Combined clip F1 does not demonstrate reliable performance on every source; URFD has 9 false positives out of 10 ADL test clips.",
+    "deployment": "Installed with RGB/pose corroboration; new fusion event quality not independently measured."
+  },
+  "runtime_seconds": 20904.2,
+  "all_five_done": true,
+  "output_files": 157,
+  "archive": "linq-night-trained-models.zip",
+  "remaining_training_minutes": 0,
+  "metrics_report": "docs/trained-model-metrics.json"
 }

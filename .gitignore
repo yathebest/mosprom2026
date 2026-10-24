@@ -42,3 +42,7 @@ linq-ppe-training-data.zip
 linq-night-trained-models.zip
 linq-fast-trained-models.zip
 linq-fall-trained-models.zip
+data/models/fall-temporal*
+data/models/*-metrics.json
+data/models/trained-installation.json
+data/models/training-progress.json

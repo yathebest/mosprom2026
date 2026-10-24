@@ -73,6 +73,10 @@ def draw(frame, people, details, config, now, scene_state=None, scene_alerts=())
         label='ALERT: FALL' if 'possible_fall' in scene_alerts else 'ALERT: PERSON DOWN' if 'person_down' in scene_alerts else 'LYING CANDIDATE' if probability>=config.body_threshold else 'BODY: MONITORING'
         color=(70,70,250) if scene_alerts else (100,215,235)
         cv2.putText(output,label,(14,max(48,h-15)),cv2.FONT_HERSHEY_SIMPLEX,.55,color,2)
+        if 'fall_probability' in scene_state:
+            value=scene_state['fall_probability']
+            text='TEMPORAL: WARMUP' if value is None else f'TEMPORAL FALL: {value:.2f}'
+            cv2.putText(output,text,(14,max(48,h-38)),cv2.FONT_HERSHEY_SIMPLEX,.5,color,1)
         if scene_alerts:cv2.rectangle(output,(2,2),(w-3,h-3),color,3)
     return output
 
@@ -141,6 +145,8 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
             now = index/fps
             inference_start = time.perf_counter()
             people = backend.predict(frame)
+            if callable(getattr(backend,'predict_temporal',None)):
+                backend.predict_temporal(frame,now)
             latencies.append((time.perf_counter()-inference_start)*1000)
             people = tracker.update(people,frame.shape,now)
             if processed%10==0:

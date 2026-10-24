@@ -280,6 +280,11 @@ class Rules:
         if cfg.fall_detection and scene_state is not None:
             probability=float(scene_state.get("lying_probability",0))
             high=probability>=cfg.body_threshold
+            temporal=scene_state.get('fall_probability')
+            temporal_high=(temporal is not None and temporal>=scene_state.get('fall_threshold',.8)
+                           and (high or any(d['posture']=='lying' and d['tracking']=='measured'
+                                            for d in details.values())))
+            high=high or temporal_high
             strong_upright=probability<.1
             if strong_upright:
                 if self.scene["upright_since"] is None:
@@ -298,7 +303,7 @@ class Rules:
                 self.scene["upright_since"]=None
                 self.scene["high_since"]=None
             previous_fall=self.gates.get((0,"possible_fall",""))
-            kind="possible_fall" if self.scene["fall_candidate"] or (previous_fall and previous_fall.active) else "person_down"
+            kind="possible_fall" if temporal_high or self.scene["fall_candidate"] or (previous_fall and previous_fall.active) else "person_down"
             for event_kind in ("possible_fall","person_down"):
                 hold=cfg.body_hold if event_kind=="possible_fall" else cfg.lying_hold
                 gate=self.gates.setdefault((0,event_kind,""),Gate())
@@ -306,7 +311,9 @@ class Rules:
                 if fired:
                     started,sequence=fired
                     events.append({"track_id":0,"kind":event_kind,"zone":"","start_s":round(started,3),
-                        "alert_s":round(now,3),"sequence":sequence,"score":probability,
-                        "posture":"lying","source":"rgb_scene_classifier","confirmation_s":round(now-started,3),
-                        "reason":f"RGB-модель: вероятность горизонтального положения ≥ {cfg.body_threshold:.2f} в течение {hold:g} с. Требуется проверка оператором."})
+                        "alert_s":round(now,3),"sequence":sequence,"score":float(temporal) if temporal_high else probability,
+                        "posture":"lying","source":"rgb_temporal_fusion" if temporal_high else "rgb_scene_classifier",
+                        "confirmation_s":round(now-started,3),
+                        "reason":(f"Временная модель падения и положение человека подтверждают событие в течение {hold:g} с. Требуется проверка оператором."
+                                  if temporal_high else f"RGB-модель: вероятность горизонтального положения ≥ {cfg.body_threshold:.2f} в течение {hold:g} с. Требуется проверка оператором.")})
         return events,details

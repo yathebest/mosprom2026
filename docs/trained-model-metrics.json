@@ -1,0 +1,186 @@
+{
+  "people-metrics.json": {
+    "task": "people",
+    "test_metrics": {
+      "metrics/precision(B)": 0.7520963064975329,
+      "metrics/recall(B)": 0.5396322130627774,
+      "metrics/mAP50(B)": 0.6248046313312574,
+      "metrics/mAP50-95(B)": 0.3626883041148877,
+      "fitness": 0.3626883041148877
+    },
+    "onnx_sha256": "a7a027419a46770aa8c6d91e1293d7286e6bb84f94ae21f82f1ac2d2168acfa3",
+    "linq_status": "not_compiled",
+    "event_metrics": "not_evaluated",
+    "freeze_layers": 0,
+    "training_time_budget_minutes": 45.0,
+    "continuation": null,
+    "actual_epochs": 16
+  },
+  "head_ppe-metrics.json": {
+    "task": "head_ppe",
+    "test_metrics": {
+      "metrics/precision(B)": 0.9247669111690386,
+      "metrics/recall(B)": 0.8837799412635705,
+      "metrics/mAP50(B)": 0.9313380182242645,
+      "metrics/mAP50-95(B)": 0.5909493011656777,
+      "fitness": 0.5909493011656777
+    },
+    "onnx_sha256": "7b823854a1fc2d4c50ff44a7becad93c2f82f860d9e806508c7067a7fb4a0fcc",
+    "linq_status": "not_compiled",
+    "event_metrics": "not_evaluated",
+    "freeze_layers": 0,
+    "training_time_budget_minutes": 320.0,
+    "continuation": null,
+    "actual_epochs": 48
+  },
+  "vest_ppe-metrics.json": {
+    "task": "vest_ppe",
+    "test_metrics": {
+      "metrics/precision(B)": 0.8501956913257491,
+      "metrics/recall(B)": 0.7051310054759172,
+      "metrics/mAP50(B)": 0.7754360729987426,
+      "metrics/mAP50-95(B)": 0.5007465164759604,
+      "fitness": 0.5007465164759604
+    },
+    "onnx_sha256": "715bd7d536032c1dea7c31362bdc79d27c80dd3982074c5b1e50388cfa917dab",
+    "linq_status": "not_compiled",
+    "event_metrics": "not_evaluated",
+    "freeze_layers": 0,
+    "training_time_budget_minutes": 170.0,
+    "continuation": null,
+    "actual_epochs": 60
+  },
+  "head_ppe-classifier-metrics.json": {
+    "classes": [
+      "hardhat",
+      "no_hardhat"
+    ],
+    "threshold": 0.5,
+    "validation_precision_target_met": true,
+    "actual_epochs": 13,
+    "training_time_budget_minutes": 70.0,
+    "frozen_early_layers": true,
+    "test": {
+      "hardhat": {
+        "precision": 0.9903890583125404,
+        "recall": 0.9666275818526202,
+        "f1": 0.9783640679203943,
+        "tp": 10717,
+        "fp": 104,
+        "fn": 370
+      },
+      "no_hardhat": {
+        "precision": 0.971212946393838,
+        "recall": 0.9917375069516168,
+        "f1": 0.9813679245283019,
+        "tp": 12483,
+        "fp": 370,
+        "fn": 104
+      }
+    },
+    "test_coverage": 1.0,
+    "linq_status": "not_compiled",
+    "qc_excluded_image_sha256": [
+      "8ab6abebd308d47cead1c3b6403e4bc767c288766d4113dde197c3609373a0c3"
+    ],
+    "split_crops": {
+      "train": 55378,
+      "val": 16239,
+      "test": 23674
+    },
+    "warning": "Crop classification metrics are not event metrics; unobservable crops need a separate evaluation set."
+  },
+  "vest_ppe-classifier-metrics.json": {
+    "classes": [
+      "no_vest",
+      "vest"
+    ],
+    "threshold": 0.51,
+    "validation_precision_target_met": true,
+    "actual_epochs": 16,
+    "training_time_budget_minutes": 37.63215513373695,
+    "frozen_early_layers": true,
+    "test": {
+      "no_vest": {
+        "precision": 0.9716494845360825,
+        "recall": 0.9544303797468354,
+        "f1": 0.9629629629629629,
+        "tp": 377,
+        "fp": 11,
+        "fn": 18
+      },
+      "vest": {
+        "precision": 0.9909284951974386,
+        "recall": 0.9941113490364025,
+        "f1": 0.9925173703901657,
+        "tp": 1857,
+        "fp": 17,
+        "fn": 11
+      }
+    },
+    "test_coverage": 0.9995581087052585,
+    "linq_status": "not_compiled",
+    "qc_excluded_image_sha256": [
+      "8ab6abebd308d47cead1c3b6403e4bc767c288766d4113dde197c3609373a0c3"
+    ],
+    "split_crops": {
+      "train": 8737,
+      "val": 2119,
+      "test": 2263
+    },
+    "warning": "Crop classification metrics are not event metrics; unobservable crops need a separate evaluation set."
+  },
+  "fall-temporal-metrics.json": {
+    "architecture": "resnet18-gru-v1",
+    "threshold_selected_on_validation": 0.5399999999999999,
+    "validation_clip": {
+      "precision": 0.990909090909091,
+      "recall": 1.0,
+      "f1": 0.9954337899543378,
+      "tp": 109,
+      "fp": 1,
+      "fn": 0,
+      "tn": 105
+    },
+    "test_clip": {
+      "precision": 0.9594594594594594,
+      "recall": 0.9861111111111112,
+      "f1": 0.9726027397260274,
+      "tp": 213,
+      "fp": 9,
+      "fn": 3,
+      "tn": 158
+    },
+    "test_by_source": {
+      "urfd-rgb-preview": {
+        "precision": 0.5263157894736842,
+        "recall": 1.0,
+        "f1": 0.6896551724137931,
+        "tp": 10,
+        "fp": 9,
+        "fn": 0,
+        "tn": 1
+      },
+      "figshare-28596332-v2": {
+        "precision": 1.0,
+        "recall": 0.9854368932038835,
+        "f1": 0.9926650366748166,
+        "tp": 203,
+        "fp": 0,
+        "fn": 3,
+        "tn": 157
+      }
+    },
+    "data_manifest_sha256": "48ce931fcf4170d6394fd1f6a56bd71dd97b4c719ee8aa5c5413ac4540cf203e",
+    "split_counts": {
+      "train": 1485,
+      "val": 215,
+      "test": 383
+    },
+    "elapsed_minutes": 45.422483078333364,
+    "event_timing_metrics": "not measured on Figshare: onset labels unavailable",
+    "linq_encoder": "ResNet18 family; new weights require compilation and hardware test",
+    "temporal_head": "small GRU on CPU; no LinQ GRU support claimed",
+    "deployment": "candidate only; do not replace the evaluated baseline automatically"
+  }
+}
