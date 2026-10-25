@@ -41,12 +41,13 @@
     "hardware_verified": false
   },
   "full_pytest": {
-    "passed": 322,
-    "seconds": 88.36,
+    "passed": 328,
+    "seconds": 102.05,
     "warnings": 1
   },
   "additional_packaging_tests": {
-    "passed": 5
+    "passed": 5,
+    "included_in_full_pytest": true
   },
   "actual_remote_probe": {
     "startup": "failed",
@@ -67,5 +68,23 @@
     "Only person-YOLO12m head uses the remote TPU. Pose/PPE/phone/fire/RGB fall remain local.",
     "The supplied docs named a different TPU SHA; this report records the actual ZIP artifact.",
     "The kit contains no saved hardware timing JSON and the notebook has no executed outputs."
-  ]
+  ],
+  "git_clone_check": {
+    "source_commit": "d60c14b6100bbb25d94f6c01c180221e1294d8c9",
+    "clone_transport": "local shared Git clone; same commit verified on GitHub main",
+    "dependency_environment": "existing Python 3.13.9; no clean dependency install claimed",
+    "lfs_fsck": "passed",
+    "organizer_zip_install": "passed",
+    "actual_serializer_roundtrip": "passed",
+    "runtime_preflight_missing_models": [],
+    "offline_pipeline": "completed; one event and ready clip; mocked transport and frozen pose",
+    "private_protocol_tracked": false,
+    "tpu_program_tracked": false
+  },
+  "distribution": {
+    "new_runtime_weight_files_in_lfs": 12,
+    "lfs_upload_completed": true,
+    "readme": "README.md",
+    "private_runtime_installer": "scripts/install_linq_runtime.py"
+  }
 }
