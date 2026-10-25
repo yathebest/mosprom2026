@@ -34,9 +34,11 @@ test('camera actions and all alert/source IDs survive the layout move; long stat
  for(const id of ['live-alert','live-alert-title','live-alert-time','live-alert-clips','live-frames','live-model-latency','live-events-total','live-state','live-clock','live-sessions'])assert.ok(ids.has(id),id);
  assert.equal(inside(ids.get('live-sessions'),'live-state-details'),true);
  assert.doesNotMatch(ids.get('live-state-details').attrs,/\bopen(?:\s|$|=)/);
- const css=fs.readFileSync(require.resolve('../app/static/product.css'),'utf8');
- assert.match(css,/#live \.live-layout\.live-workspace\{grid-template-columns:minmax\(0,1fr\) minmax\(280px,340px\)/);
- assert.match(css,/@media\(max-width:900px\)\{#live \.live-layout\.live-workspace\{grid-template-columns:minmax\(0,1fr\)/);
+ const css=fs.readFileSync(require.resolve('../app/static/live.css'),'utf8');
+ assert.match(css,/#live \.live-layout\.live-workspace\{[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(380px,420px\)/);
+ assert.match(css,/@media\(max-width:1050px\)\{#live \.live-layout\.live-workspace\{grid-template-columns:minmax\(0,1fr\)/);
+ assert.match(css,/\.live-screen\{[^}]*max-height:500px/);assert.match(css,/\.live-screen:has\(#live-idle:not\(\[hidden\]\)\)\{max-height:360px/);
+ assert.doesNotMatch(css,/\.live-controls>\.between\{[^}]*position:sticky/,'The setup header must not create a sticky gap inside the settings grid');
  const wall=fs.readFileSync(require.resolve('../app/static/camera-wall.css'),'utf8');
  assert.doesNotMatch(wall,/body:not\(\.can-manage-live\)\s+#live\s+\.live-layout\s*\{/,'An obsolete operator override must not force the alert rail below the video');
 });

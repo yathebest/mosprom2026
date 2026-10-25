@@ -26,7 +26,7 @@ test('common alerts show active authorized session IDs only and escape user labe
   {id:'old1',job_id:'old',camera:'Past demo',kind:'danger_zone'}, {id:'secret',job_id:'foreign',camera:'Foreign'}];
  assert.deepEqual(wall.activeEvents(sessions,events).map(event=>event.id),['b1']);
  const html=wall.eventFeed(sessions,events,{time:String});assert.match(html,/&lt;camera B&gt;/);assert.match(html,/data-alert-source="b"/);assert.doesNotMatch(html,/Past demo|Foreign|episode-summary/);
- assert.match(wall.eventFeed([],events),/В работающих камерах тревог пока нет/);
+ const empty=wall.eventFeed([],events);assert.match(empty,/Тревог пока нет/);assert.equal((empty.match(/class="camera-alert-empty"/g)||[]).length,1);assert.match(empty,/aria-hidden="true"/);assert.doesNotMatch(empty,/Новых уведомлений нет/);
 });
 test('otherwise identical alerts identify distinct people and localize without exposing scene or invalid IDs',()=>{
  const sessions=[{id:'a',state:'running'}],base={job_id:'a',camera:'Line A',kind:'no_helmet',start_s:1,alert_s:2,created:'utc'};

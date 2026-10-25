@@ -1,0 +1,199 @@
+{
+  "created_at": "2026-10-25T02:07:13.638840+00:00",
+  "pattern": "phone",
+  "protocol": "Frozen public-video cases; isolated enabled pattern; deployed weights and thresholds; no DB mutation or fitting.",
+  "limitations": [
+    "Selected development regressions, not a blind benchmark or quality guarantee.",
+    "Expected labels are case-level presence/absence, not expert-complete intervals.",
+    "Native source resolution; original video timestamps; processing speed is not LIVE presentation speed."
+  ],
+  "weights": [
+    {
+      "file": "yolov8n-pose.pt",
+      "sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212"
+    },
+    {
+      "file": "person-yolo12m.pt",
+      "sha256": "3c2f9fc99bf6fbd11f72c2f8243c753cd671145c8cfbb3d7b36ac3c2750de4c2"
+    },
+    {
+      "file": "yolo12m.pt",
+      "sha256": "4c6d179786eddf6134ee469ae2f4ce04cbe4e9d1a47d6b669d9cd6b9c6c513d8"
+    },
+    {
+      "file": "phone-objects.onnx",
+      "sha256": "00b345f1432c17cbe0547b63f970acb5b7248b9783a12ebc2a2d9771d6c55f45"
+    }
+  ],
+  "rules_sha256": {
+    "Rules": "c783fc30b12d2f9fcc6bf6a57f1e6b1ab4e7e052b76750eb7c7b5026ac193f36",
+    "ScenarioRules": "68b8c989b46826a317812bb555b5a3c2377674d8d3f369db800edd7b93de9b86",
+    "PeopleTracker": "965bafbc92c73c9f33ef2dfb0ff1af5cc785a3aeefb61fb3b26c1d337eef2f1e"
+  },
+  "rows": [
+    {
+      "id": "phone-factory-negative",
+      "pattern": "phone",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "possible_phone_use"
+      ],
+      "config": {
+        "camera": "Камера 01",
+        "recorded_at": null,
+        "zones": [],
+        "zone_hold": 1.0,
+        "fast_motion": false,
+        "speed_threshold": 1.25,
+        "motion_hold": 1.0,
+        "fall_detection": false,
+        "fall_hold": 1.0,
+        "lying_hold": 5.0,
+        "release_hold": 2.0,
+        "observation_gap": 0.8,
+        "sample_fps": 10,
+        "confidence": 0.4,
+        "calibration": null,
+        "speed_threshold_m_s": 2.5,
+        "body_threshold": 0.9,
+        "body_hold": 0.5,
+        "body_transition_max_s": 1.0,
+        "helmet_detection": false,
+        "vest_detection": false,
+        "signal_clothing_policy": "vest_or_reflective_uniform",
+        "mask_detection": false,
+        "harness_detection": false,
+        "phone_detection": true,
+        "fire_detection": false,
+        "smoke_detection": false,
+        "smoking_detection": false,
+        "proximity_detection": false,
+        "load_posture_detection": false,
+        "ppe_hold": 1.5,
+        "object_hold": 1.0,
+        "object_confidence": 0.5,
+        "phone_confidence": 0.3,
+        "phone_work_context_only": false,
+        "distant_people": true,
+        "smoking_min_person_height": 120,
+        "ppe_crops": true,
+        "ppe_max_people": 8,
+        "ppe_memory_s": 0.5,
+        "ppe_conflict_margin": 0.15,
+        "proximity_heights": 0.6,
+        "proximity_m": 3.0,
+        "state_confirmation_ratio": 0.75,
+        "state_min_samples": 3,
+        "state_windows": {}
+      },
+      "truth_basis": "Visual review of this short public recording: no visible phone use.",
+      "status": "completed",
+      "passed": true,
+      "source_sha256": "7434951bbc7f87ba144436863f7128e8780b14721191431aa30d7f3020ac0987",
+      "source_fps": 25.11,
+      "source_duration_s": 2.986857825567503,
+      "processed_frames": 25,
+      "sample_fps_actual": 8.37,
+      "wall_s": 25.262,
+      "measured_person_ids": [
+        1,
+        2
+      ],
+      "eligible_person_ids": [
+        1,
+        2
+      ],
+      "object_observations": {
+        "cell_phone": 2
+      },
+      "object_peak_scores": {
+        "cell_phone": 0.4091417193412781
+      },
+      "events": [],
+      "matching_events": 0,
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + person-yolo12m.pt + COCO person ensemble + ONNX CUDA scenarios",
+      "observations": "data/cache/pattern-audit-20261025/phone-factory-negative/observations.json"
+    },
+    {
+      "id": "phone-tablet-hardnegative",
+      "pattern": "phone",
+      "file": "data/datasets/demo-video-selection/ppe/pexels_8964295_construction_helmets_vests.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "possible_phone_use"
+      ],
+      "config": {
+        "camera": "Камера 01",
+        "recorded_at": null,
+        "zones": [],
+        "zone_hold": 1.0,
+        "fast_motion": false,
+        "speed_threshold": 1.25,
+        "motion_hold": 1.0,
+        "fall_detection": false,
+        "fall_hold": 1.0,
+        "lying_hold": 5.0,
+        "release_hold": 2.0,
+        "observation_gap": 0.8,
+        "sample_fps": 10,
+        "confidence": 0.4,
+        "calibration": null,
+        "speed_threshold_m_s": 2.5,
+        "body_threshold": 0.9,
+        "body_hold": 0.5,
+        "body_transition_max_s": 1.0,
+        "helmet_detection": false,
+        "vest_detection": false,
+        "signal_clothing_policy": "vest_or_reflective_uniform",
+        "mask_detection": false,
+        "harness_detection": false,
+        "phone_detection": true,
+        "fire_detection": false,
+        "smoke_detection": false,
+        "smoking_detection": false,
+        "proximity_detection": false,
+        "load_posture_detection": false,
+        "ppe_hold": 1.5,
+        "object_hold": 1.0,
+        "object_confidence": 0.5,
+        "phone_confidence": 0.3,
+        "phone_work_context_only": false,
+        "distant_people": true,
+        "smoking_min_person_height": 120,
+        "ppe_crops": true,
+        "ppe_max_people": 8,
+        "ppe_memory_s": 0.5,
+        "ppe_conflict_margin": 0.15,
+        "proximity_heights": 0.6,
+        "proximity_m": 3.0,
+        "state_confirmation_ratio": 0.75,
+        "state_min_samples": 3,
+        "state_windows": {}
+      },
+      "truth_basis": "CPU source review: clipboard/tablet is held; no visible phone, static worker",
+      "status": "completed",
+      "passed": true,
+      "source_sha256": "2e633994b2a2f205c3a68786bb33940889cbf614d6b01bf96cdefcf2045cd8e5",
+      "source_fps": 25.0,
+      "source_duration_s": 8.24,
+      "processed_frames": 103,
+      "sample_fps_actual": 12.5,
+      "wall_s": 142.989,
+      "measured_person_ids": [
+        1,
+        2
+      ],
+      "eligible_person_ids": [
+        1,
+        2
+      ],
+      "object_observations": {},
+      "object_peak_scores": {},
+      "events": [],
+      "matching_events": 0,
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + person-yolo12m.pt + COCO person ensemble + ONNX CUDA scenarios",
+      "observations": "data/cache/pattern-audit-20261025/phone-tablet-hardnegative/observations.json"
+    }
+  ]
+}

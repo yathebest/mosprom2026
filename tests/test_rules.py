@@ -115,7 +115,7 @@ def test_decision_uses_source_time_not_processing_frame_count(fps):
 
 
 def test_camera_motion_is_not_mislabeled_as_calibrated_speed():
-    engine=Rules(RunConfig(speed_threshold=1,motion_hold=.5))
+    engine=Rules(RunConfig(fast_motion=True,speed_threshold=1,motion_hold=.5))
     events=[]
     for i in range(30):
         x=i*5

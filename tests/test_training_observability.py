@@ -9,6 +9,16 @@ sys.path.insert(0,str(ROOT/'scripts'))
 from training_observability import Progress,bounded_tail,materialize_fpi
 
 
+def read_progress(path,timeout=1):
+    """Windows can briefly deny open during replace; malformed JSON must fail."""
+    deadline=time.monotonic()+timeout
+    while True:
+        try:return json.loads(path.read_text(encoding='utf-8'))
+        except PermissionError:
+            if time.monotonic()>=deadline:raise
+            time.sleep(.005)
+
+
 def test_local_staging_copies_bytes_remaps_classes_and_does_not_read_test(tmp_path):
     source=tmp_path/'source'
     for split in ['train','val','test']:
@@ -32,13 +42,13 @@ def test_heartbeat_distinguishes_process_liveness_from_work_and_clears_stale_sta
     target=tmp_path/'progress.json';progress=Progress(target,interval=.02)
     try:
         progress.update('materialize',completed=25,total=100,force=True)
-        before=json.loads(target.read_text())['sequence']
+        before=read_progress(target)['sequence']
         deadline=time.monotonic()+1
-        while json.loads(target.read_text())['sequence']<=before and time.monotonic()<deadline:time.sleep(.01)
-        state=json.loads(target.read_text())
+        while read_progress(target)['sequence']<=before and time.monotonic()<deadline:time.sleep(.01)
+        state=read_progress(target)
         assert state['sequence']>before and state['completed']==25
         progress.update('scan',detail='loader setup',force=True)
-        assert 'completed' not in json.loads(target.read_text())
+        assert 'completed' not in read_progress(target)
     finally:progress.close()
 
 

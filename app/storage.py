@@ -217,6 +217,40 @@ def set_clip(event_id,path):
         c.execute("UPDATE events SET clip=? WHERE id=?",(path,event_id))
 
 
+def set_group_clip(job_id, camera, event_updates, *, clip=None, organization_id=None):
+    """Atomically attach shared media metadata without changing event decisions.
+
+    All supplied members must belong to this one job/camera/tenant. Lifecycle
+    updates and encoders serialize their payload merges via BEGIN IMMEDIATE.
+    """
+    if not event_updates:return []
+    if clip is not None:
+        source_root=(DATA/'runs'/job_id).resolve()
+        candidate=(DATA/clip).resolve()
+        if (not clip.replace('\\','/').startswith(f'runs/{job_id}/')
+                or source_root.parent!=(DATA/'runs').resolve()
+                or not candidate.is_relative_to(source_root)):
+            raise ValueError('Shared clip must belong to its source job')
+    clause,args=sql_scope('jobs','events.camera')
+    identifiers=list(event_updates)
+    placeholders=','.join('?' for _ in identifiers)
+    organization_clause=' AND jobs.organization_id=?' if organization_id is not None else ''
+    with connection() as c:
+        c.execute('BEGIN IMMEDIATE')
+        rows=c.execute('SELECT events.* FROM events JOIN jobs ON jobs.id=events.job_id '
+            f'WHERE events.id IN ({placeholders}) AND events.job_id=? AND events.camera=?'+organization_clause+clause,
+            (*identifiers,job_id,camera,*([organization_id] if organization_id is not None else []),*args)).fetchall()
+        if len(rows)!=len(identifiers):
+            raise ValueError('Shared clip members cross an inaccessible source')
+        for row in rows:
+            payload=json.loads(row['payload']);payload.update(event_updates[row['id']])
+            if clip is None:
+                c.execute('UPDATE events SET payload=? WHERE id=?',(json.dumps(payload,ensure_ascii=False),row['id']))
+            else:
+                c.execute('UPDATE events SET payload=?,clip=? WHERE id=?',(json.dumps(payload,ensure_ascii=False),clip,row['id']))
+    return identifiers
+
+
 def review(event_id,status):
     with connection() as c:
         scope=current_scope.get()

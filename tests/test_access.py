@@ -91,7 +91,7 @@ def test_enterprise_isolation_media_live_exports_and_camera_names(system):
     with zipfile.ZipFile(io.BytesIO(c.get('/api/review-dataset').content)) as z:
         assert [e['id'] for e in json.loads(z.read('annotations.json'))]==[ea]
     assert len(c.get('/api/cameras').json())==1
-    assert c.post('/api/cameras',json={'camera':'same camera','fall_detection':True}).status_code==200
+    assert c.post('/api/cameras',json={'camera':'same camera','helmet_detection':True}).status_code==200
     sign_in(c,'enterprise-b');assert c.get('/api/cameras').json()[0]['config']=={'camera':'same camera'}
 
 

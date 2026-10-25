@@ -9,6 +9,13 @@ from app.access import Scope, current_scope
 NOW=datetime(2026,10,25,12,tzinfo=timezone.utc)
 
 
+@pytest.fixture(autouse=True)
+def stable_unit_policy(monkeypatch):
+    # Pure aggregation tests must not depend on an evolving deployment manifest.
+    monkeypatch.setattr(analytics,'production_catalog',lambda:{'version':'unit-core',
+        'patterns':[{'enabled':True,'event_kinds':sorted(analytics.CORE_KINDS)}]})
+
+
 def job(key='j',camera='Press',**values):
     return {'id':key,'created':'2026-10-25T00:00:00Z','filename':'production.mp4',
         'config':{'camera':camera},'meta':{'duration_s':3600},'stats':{},**values}
@@ -122,6 +129,51 @@ def test_recurrence_is_per_place_pattern_and_separates_jobs_from_people():
     row=result['priorities'][0]
     assert row['confirmed']==4 and row['distinct_jobs']==2
     assert result['cameras'][0]['confirmed']==4
+
+
+def test_status_filter_applies_before_every_aggregation_and_details():
+    records=[event('a',status='new'),event('b',status='forwarded'),event('c',status='confirmed'),event('d',status='false')]
+    for status in ('new','forwarded','confirmed','false'):
+        result=analytics.aggregate(records,[job()],now=NOW,status=status)
+        assert result['filters']['status']==status
+        assert result['kpis']['automatic_events']==1
+        assert result['breakdowns']['by_status']=={status:1}
+        assert result['cameras'][0]['by_kind']=={'no_helmet':1}
+        assert len(result['events'])==1 and result['events'][0]['status']==status
+        assert result['kpis']['pending']==(1 if status in ('new','forwarded') else 0)
+    with pytest.raises(ValueError,match='review status'):analytics.aggregate(records,[job()],now=NOW,status='garbage')
+
+
+def test_daily_kind_and_camera_breakdowns_use_selected_time_basis_after_status_filter():
+    records=[event('a',status='confirmed',created='2026-10-24T22:30:00Z',payload={'occurred_at':'2026-10-23T22:30:00Z'}),
+        event('b',status='new',created='2026-10-24T20:30:00Z',payload={'occurred_at':'2026-10-23T20:30:00Z'})]
+    processing=analytics.aggregate(records,[job()],now=NOW,status='confirmed')
+    assert processing['breakdowns']['by_time_day']=={'2026-10-25':1}
+    assert processing['breakdowns']['by_time_day_kind']=={'2026-10-25':{'no_helmet':1}}
+    source=analytics.aggregate(records,[job()],now=NOW,status='confirmed',time_basis='recording')
+    assert source['breakdowns']['by_time_day']=={'2026-10-24':1}
+    assert source['breakdowns']['by_time_day_kind']=={'2026-10-24':{'no_helmet':1}}
+    assert source['breakdowns']['by_processing_day']=={'2026-10-25':1}
+
+
+def test_current_production_policy_enables_phone_fire_without_history_toggle_and_preserves_disabled_history(tmp_path,monkeypatch):
+    manifest=tmp_path/'policy.json'
+    manifest.write_text(json.dumps({'version':'production-test','enabled_patterns':['helmet','phone','fire']}))
+    monkeypatch.setattr(analytics.pattern_policy,'MANIFEST_PATH',manifest)
+    monkeypatch.setattr(analytics,'production_catalog',analytics.pattern_policy.catalog)
+    records=[event('helmet'),event('phone',kind='possible_phone_use'),event('fire',kind='fire'),event('removed',kind='possible_smoking')]
+    result=analytics.aggregate(records,[job()],now=NOW)
+    assert result['kpis']['automatic_events']==3
+    assert result['production_kinds']==['fire','no_helmet','possible_phone_use']
+    assert result['pattern_policy_version']=='production-test'
+    assert result['cameras'][0]['by_kind']=={'no_helmet':1,'possible_phone_use':1,'fire':1}
+    assert result['excluded']['experimental']==1
+    history=analytics.aggregate(records,[job()],now=NOW,include_experimental=True)
+    assert history['kpis']['automatic_events']==4
+    assert next(row for row in history['events'] if row['id']=='removed')['experimental']
+    manifest.unlink()
+    with pytest.raises(analytics.pattern_policy.PolicyError):
+        analytics.aggregate(records,[job()],now=NOW,include_experimental=True)
 
 
 def test_scoped_history_has_no_100_job_truncation_or_cross_org_camera_leak(tmp_path,monkeypatch):

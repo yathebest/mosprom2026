@@ -56,7 +56,7 @@ class RunConfig(BaseModel):
     recorded_at: str | None = None
     zones: list[Zone] = Field(default_factory=list, max_length=8)
     zone_hold: float = Field(default=1.0, ge=0.2, le=30)
-    fast_motion: bool = True
+    fast_motion: bool = False
     speed_threshold: float = Field(default=1.25, ge=0.2, le=10)
     motion_hold: float = Field(default=1.0, ge=0.2, le=10)
     fall_detection: bool = False

@@ -24,6 +24,7 @@ from .video import MODEL,draw,ffmpeg_path,state_snapshot,finish_rules,persist_ep
 from .scenarios import ScenarioRules,base_config,annotate_objects,assessment_rows
 from .preview_motion import PreviewMotion
 from .access import current_scope
+from .clip_groups import GroupPool
 
 SESSIONS={}
 LOCK=threading.Lock()
@@ -81,6 +82,7 @@ class LiveSession:
         self.people_states={};self.scenario_states={};self.states_updated_s=0.
         self.effective_observation_gap_s=max(2.5,config.observation_gap)
         self.frame_lock=threading.RLock()
+        self.clip_groups=GroupPool(self.id,config.camera,self.organization_id,pre_s=PRE_SECONDS,post_s=POST_SECONDS)
         self.display_frames=queue.Queue(maxsize=1);self.scenario_frames=queue.Queue(maxsize=1)
         self.record_frames=queue.Queue(maxsize=1);self.record_times=deque(maxlen=150)
         self.visual=None;self.scenario_visual=None
@@ -144,7 +146,7 @@ class LiveSession:
                     history_s=PRE_SECONDS+min(15.,max(4.,(self.scenario_age_ms or 0)/1000+1.))
                     while self.ring and now-self.ring[0][0]>history_s:self.ring.popleft()
                     for clip in self.pending:
-                        if now<=clip['until']:clip['frames'].append((now,original))
+                        if clip.get('start',0)<=now<=clip['until']:clip['frames'].append((now,original))
                 self.record_times.append(time.monotonic())
                 self.queue_finished_clips(now)
         except Exception:
@@ -214,8 +216,22 @@ class LiveSession:
                 (db.DATA/image).unlink(missing_ok=True)
                 continue
             with self.frame_lock:
-                self.pending.append({'id':saved_id,'frames':[(t,b) for t,b in self.ring if source_time-PRE_SECONDS<=t<=source_time+POST_SECONDS],
-                    'until':source_time+POST_SECONDS,'alert_s':event['alert_s']})
+                group=self.clip_groups.add(saved_id,event)
+                clip=next((item for item in self.pending if item['id']==group.id),None)
+                if group.state=='pending':
+                    if clip is None:
+                        clip={'id':group.id,'group':group,'frames':[]}
+                        self.pending.append(clip)
+                    clip.update(start=group.start_s,until=group.end_s,alert_s=group.first_alert_s)
+                    merged={t:b for t,b in clip['frames']}
+                    merged.update((t,b) for t,b in self.ring if group.start_s<=t<=group.end_s)
+                    clip['frames']=sorted(merged.items())
+                result={key:value for key,value in group.result.items() if key not in ('clip_path','clip_alert_offset_s')}
+                updates={member_id:{**group.member_metadata(member_id,start_s=group.result.get('clip_start_s',group.start_s)),
+                    'clip_state':'capturing' if group.state=='pending' else group.state,
+                    **result} for member_id in group.members}
+                db.set_group_clip(self.id,self.config.camera,updates,
+                    clip=group.result.get('clip_path'),organization_id=self.organization_id)
                 self.events+=1
         self.queue_finished_clips(self.elapsed)
 
@@ -306,10 +322,25 @@ class LiveSession:
                 'model':getattr(self.backend,'name',self.backend_name),'assessments':self.assessments}
 
     def finalize_clip(self,clip):
-        event_id=clip['id'];frames=clip['frames']
+        event_id=clip['id'];frames=sorted(dict(clip['frames']).items());group=clip.get('group')
+        def publish(patch,path=None):
+            if group is None:
+                if path is not None:db.set_clip(event_id,path)
+                db.patch_payload(event_id,patch)
+            else:
+                with self.frame_lock:
+                    updates={member_id:{**group.member_metadata(member_id,start_s=patch.get('clip_start_s',group.start_s)),
+                                        **patch} for member_id in group.members}
+                    # Offset is per event, not the first actor's alert offset.
+                    for member_id,update in updates.items():
+                        update['clip_alert_offset_s']=group.member_metadata(member_id,start_s=patch.get('clip_start_s',group.start_s))['clip_alert_offset_s']
+                    db.set_group_clip(self.id,self.config.camera,updates,clip=path,organization_id=self.organization_id)
+                    if patch.get('clip_state') in ('ready','failed','cancelled'):
+                        self.clip_groups.finish(group.id,patch['clip_state'],{**patch,**({'clip_path':path} if path else {})})
         if not frames:
-            db.patch_payload(event_id,{'clip_state':'failed'});return
-        db.patch_payload(event_id,{'clip_state':'exporting'})
+            publish({'clip_state':'failed'})
+            return
+        publish({'clip_state':'exporting'})
         target=self.folder/'clips'/f'{event_id}.mp4'
         process=None
         try:
@@ -330,14 +361,17 @@ class LiveSession:
             process.stdin.close();process.stdin=None
             _,error=process.communicate(timeout=60)
             if process.returncode or not target.exists():raise RuntimeError('H264 export failed')
-            db.set_clip(event_id,f'runs/{self.id}/clips/{target.name}')
-            db.patch_payload(event_id,{'clip_state':'ready','clip_start_s':round(start,3),
+            from .clip_metadata import probe_clip
+            metadata=probe_clip(target,data_dir=db.DATA) or {}
+            path=f'runs/{self.id}/clips/{target.name}'
+            patch={'clip_state':'ready','clip_start_s':round(start,3),
                 'clip_end_s':round(end,3),'clip_truncated_after':end<clip['until']-.2,
                 'clip_truncated_before':start>max(0,clip['alert_s']-PRE_SECONDS)+.2,
-                'clip_alert_offset_s':round(clip['alert_s']-start,3)})
+                'clip_alert_offset_s':round(clip['alert_s']-start,3),**metadata}
+            publish(patch,path)
         except Exception:
             logging.exception('Clip export failed: %s',event_id)
-            db.patch_payload(event_id,{'clip_state':'failed'})
+            publish({'clip_state':'failed'})
         finally:
             if process is not None and process.poll() is None:
                 process.kill();process.communicate()
@@ -347,7 +381,8 @@ class LiveSession:
             remaining=[]
             for clip in self.pending:
                 if force or now>=clip['until']:
-                    self.clip_futures.append(CLIPS.submit(self.finalize_clip,clip))
+                    if 'group' not in clip or self.clip_groups.reserve(clip['group'].id):
+                        self.clip_futures.append(CLIPS.submit(self.finalize_clip,clip))
                 else:remaining.append(clip)
             self.pending=remaining
             self.clip_futures=[f for f in self.clip_futures if not f.done()]

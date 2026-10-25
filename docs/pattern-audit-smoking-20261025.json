@@ -1,0 +1,323 @@
+{
+  "created_at": "2026-10-25T02:03:25.027221+00:00",
+  "pattern": "smoking",
+  "protocol": "Frozen public-video cases; isolated enabled pattern; deployed weights and thresholds; no DB mutation or fitting.",
+  "limitations": [
+    "Selected development regressions, not a blind benchmark or quality guarantee.",
+    "Expected labels are case-level presence/absence, not expert-complete intervals.",
+    "Native source resolution; original video timestamps; processing speed is not LIVE presentation speed."
+  ],
+  "weights": [
+    {
+      "file": "yolov8n-pose.pt",
+      "sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212"
+    },
+    {
+      "file": "person-yolo12m.pt",
+      "sha256": "3c2f9fc99bf6fbd11f72c2f8243c753cd671145c8cfbb3d7b36ac3c2750de4c2"
+    },
+    {
+      "file": "yolo12m.pt",
+      "sha256": "4c6d179786eddf6134ee469ae2f4ce04cbe4e9d1a47d6b669d9cd6b9c6c513d8"
+    },
+    {
+      "file": "smoking.onnx",
+      "sha256": "ddc8cae492f0c28e1ccbadb11560de49b436dd4544f4382a361d3b047f02f38f"
+    }
+  ],
+  "rules_sha256": {
+    "Rules": "c783fc30b12d2f9fcc6bf6a57f1e6b1ab4e7e052b76750eb7c7b5026ac193f36",
+    "ScenarioRules": "68b8c989b46826a317812bb555b5a3c2377674d8d3f369db800edd7b93de9b86",
+    "PeopleTracker": "965bafbc92c73c9f33ef2dfb0ff1af5cc785a3aeefb61fb3b26c1d337eef2f1e"
+  },
+  "rows": [
+    {
+      "id": "smoking-visible-cigarette",
+      "pattern": "smoking",
+      "file": "data/datasets/demo-video-selection/smoking/smoking-cigarette-10s.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "possible_smoking"
+      ],
+      "config": {
+        "camera": "Камера 01",
+        "recorded_at": null,
+        "zones": [],
+        "zone_hold": 1.0,
+        "fast_motion": false,
+        "speed_threshold": 1.25,
+        "motion_hold": 1.0,
+        "fall_detection": false,
+        "fall_hold": 1.0,
+        "lying_hold": 5.0,
+        "release_hold": 2.0,
+        "observation_gap": 0.8,
+        "sample_fps": 10,
+        "confidence": 0.4,
+        "calibration": null,
+        "speed_threshold_m_s": 2.5,
+        "body_threshold": 0.9,
+        "body_hold": 0.5,
+        "body_transition_max_s": 1.0,
+        "helmet_detection": false,
+        "vest_detection": false,
+        "signal_clothing_policy": "vest_or_reflective_uniform",
+        "mask_detection": false,
+        "harness_detection": false,
+        "phone_detection": false,
+        "fire_detection": false,
+        "smoke_detection": false,
+        "smoking_detection": true,
+        "proximity_detection": false,
+        "load_posture_detection": false,
+        "ppe_hold": 1.5,
+        "object_hold": 1.0,
+        "object_confidence": 0.5,
+        "phone_confidence": 0.3,
+        "phone_work_context_only": false,
+        "distant_people": true,
+        "smoking_min_person_height": 120,
+        "ppe_crops": true,
+        "ppe_max_people": 8,
+        "ppe_memory_s": 0.5,
+        "ppe_conflict_margin": 0.15,
+        "proximity_heights": 0.6,
+        "proximity_m": 3.0,
+        "state_confirmation_ratio": 0.75,
+        "state_min_samples": 3,
+        "state_windows": {}
+      },
+      "truth_basis": "Selected public raw live-action cigarette demonstration, not factory CCTV. Needs visual temporal review.",
+      "status": "completed",
+      "passed": false,
+      "source_sha256": "954d93e3a70964c32c9b5c25bac9e5e82a7682d3214d109955c83f69b571cd46",
+      "source_fps": 29.97002997002997,
+      "source_duration_s": 10.01,
+      "processed_frames": 100,
+      "sample_fps_actual": 9.99000999000999,
+      "wall_s": 85.538,
+      "measured_person_ids": [
+        1
+      ],
+      "eligible_person_ids": [
+        1
+      ],
+      "object_observations": {
+        "smooking": 13
+      },
+      "object_peak_scores": {
+        "smooking": 0.7615774273872375
+      },
+      "events": [],
+      "matching_events": 0,
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + person-yolo12m.pt + COCO person ensemble + ONNX CUDA scenarios",
+      "observations": "data/cache/pattern-audit-20261025/smoking-visible-cigarette/observations.json"
+    },
+    {
+      "id": "smoking-visible-cigar",
+      "pattern": "smoking",
+      "file": "data/datasets/demo-video-selection/smoking/smoking-cigar-12s.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "possible_smoking"
+      ],
+      "config": {
+        "camera": "Камера 01",
+        "recorded_at": null,
+        "zones": [],
+        "zone_hold": 1.0,
+        "fast_motion": false,
+        "speed_threshold": 1.25,
+        "motion_hold": 1.0,
+        "fall_detection": false,
+        "fall_hold": 1.0,
+        "lying_hold": 5.0,
+        "release_hold": 2.0,
+        "observation_gap": 0.8,
+        "sample_fps": 10,
+        "confidence": 0.4,
+        "calibration": null,
+        "speed_threshold_m_s": 2.5,
+        "body_threshold": 0.9,
+        "body_hold": 0.5,
+        "body_transition_max_s": 1.0,
+        "helmet_detection": false,
+        "vest_detection": false,
+        "signal_clothing_policy": "vest_or_reflective_uniform",
+        "mask_detection": false,
+        "harness_detection": false,
+        "phone_detection": false,
+        "fire_detection": false,
+        "smoke_detection": false,
+        "smoking_detection": true,
+        "proximity_detection": false,
+        "load_posture_detection": false,
+        "ppe_hold": 1.5,
+        "object_hold": 1.0,
+        "object_confidence": 0.5,
+        "phone_confidence": 0.3,
+        "phone_work_context_only": false,
+        "distant_people": true,
+        "smoking_min_person_height": 120,
+        "ppe_crops": true,
+        "ppe_max_people": 8,
+        "ppe_memory_s": 0.5,
+        "ppe_conflict_margin": 0.15,
+        "proximity_heights": 0.6,
+        "proximity_m": 3.0,
+        "state_confirmation_ratio": 0.75,
+        "state_min_samples": 3,
+        "state_windows": {}
+      },
+      "truth_basis": "Selected public raw live-action cigar demonstration, not factory CCTV. Needs visual temporal review.",
+      "status": "completed",
+      "passed": true,
+      "source_sha256": "e9641844b87069e27aa8125b53ca10ca4bc4e158620f4912d8b7ed19a4577339",
+      "source_fps": 25.0,
+      "source_duration_s": 12.0,
+      "processed_frames": 150,
+      "sample_fps_actual": 12.5,
+      "wall_s": 21.275,
+      "measured_person_ids": [
+        1
+      ],
+      "eligible_person_ids": [
+        1
+      ],
+      "object_observations": {
+        "smooking": 50
+      },
+      "object_peak_scores": {
+        "smooking": 0.8090423941612244
+      },
+      "events": [
+        {
+          "track_id": 1,
+          "kind": "possible_smoking",
+          "zone": "",
+          "start_s": 5.92,
+          "alert_s": 6.72,
+          "sequence": 1,
+          "score": 0.7191,
+          "reason": "Повторно обнаружен визуальный признак курения рядом с человеком. Проверьте клип: жест сам по себе не доказывает курение.",
+          "confirmation_s": 0.8,
+          "source": "scenario_rules",
+          "scope": "person",
+          "experimental": true,
+          "episode_id": "9d66b4699a554bdfb05ab73b3376a628",
+          "episode_state": "open",
+          "end_s": null,
+          "state_from": "unknown",
+          "state_to": "violation",
+          "state_confirmation": {
+            "window_s": 1.0,
+            "nominal_window_s": 1.0,
+            "cadence_limited": false,
+            "ratio": 0.75,
+            "min_samples": 3,
+            "agreement": 0.8,
+            "coverage": 1.0,
+            "samples": 11,
+            "weighting": "elapsed_source_time"
+          },
+          "evidence_label": "smooking",
+          "evidence_model": "smoking:upper_body_crop",
+          "evidence_box": [
+            358.3850555419922,
+            183.52425384521484,
+            745.87890625,
+            310.9065246582031
+          ],
+          "audit_evidence": "data/cache/pattern-audit-20261025/smoking-visible-cigar/event-1-possible_smoking.jpg"
+        }
+      ],
+      "matching_events": 1,
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + person-yolo12m.pt + COCO person ensemble + ONNX CUDA scenarios",
+      "observations": "data/cache/pattern-audit-20261025/smoking-visible-cigar/observations.json"
+    },
+    {
+      "id": "smoking-factory-negative",
+      "pattern": "smoking",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "possible_smoking"
+      ],
+      "config": {
+        "camera": "Камера 01",
+        "recorded_at": null,
+        "zones": [],
+        "zone_hold": 1.0,
+        "fast_motion": false,
+        "speed_threshold": 1.25,
+        "motion_hold": 1.0,
+        "fall_detection": false,
+        "fall_hold": 1.0,
+        "lying_hold": 5.0,
+        "release_hold": 2.0,
+        "observation_gap": 0.8,
+        "sample_fps": 10,
+        "confidence": 0.4,
+        "calibration": null,
+        "speed_threshold_m_s": 2.5,
+        "body_threshold": 0.9,
+        "body_hold": 0.5,
+        "body_transition_max_s": 1.0,
+        "helmet_detection": false,
+        "vest_detection": false,
+        "signal_clothing_policy": "vest_or_reflective_uniform",
+        "mask_detection": false,
+        "harness_detection": false,
+        "phone_detection": false,
+        "fire_detection": false,
+        "smoke_detection": false,
+        "smoking_detection": true,
+        "proximity_detection": false,
+        "load_posture_detection": false,
+        "ppe_hold": 1.5,
+        "object_hold": 1.0,
+        "object_confidence": 0.5,
+        "phone_confidence": 0.3,
+        "phone_work_context_only": false,
+        "distant_people": true,
+        "smoking_min_person_height": 120,
+        "ppe_crops": true,
+        "ppe_max_people": 8,
+        "ppe_memory_s": 0.5,
+        "ppe_conflict_margin": 0.15,
+        "proximity_heights": 0.6,
+        "proximity_m": 3.0,
+        "state_confirmation_ratio": 0.75,
+        "state_min_samples": 3,
+        "state_windows": {}
+      },
+      "truth_basis": "No visible smoking in the short factory recording.",
+      "status": "completed",
+      "passed": true,
+      "source_sha256": "7434951bbc7f87ba144436863f7128e8780b14721191431aa30d7f3020ac0987",
+      "source_fps": 25.11,
+      "source_duration_s": 2.986857825567503,
+      "processed_frames": 25,
+      "sample_fps_actual": 8.37,
+      "wall_s": 20.321,
+      "measured_person_ids": [
+        1,
+        2
+      ],
+      "eligible_person_ids": [
+        1,
+        2
+      ],
+      "object_observations": {
+        "smooking": 9
+      },
+      "object_peak_scores": {
+        "smooking": 0.737700879573822
+      },
+      "events": [],
+      "matching_events": 0,
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + person-yolo12m.pt + COCO person ensemble + ONNX CUDA scenarios",
+      "observations": "data/cache/pattern-audit-20261025/smoking-factory-negative/observations.json"
+    }
+  ]
+}

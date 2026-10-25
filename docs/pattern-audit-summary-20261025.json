@@ -1,0 +1,113 @@
+{
+  "created": "2026-10-25",
+  "policy_version": "2026-10-25-selected-scenarios-v2",
+  "enabled_patterns": [
+    "helmet",
+    "danger_zone",
+    "phone",
+    "fire",
+    "smoke",
+    "vest",
+    "smoking",
+    "fall",
+    "fast_motion",
+    "barrier",
+    "under_load",
+    "under_conveyor"
+  ],
+  "disabled_patterns": [
+    "harness",
+    "load_posture",
+    "mask",
+    "proximity"
+  ],
+  "public_case_count": 25,
+  "public_passed_case_count": 19,
+  "public_failed_case_count": 6,
+  "reports": [
+    {
+      "pattern": "danger_zone",
+      "report": "docs/pattern-audit-danger_zone-20261025.json",
+      "cases": 2,
+      "passed": 2,
+      "failed": 0,
+      "status": "selected_public_video_regression"
+    },
+    {
+      "pattern": "fall",
+      "report": "docs/pattern-audit-fall-20261025.json",
+      "cases": 7,
+      "passed": 4,
+      "failed": 3,
+      "status": "selected_public_video_regression"
+    },
+    {
+      "pattern": "fire",
+      "report": "docs/pattern-audit-fire-20261025.json",
+      "cases": 3,
+      "passed": 3,
+      "failed": 0,
+      "status": "selected_public_video_regression"
+    },
+    {
+      "pattern": "helmet",
+      "report": "docs/pattern-audit-helmet-20261025.json",
+      "cases": 2,
+      "passed": 2,
+      "failed": 0,
+      "status": "selected_public_video_regression"
+    },
+    {
+      "pattern": "mask",
+      "report": "docs/pattern-audit-mask-20261025.json",
+      "cases": 2,
+      "passed": 1,
+      "failed": 1,
+      "status": "selected_public_video_regression"
+    },
+    {
+      "pattern": "phone",
+      "report": "docs/pattern-audit-phone-20261025.json",
+      "cases": 2,
+      "passed": 2,
+      "failed": 0,
+      "status": "selected_public_video_regression"
+    },
+    {
+      "pattern": "smoke",
+      "report": "docs/pattern-audit-smoke-20261025.json",
+      "cases": 2,
+      "passed": 2,
+      "failed": 0,
+      "status": "selected_public_video_regression"
+    },
+    {
+      "pattern": "smoking",
+      "report": "docs/pattern-audit-smoking-20261025.json",
+      "cases": 3,
+      "passed": 2,
+      "failed": 1,
+      "status": "selected_public_video_regression"
+    },
+    {
+      "pattern": "vest",
+      "report": "docs/pattern-audit-vest-20261025.json",
+      "cases": 2,
+      "passed": 1,
+      "failed": 1,
+      "status": "selected_public_video_regression"
+    }
+  ],
+  "structural_audit": "docs/pattern-unsupported-audit-20261025.json",
+  "source_inventory": "docs/pattern-audit-inventory-20261025.json",
+  "limitations": [
+    "Selected development videos, not a blind industrial benchmark. No overall accuracy/precision claim.",
+    "Case-level presence/absence checks are not full temporal ground truth.",
+    "NN weights and historical events are retained; production activation and editable configurations are restricted by the versioned policy.",
+    "No private recordings, identifying metadata or derived private observations are included."
+  ],
+  "availability_decision": "Twelve scenarios are available; four scenarios and the optional phone motion/work restriction are removed from new configuration. Recorded audit outcomes are unchanged.",
+  "disabled_options": [
+    "phone_work_context_only"
+  ]
+}

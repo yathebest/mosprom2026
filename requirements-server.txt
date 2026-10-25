@@ -1,0 +1,14 @@
+# Server preset: OpenCV core version verified in the local runtime.
+fastapi==0.138.0
+uvicorn==0.41.0
+python-multipart==0.0.32
+pydantic>=2.10,<3
+ultralytics==8.4.88
+lap==0.5.13
+opencv-python==4.10.0.84
+numpy==2.3.4
+imageio-ffmpeg==0.6.0
+pytest==8.4.2
+httpx>=0.28,<1
+onnxruntime==1.27.0
+# Install a matching torch/torchvision pair for your CUDA version separately.

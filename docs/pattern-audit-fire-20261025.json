@@ -1,0 +1,356 @@
+{
+  "created_at": "2026-10-25T01:53:50.123480+00:00",
+  "pattern": "fire",
+  "protocol": "Frozen public-video cases; isolated enabled pattern; deployed weights and thresholds; no DB mutation or fitting.",
+  "limitations": [
+    "Selected development regressions, not a blind benchmark or quality guarantee.",
+    "Expected labels are case-level presence/absence, not expert-complete intervals.",
+    "Native source resolution; original video timestamps; processing speed is not LIVE presentation speed."
+  ],
+  "weights": [
+    {
+      "file": "yolov8n-pose.pt",
+      "sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212"
+    },
+    {
+      "file": "person-yolo12m.pt",
+      "sha256": "3c2f9fc99bf6fbd11f72c2f8243c753cd671145c8cfbb3d7b36ac3c2750de4c2"
+    },
+    {
+      "file": "yolo12m.pt",
+      "sha256": "4c6d179786eddf6134ee469ae2f4ce04cbe4e9d1a47d6b669d9cd6b9c6c513d8"
+    },
+    {
+      "file": "fire-smoke.onnx",
+      "sha256": "dbb66a2c78a29ba80ae605c044899a7979cfab14b0eb0a58f68bddc3cec6ec89"
+    }
+  ],
+  "rows": [
+    {
+      "id": "fire-industrial-forklift",
+      "pattern": "fire",
+      "file": "data/datasets/isafety-expanded/hazard/ZNOHrOs9VMA_trim_1.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "fire"
+      ],
+      "config": {
+        "camera": "Камера 01",
+        "recorded_at": null,
+        "zones": [],
+        "zone_hold": 1.0,
+        "fast_motion": false,
+        "speed_threshold": 1.25,
+        "motion_hold": 1.0,
+        "fall_detection": false,
+        "fall_hold": 1.0,
+        "lying_hold": 5.0,
+        "release_hold": 2.0,
+        "observation_gap": 0.8,
+        "sample_fps": 10,
+        "confidence": 0.4,
+        "calibration": null,
+        "speed_threshold_m_s": 2.5,
+        "body_threshold": 0.9,
+        "body_hold": 0.5,
+        "body_transition_max_s": 1.0,
+        "helmet_detection": false,
+        "vest_detection": false,
+        "signal_clothing_policy": "vest_or_reflective_uniform",
+        "mask_detection": false,
+        "harness_detection": false,
+        "phone_detection": false,
+        "fire_detection": true,
+        "smoke_detection": false,
+        "smoking_detection": false,
+        "proximity_detection": false,
+        "load_posture_detection": false,
+        "ppe_hold": 1.5,
+        "object_hold": 1.0,
+        "object_confidence": 0.5,
+        "phone_confidence": 0.3,
+        "phone_work_context_only": false,
+        "distant_people": true,
+        "smoking_min_person_height": 120,
+        "ppe_crops": true,
+        "ppe_max_people": 8,
+        "ppe_memory_s": 0.5,
+        "ppe_conflict_margin": 0.15,
+        "proximity_heights": 0.6,
+        "proximity_m": 3.0,
+        "state_confirmation_ratio": 0.75,
+        "state_min_samples": 3,
+        "state_windows": {}
+      },
+      "truth_basis": "CPU contact review: clear flame from3.27s onward, warehouse/forklift CCTV",
+      "status": "completed",
+      "passed": true,
+      "source_sha256": "88365ffecf13899d14d98a1705468c61084056f29dd32f9fe117d5d64469dc63",
+      "source_fps": 60.0,
+      "source_duration_s": 8.0,
+      "processed_frames": 80,
+      "sample_fps_actual": 10.0,
+      "wall_s": 12.61,
+      "measured_person_ids": [
+        1
+      ],
+      "eligible_person_ids": [
+        1
+      ],
+      "object_observations": {
+        "fire": 80
+      },
+      "object_peak_scores": {
+        "fire": 0.8299443125724792
+      },
+      "events": [
+        {
+          "track_id": 0,
+          "kind": "fire",
+          "zone": "",
+          "start_s": 4.2,
+          "alert_s": 5.0,
+          "sequence": 1,
+          "score": 0.6387,
+          "reason": "Обнаружены признаки открытого огня вне разрешённой области.",
+          "confirmation_s": 0.8,
+          "source": "scenario_rules",
+          "scope": "scene",
+          "experimental": true,
+          "episode_id": "54e83ebe988b4049a806c6668018a47d",
+          "episode_state": "open",
+          "end_s": null,
+          "state_from": "clear",
+          "state_to": "violation",
+          "state_confirmation": {
+            "window_s": 1.0,
+            "nominal_window_s": 1.0,
+            "cadence_limited": false,
+            "ratio": 0.75,
+            "min_samples": 3,
+            "agreement": 0.8,
+            "coverage": 1.0,
+            "samples": 9,
+            "weighting": "elapsed_source_time"
+          },
+          "evidence_label": "fire",
+          "evidence_model": "fire-smoke",
+          "evidence_box": [
+            811.1641845703125,
+            399.81890869140625,
+            1012.8536376953125,
+            575.3850708007812
+          ],
+          "audit_evidence": "data/cache/pattern-audit-20261025/fire-industrial-forklift/event-1-fire.jpg"
+        }
+      ],
+      "matching_events": 1,
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + person-yolo12m.pt + COCO person ensemble + ONNX CUDA scenarios",
+      "observations": "data/cache/pattern-audit-20261025/fire-industrial-forklift/observations.json"
+    },
+    {
+      "id": "fire-kitchen-flare",
+      "pattern": "fire",
+      "file": "data/datasets/isafety-expanded/hazard/87O1pBSGtR0_trim_122.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "fire"
+      ],
+      "config": {
+        "camera": "Камера 01",
+        "recorded_at": null,
+        "zones": [],
+        "zone_hold": 1.0,
+        "fast_motion": false,
+        "speed_threshold": 1.25,
+        "motion_hold": 1.0,
+        "fall_detection": false,
+        "fall_hold": 1.0,
+        "lying_hold": 5.0,
+        "release_hold": 2.0,
+        "observation_gap": 0.8,
+        "sample_fps": 10,
+        "confidence": 0.4,
+        "calibration": null,
+        "speed_threshold_m_s": 2.5,
+        "body_threshold": 0.9,
+        "body_hold": 0.5,
+        "body_transition_max_s": 1.0,
+        "helmet_detection": false,
+        "vest_detection": false,
+        "signal_clothing_policy": "vest_or_reflective_uniform",
+        "mask_detection": false,
+        "harness_detection": false,
+        "phone_detection": false,
+        "fire_detection": true,
+        "smoke_detection": false,
+        "smoking_detection": false,
+        "proximity_detection": false,
+        "load_posture_detection": false,
+        "ppe_hold": 1.5,
+        "object_hold": 1.0,
+        "object_confidence": 0.5,
+        "phone_confidence": 0.3,
+        "phone_work_context_only": false,
+        "distant_people": true,
+        "smoking_min_person_height": 120,
+        "ppe_crops": true,
+        "ppe_max_people": 8,
+        "ppe_memory_s": 0.5,
+        "ppe_conflict_margin": 0.15,
+        "proximity_heights": 0.6,
+        "proximity_m": 3.0,
+        "state_confirmation_ratio": 0.75,
+        "state_min_samples": 3,
+        "state_windows": {}
+      },
+      "truth_basis": "CPU contact review: large visible kitchen flame throughout6s",
+      "status": "completed",
+      "passed": true,
+      "source_sha256": "9a605ef848afc1cb065a93a1c1e20bd6c3050ecd4817bbf22370367c0f9c1084",
+      "source_fps": 30.0,
+      "source_duration_s": 6.0,
+      "processed_frames": 60,
+      "sample_fps_actual": 10.0,
+      "wall_s": 5.605,
+      "measured_person_ids": [
+        1,
+        2
+      ],
+      "eligible_person_ids": [
+        1,
+        2
+      ],
+      "object_observations": {
+        "fire": 104
+      },
+      "object_peak_scores": {
+        "fire": 0.8267194032669067
+      },
+      "events": [
+        {
+          "track_id": 0,
+          "kind": "fire",
+          "zone": "",
+          "start_s": 0.0,
+          "alert_s": 1.0,
+          "sequence": 1,
+          "score": 0.7924,
+          "reason": "Обнаружены признаки открытого огня вне разрешённой области.",
+          "confirmation_s": 1.0,
+          "source": "scenario_rules",
+          "scope": "scene",
+          "experimental": true,
+          "episode_id": "6cbebfc8f6df4612a41e062797515754",
+          "episode_state": "open",
+          "end_s": null,
+          "state_from": "unknown",
+          "state_to": "violation",
+          "state_confirmation": {
+            "window_s": 1.0,
+            "nominal_window_s": 1.0,
+            "cadence_limited": false,
+            "ratio": 0.75,
+            "min_samples": 3,
+            "agreement": 1.0,
+            "coverage": 1.0,
+            "samples": 11,
+            "weighting": "elapsed_source_time"
+          },
+          "evidence_label": "fire",
+          "evidence_model": "fire-dfire",
+          "evidence_box": [
+            879.7978515625,
+            210.47509765625,
+            1066.16162109375,
+            332.979248046875
+          ],
+          "audit_evidence": "data/cache/pattern-audit-20261025/fire-kitchen-flare/event-1-fire.jpg"
+        }
+      ],
+      "matching_events": 1,
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + person-yolo12m.pt + COCO person ensemble + ONNX CUDA scenarios",
+      "observations": "data/cache/pattern-audit-20261025/fire-kitchen-flare/observations.json"
+    },
+    {
+      "id": "fire-factory-negative",
+      "pattern": "fire",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "fire"
+      ],
+      "config": {
+        "camera": "Камера 01",
+        "recorded_at": null,
+        "zones": [],
+        "zone_hold": 1.0,
+        "fast_motion": false,
+        "speed_threshold": 1.25,
+        "motion_hold": 1.0,
+        "fall_detection": false,
+        "fall_hold": 1.0,
+        "lying_hold": 5.0,
+        "release_hold": 2.0,
+        "observation_gap": 0.8,
+        "sample_fps": 10,
+        "confidence": 0.4,
+        "calibration": null,
+        "speed_threshold_m_s": 2.5,
+        "body_threshold": 0.9,
+        "body_hold": 0.5,
+        "body_transition_max_s": 1.0,
+        "helmet_detection": false,
+        "vest_detection": false,
+        "signal_clothing_policy": "vest_or_reflective_uniform",
+        "mask_detection": false,
+        "harness_detection": false,
+        "phone_detection": false,
+        "fire_detection": true,
+        "smoke_detection": false,
+        "smoking_detection": false,
+        "proximity_detection": false,
+        "load_posture_detection": false,
+        "ppe_hold": 1.5,
+        "object_hold": 1.0,
+        "object_confidence": 0.5,
+        "phone_confidence": 0.3,
+        "phone_work_context_only": false,
+        "distant_people": true,
+        "smoking_min_person_height": 120,
+        "ppe_crops": true,
+        "ppe_max_people": 8,
+        "ppe_memory_s": 0.5,
+        "ppe_conflict_margin": 0.15,
+        "proximity_heights": 0.6,
+        "proximity_m": 3.0,
+        "state_confirmation_ratio": 0.75,
+        "state_min_samples": 3,
+        "state_windows": {}
+      },
+      "truth_basis": "Visual source review before inference",
+      "status": "completed",
+      "passed": true,
+      "source_sha256": "7434951bbc7f87ba144436863f7128e8780b14721191431aa30d7f3020ac0987",
+      "source_fps": 25.11,
+      "source_duration_s": 2.986857825567503,
+      "processed_frames": 25,
+      "sample_fps_actual": 8.37,
+      "wall_s": 17.913,
+      "measured_person_ids": [
+        1,
+        2
+      ],
+      "eligible_person_ids": [
+        1,
+        2
+      ],
+      "object_observations": {},
+      "object_peak_scores": {},
+      "events": [],
+      "matching_events": 0,
+      "backend": "PyTorch / cuda:0 / yolov8n-pose.pt + person-yolo12m.pt + COCO person ensemble + ONNX CUDA scenarios",
+      "observations": "data/cache/pattern-audit-20261025/fire-factory-negative/observations.json"
+    }
+  ]
+}

@@ -142,5 +142,5 @@ test('freshness group header survives RU to EN to RU without the retired wording
 });
 test('operator review labels remain distinct from model confirmation without changing API enum values',()=>{
  const source=fs.readFileSync(path.join(__dirname,'../app/static/app.js'),'utf8'),literal=source.match(/const reviews=(\{[^;]+\});/)[1];const reviews=require('node:vm').runInNewContext('('+literal+')');
- assert.deepEqual(Object.keys(reviews),['new','confirmed','false','forwarded']);assert.equal(reviews.new,'Нужна проверка оператором');assert.equal(reviews.confirmed,'Подтверждено оператором');assert.equal(i18n.t(reviews.new,'en'),'Needs operator review');assert.equal(i18n.t('Последний признак правила','en'),'Latest rule observation');
+ assert.deepEqual(Object.keys(reviews),['new','confirmed','false','forwarded']);assert.equal(reviews.new,'Новое событие');assert.equal(reviews.confirmed,'Подтверждено');assert.equal(i18n.t(reviews.new,'en'),'New event');assert.equal(i18n.t('Последний признак правила','en'),'Latest rule observation');
 });

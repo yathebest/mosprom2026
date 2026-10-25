@@ -5,6 +5,7 @@ const vm=require('node:vm');
 const access=require('../app/static/workspace-access.js');
 const catalog=require('../app/static/scenario-catalog.js');
 const format=require('../app/static/ux-status.js');
+const checkHelpers=fs.readFileSync(require.resolve('../app/static/app.js'),'utf8').split('\n').filter(line=>line.startsWith('const isChecked=')||line.startsWith('function setCheck(')).join('\n');
 
 test('source video timecodes stay separate from readable durations and Moscow midnight',()=>{
  assert.equal(format.duration(135),'2 мин 15 с');
@@ -55,7 +56,7 @@ test('saved experimental selections are retained and disclosed, while a fresh ca
  const code=source.slice(source.indexOf('function setScenarioValues('),source.indexOf('const scenarioParams='));
  const nodes=new Map();const element=id=>{if(!nodes.has(id))nodes.set(id,{checked:false,value:'',dataset:{},open:false});return nodes.get(id)};
  const context={$:element,scenarioOptions:[['helmet'],['phone'],['vest']],scenarioParams:[['ppe_hold','',1.5]],updateSmokeExplanation(){},setConfirmationValues(){}};
- vm.runInNewContext(code,context);
+ vm.runInNewContext(checkHelpers+'\n'+code,context);
  context.setScenarioValues('extra',{});
  assert.equal(element('extra-helmet').checked,true);assert.equal(element('extra-phone').checked,false);assert.equal(element('extra-experimental').open,false);
  context.setScenarioValues('extra',{helmet_detection:false,phone_detection:true,ppe_hold:2});
@@ -72,7 +73,7 @@ test('new-camera controls unlock immediately after leaving active A, without cha
  const button={},controls=[{disabled:false,checked:true},{disabled:false,value:'danger_zone'}],configA={helmet_detection:true,fall_detection:false},sessionA={id:'A',state:'running',config:configA};
  const values=[];
  const context={L:{current:sessionA,events:[],drafting:false},S:{jobs:[],defaults:{helmet_detection:false,fall_detection:true}},$:()=>button,document:{querySelectorAll:()=>controls},ScenarioCatalog:catalog,
-  baseLiveStatus(){},renderPpeAssessments(){},setScenarioValues(_prefix,c){values.push(c)},baseLiveNew(){context.L.current=null;context.L.drafting=true}};
+  baseLiveStatus(){},renderPpeAssessments(){},sanitizePatternConfig:c=>c,setScenarioValues(_prefix,c){values.push(c)},baseLiveNew(){context.L.current=null;context.L.drafting=true}};
  vm.runInNewContext(status,context);context.renderLiveStatus();assert.equal(controls.every(el=>el.disabled),true);
  vm.runInNewContext(draft,context);button.onclick();
  assert.equal(controls.every(el=>!el.disabled),true);assert.equal(values.at(-1).helmet_detection,true);assert.equal(values.at(-1).fall_detection,false);

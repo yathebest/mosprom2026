@@ -34,7 +34,7 @@
     return `<time datetime="${escape(date.toISOString())}" data-local-time data-i18n-ignore>${escape(dateTime(value))}</time>`;
   }
   const rolesEn={enterprise_admin:'Enterprise administrator',safety_specialist:'Safety specialist',foreman:'Foreman / shift supervisor',operator:'Operator / dispatcher',worker:'Worker / driver',safety_legal:'Safety office / legal',management:'Management'};
-  const values={pending:'На рассмотрении',active:'Подключено',rejected:'Отклонено',suspended:'Приостановлено',new:'Нужна проверка',confirmed:'Подтверждено',false:'Ложное',forwarded:'Передано мастеру',preview:'Имитация отправки',smtp:'SMTP'};
+  const values={pending:'На рассмотрении',active:'Подключено',rejected:'Отклонено',suspended:'Приостановлено',new:'Новое событие',confirmed:'Подтверждено',false:'Ложное срабатывание',forwarded:'Передано ответственному',preview:'Имитация отправки',smtp:'SMTP'};
   function auditDetails(row,roleCatalog=[],eventLabels={}){
     let details=row.details_data;
     if(!details){try{details=JSON.parse(row.details||'{}')}catch(_){details={}}}

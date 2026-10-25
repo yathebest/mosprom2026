@@ -119,6 +119,46 @@ def transcode(source,target):
     return result.returncode==0 and target.exists()
 
 
+def export_event_clips(job_id,camera,inference_events,source,folder,duration_s,cancel):
+    """One bounded source excerpt per nearby group; incident rows stay separate."""
+    from .clip_groups import GroupPool
+    from .clip_metadata import probe_clip,safe_path
+    owner=db.job(job_id)
+    if not owner:raise ValueError('Clip source job not found')
+    organization_id=owner.get('organization_id')
+    pool=GroupPool(job_id,camera,organization_id)
+    for event_id,event in sorted(inference_events,key=lambda item:(item[1]['alert_s'],item[0])):
+        pool.add(event_id,event,duration_s=duration_s)
+    executable=ffmpeg_path();failed_events=0;files=0
+    def persist(group,state,*,clip=None,extra=None):
+        updates={event_id:{**group.member_metadata(event_id),'clip_state':state,
+            'clip_start_s':group.start_s,'clip_end_s':group.end_s,**(extra or {})}
+            for event_id in group.members}
+        db.set_group_clip(job_id,camera,updates,clip=clip,organization_id=organization_id)
+    for group in pool.groups:
+        if not pool.reserve(group.id):continue
+        if cancel.is_set():
+            persist(group,'cancelled');pool.finish(group.id,'cancelled');continue
+        length=group.end_s-group.start_s
+        if not executable or length<=0:
+            failed_events+=len(group.members);persist(group,'failed');pool.finish(group.id,'failed');continue
+        target=safe_path(folder/f'clip_group_{group.id}.mp4',db.DATA)
+        persist(group,'exporting')
+        try:
+            result=subprocess.run([executable,'-hide_banner','-loglevel','error','-y','-ss',str(group.start_s),
+                '-i',str(source),'-t',str(length),'-an','-c:v','libx264','-threads','2',
+                '-preset','veryfast','-crf','26','-pix_fmt','yuv420p','-movflags','+faststart',str(target)],
+                capture_output=True,timeout=90)
+            if result.returncode or not target.is_file():raise RuntimeError('Clip encoder failed')
+            metadata=probe_clip(target,data_dir=db.DATA) or {}
+            relative=target.relative_to(db.DATA.resolve()).as_posix()
+            persist(group,'ready',clip=relative,extra=metadata)
+            pool.finish(group.id,'ready',{'clip':relative,**metadata});files+=1
+        except (OSError,RuntimeError,subprocess.SubprocessError):
+            failed_events+=len(group.members);persist(group,'failed');pool.finish(group.id,'failed')
+    return {'clip_failures':failed_events,'clip_groups':len(pool.groups),'clip_files':files}
+
+
 def run(job_id: str, config: RunConfig, cancel: threading.Event):
     folder = db.DATA/"runs"/job_id
     source = folder/"source.video"
@@ -243,32 +283,10 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
         media_wall_start = time.perf_counter()
         browser_video = folder/"annotated.mp4"
         converted = transcode(raw,browser_video)
-        clip_failures = 0
-        executable = ffmpeg_path()
         # Clip generation is separate from inference timing. Original video,
         # without overlays; the accompanying evidence image contains annotations.
-        for event_id,event in inference_events:
-            if cancel.is_set():
-                db.patch_payload(event_id,{'clip_state':'cancelled'})
-                continue
-            clip = folder/f"clip_{event_id}.mp4"
-            begin = max(0,event["alert_s"]-3)
-            length = min(7,meta["duration_s"]-begin)
-            if not executable:
-                clip_failures += 1
-                db.patch_payload(event_id,{'clip_state':'failed'})
-                continue
-            result = subprocess.run([executable,"-hide_banner","-loglevel","error","-y","-ss",str(begin),
-                                     "-i",str(source),"-t",str(length),"-an","-c:v","libx264",
-                                     "-preset","veryfast","-crf","26","-pix_fmt","yuv420p",
-                                     "-movflags","+faststart",str(clip)],capture_output=True,timeout=90)
-            if result.returncode==0:
-                db.set_clip(event_id,f"runs/{job_id}/{clip.name}")
-                db.patch_payload(event_id,{'clip_state':'ready','clip_start_s':begin,'clip_end_s':begin+length,
-                                           'clip_alert_offset_s':round(event['alert_s']-begin,3)})
-            else:
-                clip_failures += 1
-                db.patch_payload(event_id,{'clip_state':'failed'})
+        clip_stats=export_event_clips(job_id,config.camera,inference_events,source,folder,
+            min(meta['duration_s'],decoded/fps),cancel)
         truncated = decoded<count and not cancel.is_set()
         stats = {"backend":backend.name,"model":getattr(backend,"model_id","external-adapter"),"input_frames":count,
                  "latest_assessments":latest_assessments,
@@ -281,7 +299,7 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
                  "pipeline_p95_ms":round(float(np.percentile(total_latencies,95)),2),
                  "pipeline_wall_s":round(wall,3),"processing_fps":round(processed/max(wall,1e-9),2),
                  "media_export_s":round(time.perf_counter()-media_wall_start,3),
-                 "events":alerts,"clip_failures":clip_failures,"truncated":truncated,
+                 "events":alerts,**clip_stats,"truncated":truncated,
                  "annotated_video":f"runs/{job_id}/annotated.mp4" if converted else None,
                  "raw_video":f"runs/{job_id}/annotated_raw.mp4",
                  "occupancy_grid":density.tolist(),

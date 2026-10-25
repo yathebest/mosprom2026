@@ -14,7 +14,7 @@ from test_access import system,sign_in,enterprise,activate,PASS
 def test_create_is_atomic_duplicate_names_are_tenant_scoped_and_global_capacity_is_bounded(system,monkeypatch):
     client=system;organization=enterprise(client,'wall-admin');activate(client,organization);sign_in(client,'wall-admin')
     monkeypatch.setattr(live.LiveSession,'start',lambda self:self)
-    payload={'source_type':'network','url':'http://127.0.0.1:8766/cam-a.mjpg','config':{'camera':'Line A','fast_motion':True}}
+    payload={'source_type':'network','url':'http://127.0.0.1:8766/cam-a.mjpg','config':{'camera':'Line A','fast_motion':False}}
     first=client.post('/api/live',json=payload);assert first.status_code==200,first.text
     assert client.post('/api/live',json={**payload,'url':'http://127.0.0.1:8766/other.mjpg'}).status_code==409
     assert client.post('/api/live',json={**payload,'config':{'camera':'Line B'}}).status_code==409

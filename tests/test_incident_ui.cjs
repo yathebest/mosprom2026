@@ -10,7 +10,7 @@ test('ID7 broader clothing policy remains unknown when only legacy missing-vest 
  assert.equal(pattern.assessment.reason,'signal_clothing_policy_unverified');assert.equal(pattern.assessment.policy,'vest_or_reflective_uniform');
  assert.equal(pattern.state,'unknown');assert.equal(pattern.historyState,'unknown');assert.equal(view.violations,0);
  const html=ui.statesMarkup(states,[assessment],{now:3,labels:{no_vest:'Сигнальная одежда'},expandedKeys:new Set(['group:history'])});
- assert.match(html,/Человек #7/);assert.match(html,/Нужна проверка отражающей формы/);assert.match(html,/Нет подтверждённого состояния/);
+ assert.match(html,/Человек #7/);assert.match(html,/Отражающая форма не определена/);assert.match(html,/Нет подтверждённого состояния/);
  assert.doesNotMatch(html,/Сигнальная одежда отсутствует|Жилет отсутствует|Жилет обнаружен|ordinary|confirmed-violation|confirmed-clear/);
 });
 test('confirmed compliant reflective workwear is labelled signal clothing, not a separate vest',()=>{
@@ -139,7 +139,7 @@ test('legacy historical event confirms only its exact job/person/pattern and kee
  const event={id:'legacy',job_id:'job1',track_id:1,kind:'no_helmet',zone:'',status:'new',start_s:.2,alert_s:1.6,payload:{}};
  const options={historical:true,jobId:'job1',events:[event],now:2};const view=ui.stateView({},assessments,options),one=view.rows.find(r=>r.id===1).patterns[0],two=view.rows.find(r=>r.id===2).patterns[0];
  assert.equal(one.state,'unknown');assert.equal(one.currentState,'unknown');assert.equal(one.historyState,'violation');assert.equal(one.historyAt,1.6);assert.equal(one.eventReview,'new');assert.equal(two.currentState,'pending');assert.equal(two.historyState,'unknown');assert.equal(view.violations,0);
- const html=ui.statesMarkup({},assessments,options);assert.match(html,/Последнее подтверждение/);assert.match(html,/Нарушение подтверждено · 0:01.6/);assert.match(html,/Нужна проверка оператором/);assert.match(html,/Накопление подтверждения/);
+ const html=ui.statesMarkup({},assessments,options);assert.match(html,/Последнее подтверждение/);assert.match(html,/Нарушение подтверждено · 0:01.6/);assert.match(html,/Новое событие/);assert.match(html,/Накопление подтверждения/);
  for(const wrong of [{job_id:'other'},{track_id:9},{kind:'no_vest'},{zone:'another'}])assert.equal(ui.stateView({},assessments,{...options,events:[{...event,...wrong}]}).rows[0].patterns[0].historyState,'unknown');
  assert.equal(ui.stateView({},assessments,{...options,historical:false}).rows[0].patterns[0].historyState,'unknown');assert.equal(ui.stateView({},assessments,{...options,jobId:undefined}).rows[0].patterns[0].historyState,'unknown');
 });
@@ -154,7 +154,7 @@ test('operator-rejected legacy event never promotes a confirmed or accepted stat
  const event={job_id:'j',track_id:1,kind:'no_helmet',zone:'',status:'false',start_s:.2,alert_s:1.6};
  const assessments=[{track_id:1,tracking:'measured',ppe:{helmet:{state:'missing',observed_at_s:2}}}];
  const options={historical:true,jobId:'j',events:[event],now:2},view=ui.stateView({},assessments,options);assert.equal(view.rows[0].patterns[0].historyState,'unknown');assert.equal(view.violations,0);
- const html=ui.statesMarkup({},assessments,options);assert.match(html,/Оператор отклонил событие/);assert.doesNotMatch(html,/Нарушение подтверждено/);assert.doesNotMatch(html,/Подтверждено оператором/);
+ const html=ui.statesMarkup({},assessments,options);assert.match(html,/Отмечено как ложное срабатывание/);assert.doesNotMatch(html,/Нарушение подтверждено/);assert.doesNotMatch(html,/Подтверждено оператором/);
 });
 test('freshness group title and rule observation details use unambiguous copy',()=>{
  const states={1:{no_helmet:{state:'unknown',observed_state:'unknown',observed_at_s:1,last_sample_s:2,window_s:1}}};

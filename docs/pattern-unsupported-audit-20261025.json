@@ -1,0 +1,576 @@
+{
+  "date": "2026-10-25",
+  "purpose": "CPU-only actual ONNX metadata / implemented semantics audit. No final policy edit or inference.",
+  "inputs": [
+    "docs/pattern-audit-inventory-20261025.json",
+    "docs/pattern-test-cases-20261025.json",
+    "data/models/scenario-manifest.json"
+  ],
+  "nn_forward_passes": 0,
+  "cuda_sessions_created": 0,
+  "metadata_models": {
+    "ppe-safetyvision.onnx": {
+      "path": "data/models/ppe-safetyvision.onnx",
+      "bytes": 44764727,
+      "sha256": "ea18ae903a566e8fa76f3ee1c503075522dca269269315e9c862efa170430b35",
+      "metadata_names": {
+        "0": "Fall-Detected",
+        "1": "Gloves",
+        "2": "Goggles",
+        "3": "Hardhat",
+        "4": "Mask",
+        "5": "NO-Gloves",
+        "6": "NO-Goggles",
+        "7": "NO-Hardhat",
+        "8": "NO-Mask",
+        "9": "NO-Safety Vest",
+        "10": "No_Harness",
+        "11": "Person",
+        "12": "Safety Vest"
+      },
+      "normalized_names": [
+        "fall_detected",
+        "gloves",
+        "goggles",
+        "hardhat",
+        "mask",
+        "no_gloves",
+        "no_goggles",
+        "no_hardhat",
+        "no_harness",
+        "no_mask",
+        "no_safety_vest",
+        "person",
+        "safety_vest"
+      ],
+      "inspection": "ONNX metadata only; no InferenceSession, predict, CUDA or NN forward"
+    },
+    "construction-machinery.onnx": {
+      "path": "data/models/construction-machinery.onnx",
+      "bytes": 12251185,
+      "sha256": "c39b142529403aa22a3a42707d416678d92b9ac6382a5c13325f885add063871",
+      "metadata_names": {
+        "0": "barricade",
+        "1": "dumpster",
+        "2": "excavators",
+        "3": "gloves",
+        "4": "hardhat",
+        "5": "mask",
+        "6": "no-hardhat",
+        "7": "no-mask",
+        "8": "no-safety vest",
+        "9": "person",
+        "10": "safety net",
+        "11": "safety shoes",
+        "12": "safety vest",
+        "13": "dump truck",
+        "14": "mini-van",
+        "15": "truck",
+        "16": "wheel loader"
+      },
+      "normalized_names": [
+        "barricade",
+        "dump_truck",
+        "dumpster",
+        "excavators",
+        "gloves",
+        "hardhat",
+        "mask",
+        "mini_van",
+        "no_hardhat",
+        "no_mask",
+        "no_safety_vest",
+        "person",
+        "safety_net",
+        "safety_shoes",
+        "safety_vest",
+        "truck",
+        "wheel_loader"
+      ],
+      "inspection": "ONNX metadata only; no InferenceSession, predict, CUDA or NN forward"
+    },
+    "coco-objects.onnx": {
+      "path": "data/models/coco-objects.onnx",
+      "bytes": 12824059,
+      "sha256": "ab2265c1e4dcd979b139ce1b25bce1a443a8f9ff2f900ac04d695ef94508faf4",
+      "metadata_names": {
+        "0": "person",
+        "1": "bicycle",
+        "2": "car",
+        "3": "motorcycle",
+        "4": "airplane",
+        "5": "bus",
+        "6": "train",
+        "7": "truck",
+        "8": "boat",
+        "9": "traffic light",
+        "10": "fire hydrant",
+        "11": "stop sign",
+        "12": "parking meter",
+        "13": "bench",
+        "14": "bird",
+        "15": "cat",
+        "16": "dog",
+        "17": "horse",
+        "18": "sheep",
+        "19": "cow",
+        "20": "elephant",
+        "21": "bear",
+        "22": "zebra",
+        "23": "giraffe",
+        "24": "backpack",
+        "25": "umbrella",
+        "26": "handbag",
+        "27": "tie",
+        "28": "suitcase",
+        "29": "frisbee",
+        "30": "skis",
+        "31": "snowboard",
+        "32": "sports ball",
+        "33": "kite",
+        "34": "baseball bat",
+        "35": "baseball glove",
+        "36": "skateboard",
+        "37": "surfboard",
+        "38": "tennis racket",
+        "39": "bottle",
+        "40": "wine glass",
+        "41": "cup",
+        "42": "fork",
+        "43": "knife",
+        "44": "spoon",
+        "45": "bowl",
+        "46": "banana",
+        "47": "apple",
+        "48": "sandwich",
+        "49": "orange",
+        "50": "broccoli",
+        "51": "carrot",
+        "52": "hot dog",
+        "53": "pizza",
+        "54": "donut",
+        "55": "cake",
+        "56": "chair",
+        "57": "couch",
+        "58": "potted plant",
+        "59": "bed",
+        "60": "dining table",
+        "61": "toilet",
+        "62": "tv",
+        "63": "laptop",
+        "64": "mouse",
+        "65": "remote",
+        "66": "keyboard",
+        "67": "cell phone",
+        "68": "microwave",
+        "69": "oven",
+        "70": "toaster",
+        "71": "sink",
+        "72": "refrigerator",
+        "73": "book",
+        "74": "clock",
+        "75": "vase",
+        "76": "scissors",
+        "77": "teddy bear",
+        "78": "hair drier",
+        "79": "toothbrush"
+      },
+      "normalized_names": [
+        "airplane",
+        "apple",
+        "backpack",
+        "banana",
+        "baseball_bat",
+        "baseball_glove",
+        "bear",
+        "bed",
+        "bench",
+        "bicycle",
+        "bird",
+        "boat",
+        "book",
+        "bottle",
+        "bowl",
+        "broccoli",
+        "bus",
+        "cake",
+        "car",
+        "carrot",
+        "cat",
+        "cell_phone",
+        "chair",
+        "clock",
+        "couch",
+        "cow",
+        "cup",
+        "dining_table",
+        "dog",
+        "donut",
+        "elephant",
+        "fire_hydrant",
+        "fork",
+        "frisbee",
+        "giraffe",
+        "hair_drier",
+        "handbag",
+        "horse",
+        "hot_dog",
+        "keyboard",
+        "kite",
+        "knife",
+        "laptop",
+        "microwave",
+        "motorcycle",
+        "mouse",
+        "orange",
+        "oven",
+        "parking_meter",
+        "person",
+        "pizza",
+        "potted_plant",
+        "refrigerator",
+        "remote",
+        "sandwich",
+        "scissors",
+        "sheep",
+        "sink",
+        "skateboard",
+        "skis",
+        "snowboard",
+        "spoon",
+        "sports_ball",
+        "stop_sign",
+        "suitcase",
+        "surfboard",
+        "teddy_bear",
+        "tennis_racket",
+        "tie",
+        "toaster",
+        "toilet",
+        "toothbrush",
+        "traffic_light",
+        "train",
+        "truck",
+        "tv",
+        "umbrella",
+        "vase",
+        "wine_glass",
+        "zebra"
+      ],
+      "inspection": "ONNX metadata only; no InferenceSession, predict, CUDA or NN forward"
+    }
+  },
+  "structural_assertions_passed": 7,
+  "patterns": [
+    {
+      "id": "harness",
+      "config_flag": "harness_detection",
+      "event_kinds": [
+        "no_harness_at_height"
+      ],
+      "models_when_tested_alone": [
+        "ppe-safetyvision.onnx"
+      ],
+      "conditions": [
+        "API requires an operator-defined height polygon; video does not measure height.",
+        "Person must be inside that polygon with a fresh assigned no_harness observation above object_confidence.",
+        "Common FSM requires >=75% weighted evidence and >=3 fresh timestamps; unknown cannot confirm or clear.",
+        "Leaving height context may close the contextual violation, without establishing a worn harness."
+      ],
+      "actual_negative_classes": [
+        "no_harness"
+      ],
+      "actual_compliant_classes": [],
+      "structural_result": "Negative No_Harness exists; missing-harness activation is possible. No harness/safety_harness output exists, so observed worn confirmation inside height context is unavailable from this model.",
+      "semantic_limit": "Fitting, attachment, anchors and physical working height are not measured.",
+      "real_positive_acceptance_gap": "Inventory has repeated still no_harness-demo.mp4 / harness-unambiguous.jpg, no verified moving at-height positive/negative pair. Ground-level people carrying straps are not such truth.",
+      "code_references": [
+        "app/scenarios.py:PPE and PPE context/confirmed-state guard",
+        "app/server.py:validate_scenarios",
+        "app/scenario_models.py:required_models and allowed labels"
+      ],
+      "acceptance_status": "not_accepted_for_production_by_this_audit",
+      "new_nn_runs": 0,
+      "fake_positive_fixtures_used": false,
+      "inventory_positive_sources": [
+        {
+          "path": "data/datasets/scenario-fixtures/no_harness-demo.mp4",
+          "exists": true,
+          "type": "repeated_still_video",
+          "meaning": "Repeated image of No_Harness",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/scenario-fixtures/harness-unambiguous.jpg",
+          "exists": true,
+          "type": "still_image",
+          "meaning": "Explicit no_harness integration image",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "inventory_negative_sources": []
+    },
+    {
+      "id": "proximity",
+      "config_flag": "proximity_detection",
+      "event_kinds": [
+        "equipment_proximity"
+      ],
+      "models_when_tested_alone": [
+        "construction-machinery.onnx"
+      ],
+      "conditions": [
+        "Equipment association uses same label, IoU>.1 and gap<.8s. Image displacement history spans >=.3s.",
+        "Autonomous branch requires equipment image speed/person.height>=.05 and person-foot distance to its bottom segment <=.6 person-heights by default, or <=3m with explicit floor homography.",
+        "Alternative bool(best or zone): occupancy of equipment polygon alone can activate, without detected/moving machinery."
+      ],
+      "actual_standalone_equipment_classes": [
+        "dump_truck",
+        "excavators",
+        "mini_van",
+        "truck",
+        "wheel_loader"
+      ],
+      "requested_but_absent_classes": [
+        "bus",
+        "car",
+        "excavator",
+        "machinery",
+        "motorcycle",
+        "vehicle"
+      ],
+      "dedicated_forklift_class": false,
+      "structural_result": "Some machinery alerts and zone-only alerts can fire. No dedicated forklift class exists; related machinery misclassification is possible but not validation.",
+      "semantic_limit": "Uncalibrated image distance is not metres; polygon occupancy is not autonomous measurement of dangerous proximity.",
+      "real_positive_acceptance_gap": "Inventory forklift-flare clip shows people/vehicle but has no calibrated distance/motion or dangerous-proximity event labels; no verified threshold-specific positive/negative pair.",
+      "code_references": [
+        "app/scenarios.py:EQUIPMENT/update_equipment/proximity branch",
+        "app/scenario_models.py:required_models/ScenarioModels.allowed"
+      ],
+      "acceptance_status": "not_accepted_for_production_by_this_audit",
+      "new_nn_runs": 0,
+      "fake_positive_fixtures_used": false,
+      "inventory_positive_sources": [
+        {
+          "path": "data/datasets/isafety-expanded/hazard/ZNOHrOs9VMA_trim_1.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Moving forklift and people visible; no calibrated hazard-distance truth",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "inventory_negative_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "No moving supported machine near workers, requires source review",
+          "review_scope": "existing/sampled visual review"
+        }
+      ]
+    },
+    {
+      "id": "load_posture",
+      "config_flag": "load_posture_detection",
+      "event_kinds": [
+        "unsafe_load_posture"
+      ],
+      "models_when_tested_alone": [
+        "coco-objects.onnx",
+        "person/pose pipeline"
+      ],
+      "conditions": [
+        "Shoulder/hip keypoints confidence >=.4; torso angle against image vertical is 40-75 degrees.",
+        "Assigned handbag/suitcase is within .2 person-height of an observed wrist.",
+        "Base normalized person speed>.1, followed by the temporal FSM."
+      ],
+      "actual_admitted_load_classes": [
+        "handbag",
+        "suitcase"
+      ],
+      "industrial_box_class": false,
+      "structural_result": "A box-only industrial load cannot satisfy the required carried-object-label branch under correct classification. Suitcase/handbag positives are possible. Hallucinating a box as a suitcase is not support.",
+      "semantic_limit": "No arbitrary industrial box recognition, mass, knee/lifting ergonomics or load-transfer assessment.",
+      "real_positive_acceptance_gap": "Inventory box-slip clip has a cardboard box, no unsafe-lifting ergonomics labels and no verified video pair satisfying the implemented carried-object predicate.",
+      "code_references": [
+        "app/scenarios.py:load_posture branch",
+        "app/scenario_models.py:required_models/ScenarioModels.allowed"
+      ],
+      "acceptance_status": "not_accepted_for_production_by_this_audit",
+      "new_nn_runs": 0,
+      "fake_positive_fixtures_used": false,
+      "inventory_positive_sources": [
+        {
+          "path": "data/datasets/isafety-inspection/hazard/4nQuQnaZjy8_trim_3.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Person carries industrial cardboard box and slips; not labelled unsafe-lifting ergonomics",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "inventory_negative_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Normal work, no established carried-load posture labels",
+          "review_scope": "existing/sampled visual review"
+        }
+      ]
+    },
+    {
+      "id": "fast_motion",
+      "config_flag": "fast_motion",
+      "event_kinds": [
+        "fast_motion"
+      ],
+      "models_when_tested_alone": [
+        "person/pose pipeline; no dedicated running classifier"
+      ],
+      "conditions": [
+        "Foot trajectory linear regression uses >=3 samples spanning >=.4s in a roughly 1s history.",
+        "Default speed threshold 1.25 person-heights/s or 2.5m/s with explicit planar floor calibration.",
+        "Temporal FSM confirms sustained evidence; fast_motion is explicit opt-in, default false."
+      ],
+      "structural_result": "Functional speed-threshold rule; no running/unsafe-motion class is required or used. CPU unit tests demonstrate geometry, not real-video model quality.",
+      "semantic_limit": "Camera movement, perspective, box jitter and height normalization affect image speed. Correct calibration is required for metres.",
+      "real_positive_acceptance_gap": "Inventory forklift-flare running-away clip is sampled only; no isolated current-cascade positive/negative result or calibrated speed ground truth from this audit.",
+      "code_references": [
+        "app/core.py:Rules.step speed regression/conditions",
+        "tests/test_rules.py:test_camera_motion_is_not_mislabeled_as_calibrated_speed",
+        "tests/test_temporal_and_tracks.py:test_metric_motion_uses_floor_calibration"
+      ],
+      "acceptance_status": "not_accepted_for_production_by_this_audit",
+      "new_nn_runs": 0,
+      "fake_positive_fixtures_used": false,
+      "inventory_positive_sources": [
+        {
+          "path": "data/datasets/isafety-expanded/hazard/ZNOHrOs9VMA_trim_1.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "People visibly run away when forklift flares; onset samples only",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "inventory_negative_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Slow/stationary factory people",
+          "review_scope": "existing/sampled visual review"
+        }
+      ]
+    },
+    {
+      "id": "barrier",
+      "config_flag": "zones",
+      "event_kinds": [
+        "barrier_crossing"
+      ],
+      "models_when_tested_alone": [
+        "person/pose pipeline; no extra object model selected"
+      ],
+      "conditions": [
+        "Person foot inside operator polygon of kind barrier.",
+        "Same track/context must first be observed outside; first appearance inside stays unknown until an outside observation.",
+        "zone_hold and common temporal FSM confirm sustained evidence."
+      ],
+      "additional_models_required": [],
+      "structural_result": "Operator-zone rule can fire. Missing object vocabulary does not make polygon occupancy impossible. Construction barricade class is not consumed by this rule.",
+      "semantic_limit": "Physical barrier and whether the region is forbidden are operator declarations, not independently recognized hazards.",
+      "real_positive_acceptance_gap": "No independent moving positive/negative pair with actual structure/forbidden-region and entry/exit timing labels in inventory. Arbitrarily drawing a polygon around a worker tests mechanics only.",
+      "code_references": [
+        "app/scenarios.py:polygon branches and base_config",
+        "app/scenario_models.py:required_models"
+      ],
+      "generic_polygon_mechanics_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Controlled polygon containing a visible foot can test rule mechanics",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "acceptance_status": "not_accepted_for_production_by_this_audit",
+      "new_nn_runs": 0,
+      "fake_positive_fixtures_used": false,
+      "inventory_positive_sources": [],
+      "inventory_negative_sources": []
+    },
+    {
+      "id": "under_load",
+      "config_flag": "zones",
+      "event_kinds": [
+        "under_load"
+      ],
+      "models_when_tested_alone": [
+        "person/pose pipeline; no extra object model selected"
+      ],
+      "conditions": [
+        "Person foot inside operator polygon of kind under_load.",
+        "zone_hold and common temporal FSM confirm sustained evidence."
+      ],
+      "additional_models_required": [],
+      "structural_result": "Operator-zone rule can fire. Missing object vocabulary does not make polygon occupancy impossible. Construction barricade class is not consumed by this rule.",
+      "semantic_limit": "Physical suspended load and whether the region is forbidden are operator declarations, not independently recognized hazards.",
+      "real_positive_acceptance_gap": "No independent moving positive/negative pair with actual structure/forbidden-region and entry/exit timing labels in inventory. Arbitrarily drawing a polygon around a worker tests mechanics only.",
+      "code_references": [
+        "app/scenarios.py:polygon branches and base_config",
+        "app/scenario_models.py:required_models"
+      ],
+      "generic_polygon_mechanics_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Controlled polygon containing a visible foot can test rule mechanics",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "acceptance_status": "not_accepted_for_production_by_this_audit",
+      "new_nn_runs": 0,
+      "fake_positive_fixtures_used": false,
+      "inventory_positive_sources": [],
+      "inventory_negative_sources": []
+    },
+    {
+      "id": "under_conveyor",
+      "config_flag": "zones",
+      "event_kinds": [
+        "under_conveyor"
+      ],
+      "models_when_tested_alone": [
+        "person/pose pipeline; no extra object model selected"
+      ],
+      "conditions": [
+        "Person foot inside operator polygon of kind under_conveyor.",
+        "zone_hold and common temporal FSM confirm sustained evidence."
+      ],
+      "additional_models_required": [],
+      "structural_result": "Operator-zone rule can fire. Missing object vocabulary does not make polygon occupancy impossible. Construction barricade class is not consumed by this rule.",
+      "semantic_limit": "Physical conveyor and whether the region is forbidden are operator declarations, not independently recognized hazards.",
+      "real_positive_acceptance_gap": "No independent moving positive/negative pair with actual structure/forbidden-region and entry/exit timing labels in inventory. Arbitrarily drawing a polygon around a worker tests mechanics only.",
+      "code_references": [
+        "app/scenarios.py:polygon branches and base_config",
+        "app/scenario_models.py:required_models"
+      ],
+      "generic_polygon_mechanics_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Controlled polygon containing a visible foot can test rule mechanics",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "acceptance_status": "not_accepted_for_production_by_this_audit",
+      "new_nn_runs": 0,
+      "fake_positive_fixtures_used": false,
+      "inventory_positive_sources": [],
+      "inventory_negative_sources": []
+    }
+  ],
+  "interpretation": "Missing vocabulary, semantic mismatch and missing real-video acceptance evidence are separate findings. No synthetic observations are presented as real positive videos. No Precision/Recall/F1 claim; no manifest modified."
+}

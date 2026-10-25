@@ -69,7 +69,7 @@ function focusLiveZones(){
 }
 $('live-edit-zones').onclick=focusLiveZones;
 $('live-zone-get-frame').onclick=()=>$('live-preview').click();
-$('live-zone-on').onchange=()=>{updateLiveZoneControls();if($('live-zone-on').checked)focusLiveZones()};
+$('live-zone-on').onchange=()=>{updateLiveZoneControls();if(isChecked('live-zone-on'))focusLiveZones()};
 const previousSetLiveImage=setLiveImage;
 setLiveImage=async function(url){await previousSetLiveImage(url);renderCameraControls();updateLiveZoneControls()};
 $('live-preview').onclick=async()=>{
@@ -97,7 +97,7 @@ function updateLiveZoneControls(){
   $('live-zone-placeholder').hidden=hasFrame;$('live-zone-canvas').hidden=!hasFrame;
   $('live-zone-count').textContent=`${L.zones.length} / 8 зон`;
   $('live-zone-progress').textContent=locked?'Правила закреплены на время эфира':points>=3?`${points} точек · можно сохранить зону`:`${points} точек · нужно не менее 3`;
-  $('live-zone-enabled').textContent=$('live-zone-on').checked?'Размеченные зоны включены':'Зоны выключены. После сохранения первой зоны включатся автоматически.';
+  $('live-zone-enabled').textContent=isChecked('live-zone-on')?'Размеченные зоны включены':'Зоны выключены. После сохранения первой зоны включатся автоматически.';
   $('live-save-zone').disabled=locked||!hasFrame||points<3;
   $('live-zone-undo').disabled=locked||!points;$('live-zone-clear').disabled=locked||!points;
   $('live-zone-get-frame').disabled=locked;
@@ -135,8 +135,8 @@ $('live-save-zone').onclick=()=>{const count=L.zones.length;previousSaveLiveZone
 const previousLiveStart=$('live-start').onclick;
 $('live-start').onclick=()=>{
   if(L.points.length||L.editingZone!==null){focusLiveZones();toast('Сначала сохраните новую или изменённую зону. Чтобы оставить прежние правила, отмените изменение.');return}
-  if($('live-zone-on').checked&&!L.zones.length){focusLiveZones();toast('Ниже отметьте минимум 3 точки на кадре и нажмите «Сохранить зону».');return}
-  if($('live-extra-harness').checked&&!L.zones.some(z=>z.kind==='height')){focusLiveZones();toast('Выбран сценарий «Работа на высоте без привязи». Добавьте зону с назначением «Работа на высоте», чтобы указать участок проверки, или отключите этот сценарий.');return}
+  if(isChecked('live-zone-on')&&!L.zones.length){focusLiveZones();toast('Ниже отметьте минимум 3 точки на кадре и нажмите «Сохранить зону».');return}
+  if(isChecked('live-extra-harness')&&!L.zones.some(z=>z.kind==='height')){focusLiveZones();toast('Выбран сценарий «Работа на высоте без привязи». Добавьте зону с назначением «Работа на высоте», чтобы указать участок проверки, или отключите этот сценарий.');return}
   return previousLiveStart();
 };
 const previousLiveStatus=renderLiveStatus;

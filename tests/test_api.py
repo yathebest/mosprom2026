@@ -1,11 +1,22 @@
 import cv2
 import numpy as np
 import pytest
+import json
 from fastapi.testclient import TestClient
 from app import storage as db
 from app.server import app
 from app import auth
+from app import pattern_policy
 from app.access import Scope,current_scope
+
+
+@pytest.fixture
+def research_pattern_policy(tmp_path,monkeypatch):
+    """Explicit opt-in for legacy harness/height mechanics, never production defaults."""
+    path=tmp_path/'research-pattern-policy.json'
+    path.write_text(json.dumps({'version':'test-research-only',
+        'enabled_patterns':[row[0] for row in pattern_policy._SPECS],'decisions':{}}),encoding='utf-8')
+    monkeypatch.setattr(pattern_policy,'MANIFEST_PATH',path)
 
 
 @pytest.fixture
@@ -69,7 +80,7 @@ def test_restart_marks_incomplete_job(client):
 
 
 def test_camera_templates_summary_and_job_report(client):
-    configuration={'camera':'Склад 2','fast_motion':False,'fall_detection':True,
+    configuration={'camera':'Склад 2','fast_motion':False,'helmet_detection':True,
                    'zones':[{'name':'Проход','points':[[0,0],[1,0],[1,1],[0,1]]}]}
     assert client.post('/api/cameras',json=configuration).status_code==200
     template=client.get('/api/cameras').json()[0]
@@ -89,7 +100,7 @@ def test_start_is_single_use_and_cancel_signals_worker(client,monkeypatch):
     monkeypatch.setattr(server.EXECUTOR,'submit',lambda *args:calls.append(args))
     monkeypatch.setattr(video,'CANCEL',{})
     db.add_job('single','x.mp4',{})
-    body={'fast_motion':False,'fall_detection':True}
+    body={'fast_motion':False,'fall_detection':False}
     assert client.post('/api/jobs/single/start',json=body).status_code==200
     assert client.post('/api/jobs/single/start',json=body).status_code==409
     assert len(calls)==1 and not video.CANCEL['single'].is_set()
@@ -142,7 +153,7 @@ def test_payload_clip_completion_preserves_other_event_fields(client):
     assert event['payload']['clip_state']=='ready' and event['payload']['occurred_at']=='2026-10-23T15:00:00Z'
 
 
-def test_scenario_preflight_requires_height_context_and_installed_weights(client):
+def test_scenario_preflight_requires_height_context_and_installed_weights(client,research_pattern_policy):
     missing=client.post('/api/live',json={'source_type':'browser','config':{'helmet_detection':True}})
     assert missing.status_code==409 and 'ppe-safetyvision' in missing.json()['detail']
     context=client.post('/api/live',json={'source_type':'browser','config':{'harness_detection':True}})
@@ -150,7 +161,7 @@ def test_scenario_preflight_requires_height_context_and_installed_weights(client
     assert not any(s['ready'] for s in client.get('/api/scenarios').json()['scenarios'])
 
 
-def test_typed_zone_and_scenario_camera_template_roundtrip(client):
+def test_typed_zone_and_scenario_camera_template_roundtrip(client,research_pattern_policy):
     body={'camera':'Высота','harness_detection':True,'phone_detection':True,
           'zones':[{'name':'Площадка','kind':'height','points':[[0,0],[1,0],[1,1],[0,1]]}]}
     assert client.post('/api/cameras',json=body).status_code==200

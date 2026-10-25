@@ -26,6 +26,7 @@ from . import operations
 from . import streams
 from . import live
 from . import auth
+from . import pattern_policy
 
 MAX_PARALLEL=max(1,min(4,int(os.getenv("SAFETY_MAX_PARALLEL","2"))))
 EXECUTOR = ThreadPoolExecutor(max_workers=MAX_PARALLEL,thread_name_prefix="video")
@@ -51,7 +52,7 @@ app.mount("/static",StaticFiles(directory=Path(__file__).parent/"static"),name="
 
 @app.get("/")
 def index():
-    return FileResponse(Path(__file__).parent/"static"/"index-v2.html")
+    return FileResponse(Path(__file__).parent/"static"/"index-v2.html",headers={'Cache-Control':'no-store'})
 
 
 @app.get("/api/health")
@@ -67,17 +68,22 @@ def health():
                 'ppe-head-classifier.onnx','ppe-torso-classifier.onnx','fall-temporal.pt')}}
 
 
+SAMPLE_PATTERNS={'fall-01':['fall'],'adl-02':['fall'],'helmet-missing':['helmet'],
+                 'helmet-worn':['helmet'],'factory-helmet-missing':['helmet'],'fire-demo':['fire']}
+
+
 @app.get("/api/samples")
 def samples():
+    enabled={row['id'] for row in patterns()['patterns'] if row['enabled']}
     examples=[('fall-01','Падение в комнате','Проверка падений; обучающий пример, не финальный тест.'),
               ('adl-02','Обычное действие','Нормальная активность без тревоги падения.'),
               ('helmet-missing','Без каски · учебный','Повтор изображения Construction-PPE; проверка конвейера, не качества.'),
               ('helmet-worn','В каске · учебный','Отрицательный пример для тревоги «без каски»; повтор изображения.'),
               ('factory-helmet-missing','Заводская камера · без каски','Настоящая запись производства, 6_te9. Демонстрация отдельного события; не оценка полноты.'),
               ('fire-demo','Огонь · учебный','Повтор кадра демонстрации автора модели; не независимый тест.')]
-    return [{"id":name,"name":title,"description":description,
+    return [{"id":name,"name":title,"description":description,"pattern_ids":SAMPLE_PATTERNS[name],
              "available":sample_source(name)[0].exists()}
-            for name,title,description in examples]
+            for name,title,description in examples if set(SAMPLE_PATTERNS[name])<=enabled]
 
 
 def sample_source(name):
@@ -200,6 +206,9 @@ async def live_view(session_id: str,request: Request):
 def import_sample(sample_id: str):
     if sample_id not in {'fall-01','adl-02','helmet-missing','helmet-worn','fire-demo','factory-helmet-missing'}:
         raise HTTPException(404,"Пример не найден")
+    enabled={row['id'] for row in patterns()['patterns'] if row['enabled']}
+    if not set(SAMPLE_PATTERNS[sample_id])<=enabled:
+        raise HTTPException(422,'Пример относится к отключённому сценарию')
     source,recommended=sample_source(sample_id)
     if not source.exists():
         raise HTTPException(404,"Файл примера пока не скачан")
@@ -243,14 +252,30 @@ def quality():
 def scenarios():
     from .scenario_models import required_models
     rows=[]
+    policy=patterns()
     for flag in ['helmet','vest','mask','harness','phone','fire','smoke','smoking','proximity','load_posture']:
+        if flag+'_detection' not in policy['enabled_flags']:continue
         names=required_models(RunConfig(**{flag+'_detection':True}))
         rows.append({'flag':flag+'_detection','models':names,'ready':all((db.DATA/'models'/n).exists() for n in names),'quality':'not_measured'})
-    return {'scenarios':rows,'runtime':'ONNX Runtime CPU; pose/fall use PyTorch','linq_verified':False}
+    return {'scenarios':rows,'runtime':'ONNX Runtime CPU; pose/fall use PyTorch','linq_verified':False,'policy_version':policy['version']}
+
+
+@app.get('/api/patterns')
+def patterns():
+    try:return pattern_policy.catalog()
+    except pattern_policy.PolicyError as exc:raise HTTPException(503,str(exc)) from None
+
+
+def validate_pattern_policy(config):
+    warnings=pattern_policy.disabled_settings(config,patterns())
+    if warnings:
+        raise HTTPException(422,{'message':'Выбраны отключённые сценарии. Обновите настройки камеры.',
+                                 'code':'disabled_patterns','disabled_settings':warnings})
 
 
 def validate_scenarios(config):
     from .scenario_models import required_models
+    validate_pattern_policy(config)
     if config.harness_detection and not any(z.kind=='height' for z in config.zones):
         raise HTTPException(422,'Для контроля страховочной привязи отметьте зону «Работа на высоте»')
     missing=[n for n in required_models(config) if not (db.DATA/'models'/n).exists()]
@@ -269,7 +294,7 @@ def defaults():
     if path.exists():
         operating=json.loads(path.read_text())
         result.update(body_threshold=operating['threshold'],body_hold=operating['hold_s'])
-    return result
+    return pattern_policy.sanitize_config(result,patterns())[0]
 
 
 from fastapi import Query
@@ -279,14 +304,16 @@ from fastapi import Query
 def summary(request: Request, days: Literal['7','30','all']='7', camera: str='',
             time_basis: Literal['processing','recording']='processing',
             include_experimental: bool=False, include_examples: bool=False,
-            date_from: str | None=Query(None,alias='from'), date_to: str | None=Query(None,alias='to')):
+            date_from: str | None=Query(None,alias='from'), date_to: str | None=Query(None,alias='to'),
+            status: Literal['all','new','forwarded','confirmed','false']='all'):
     from . import analytics
     if len(camera)>200:raise HTTPException(422,'Название камеры слишком длинное')
     records=db.events();runs=db.jobs()
     try:
         operational=analytics.build_analytics(days=None if days=='all' else int(days),camera=camera,time_basis=time_basis,
             include_experimental=include_experimental,include_examples=include_examples,date_from=date_from,date_to=date_to,
-            allow_events='events.read' in request.state.user['permissions'])
+            allow_events='events.read' in request.state.user['permissions'],status=status)
+    except analytics.pattern_policy.PolicyError as exc:raise HTTPException(503,str(exc)) from None
     except ValueError as exc:raise HTTPException(422,str(exc)) from None
     types={};cameras={};days={};hours={}
     for event in records:
@@ -319,11 +346,16 @@ def review_dataset():
 
 @app.get("/api/cameras")
 def list_cameras():
-    return db.cameras()
+    policy=patterns();result=[]
+    for camera in db.cameras():
+        config,warnings=pattern_policy.sanitize_config(camera['config'],policy)
+        result.append({**camera,'config':config,'policy_warnings':warnings,'policy_version':policy['version']})
+    return result
 
 
 @app.post("/api/cameras")
 def save_camera(config: RunConfig):
+    validate_pattern_policy(config)
     db.save_camera(config.model_dump())
     return {"ok":True}
 

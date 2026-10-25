@@ -38,7 +38,7 @@ def test_scene_second_fall_after_recovery_rearms():
 def test_metric_motion_uses_floor_calibration():
     calibration=GroundCalibration(image_points=[(0,0),(1,0),(1,1),(0,1)],
                                   world_points=[(0,0),(10,0),(10,10),(0,10)])
-    rules=Rules(RunConfig(calibration=calibration,speed_threshold_m_s=1,motion_hold=.5))
+    rules=Rules(RunConfig(fast_motion=True,calibration=calibration,speed_threshold_m_s=1,motion_hold=.5))
     events=[]
     for i in range(30):
         x=i*2

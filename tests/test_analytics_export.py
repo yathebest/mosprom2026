@@ -154,3 +154,34 @@ def test_export_preserves_org_and_camera_scope_for_aggregate_and_evidence(system
         assert 'OtherTenant' not in text_value and 'HiddenCamera' not in text_value and 'secret.jpg' not in text_value
         assert 'Line' in text_value
         if role=='management':assert 'Человек в сеансе' not in text_value
+
+
+def test_summary_and_export_share_status_filter_and_reject_invalid_status(system):
+    c=system
+    with db.connection() as conn:
+        for key,status in [('checked','confirmed'),('forward','forwarded')]:
+            conn.execute("INSERT INTO events(id,job_id,track_id,kind,camera,start_s,alert_s,payload,status) VALUES(?,'j',8,'no_helmet','Line',0,1,'{}',?)",(key,status))
+    login(c,'management')
+    result=c.get('/api/summary?days=all&status=confirmed')
+    assert result.status_code==200
+    scoped=result.json()['analytics']
+    assert scoped['filters']['status']=='confirmed'
+    assert scoped['kpis']['automatic_events']==1 and scoped['breakdowns']['by_status']=={'confirmed':1}
+    assert scoped['events']==[] and scoped['cameras'][0]['by_kind']=={'no_helmet':1}
+    login(c,'enterprise_admin')
+    response=c.get('/api/analytics/export?days=all&status=confirmed&format=csv')
+    assert response.status_code==200
+    rows=list(csv.reader(io.StringIO(response.content.decode('utf-8-sig')),delimiter=';'))
+    header=rows.index(export.EVENT_HEADERS)
+    assert len(rows[header+1:])==1 and rows[-1][6]=='Подтверждено оператором'
+    assert 'Статус: Подтверждено оператором' in response.content.decode('utf-8-sig')
+    for path in ('/api/summary','/api/analytics/export'):
+        assert c.get(path+'?status=invalid').status_code==422
+
+
+def test_source_basis_export_uses_source_day_not_processing_day():
+    r=report();r['filters']['time_basis']='recording'
+    r['breakdowns']['by_time_day']={'2026-10-23':1}
+    rows=export.summary_rows(r)
+    assert ['Дни событий','23.10.2026',1,'Время источника, МСК; LIVE — получение кадра сервером'] in rows
+    assert not any(row[0]=='Дни обработки' for row in rows)

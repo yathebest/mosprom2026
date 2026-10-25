@@ -1,0 +1,650 @@
+{
+  "purpose": "Read-only source inventory for upcoming isolated pattern rechecks; NOT new NN results or proof every pattern works.",
+  "created": "2026-10-25",
+  "new_nn_runs": false,
+  "patterns": [
+    {
+      "flag": "helmet_detection",
+      "event_kinds": [
+        "no_helmet"
+      ],
+      "models": [
+        {
+          "file": "data/models/ppe-safetyvision.onnx",
+          "exists": true
+        },
+        {
+          "file": "data/models/ppe-head.onnx",
+          "exists": true
+        },
+        {
+          "file": "data/models/ppe-head-classifier.onnx",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Two visible bare-headed workers; previously inspected debug source",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/demo-video-selection/ppe/pexels_8964295_construction_helmets_vests.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Both workers visibly wearing hardhats",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/demo-video-selection/ppe/pexels_6921181_factory_ppe.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Factory workers visibly wearing hardhats",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "Observable head required; factory-debug sources are not blind/exhaustive ground truth.",
+      "prior_reports": [
+        "docs/factory-head-evaluation.json",
+        "docs/targeted-person-comparison-20261025.json"
+      ],
+      "new_nn_run": false
+    },
+    {
+      "flag": "fall_detection",
+      "event_kinds": [
+        "possible_fall",
+        "person_down"
+      ],
+      "models": [
+        {
+          "file": "data/models/yolov8n-pose.pt",
+          "exists": true
+        },
+        {
+          "file": "data/models/fall-resnet18.pt",
+          "exists": true
+        },
+        {
+          "file": "data/models/fall-temporal.pt",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/urfd/fall-01-cam0-rgb.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Room fall; already inspected/train, not factory",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/isafety-inspection/hazard/4nQuQnaZjy8_trim_3.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Author-labelled box-carrying slip/fall",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/isafety-inspection/hazard/BWZSWUVBOuw_trim_5.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Industrial/workplace fall debug source",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/urfd/adl-01-cam0-rgb.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Normal activity, previously inspected/train",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Normal factory standing/work; no visible fall in the short clip",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "A true fall needs a measured standing-to-lying transition. Lying-at-start is person_down; URFD/body-frame scores do not establish factory event recall.",
+      "prior_reports": [
+        "docs/validation_fall.json",
+        "docs/evaluation_protocol.json",
+        "docs/quality_report.json",
+        "docs/isafety-clip-debug.json"
+      ],
+      "new_nn_run": false
+    },
+    {
+      "flag": "fast_motion",
+      "event_kinds": [
+        "fast_motion"
+      ],
+      "models": [
+        {
+          "file": "data/models/yolov8n-pose.pt",
+          "exists": true
+        },
+        {
+          "file": "data/models/person-yolo12m.pt",
+          "exists": true
+        },
+        {
+          "file": "data/models/yolo12m.pt",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/isafety-expanded/hazard/ZNOHrOs9VMA_trim_1.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "People visibly run away when forklift flares; onset samples only",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Slow/stationary factory people",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "Track speed threshold, not a trained running classifier. Camera motion/perspective require controls/calibration; no labelled event benchmark.",
+      "prior_reports": [],
+      "new_nn_run": false
+    },
+    {
+      "flag": "zones",
+      "event_kinds": [
+        "danger_zone"
+      ],
+      "models": [
+        {
+          "file": "data/models/yolov8n-pose.pt",
+          "exists": true
+        },
+        {
+          "file": "data/models/person-yolo12m.pt",
+          "exists": true
+        },
+        {
+          "file": "data/models/yolo12m.pt",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Controlled polygon containing a visible foot can test rule mechanics",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Same unmodified video with polygon placed away from feet",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "Operator-defined polygon test, not an annotation that this real location was forbidden. Need observed entry/exit, one episode and unknown handling.",
+      "prior_reports": [],
+      "new_nn_run": false
+    },
+    {
+      "flag": "vest_detection",
+      "event_kinds": [
+        "no_vest"
+      ],
+      "models": [
+        {
+          "file": "data/models/ppe-safetyvision.onnx",
+          "exists": true
+        },
+        {
+          "file": "data/models/ppe-vest.onnx",
+          "exists": true
+        },
+        {
+          "file": "data/models/ppe-torso-classifier.onnx",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/demo-video-selection/ppe/pexels_8964295_construction_helmets_vests.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Right worker: visibly ordinary blue polo on readable torso; yellow straps are held, not a signal vest",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/demo-video-selection/ppe/pexels_8964295_construction_helmets_vests.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Left worker: high-visibility reflective vest",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "Reflective uniform is compliant too. New 3-way candidate ordinary class was rejected; current negative-only verifier is being independently audited by parent. Do not treat no_vest as no reflective workwear.",
+      "prior_reports": [
+        "docs/targeted-clothing-comparison-20261025.json"
+      ],
+      "new_nn_run": false
+    },
+    {
+      "flag": "mask_detection",
+      "event_kinds": [
+        "no_mask"
+      ],
+      "models": [
+        {
+          "file": "data/models/ppe-safetyvision.onnx",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/demo-video-selection/ppe/pexels_8964295_construction_helmets_vests.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Both exposed faces have no mask; mask requirement itself is an operator policy",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/demo-video-selection/ppe/pexels_6921181_factory_ppe.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Foreground worker visibly wears respirator and face shield, especially source12.26s",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "Both class labels exist, but only old still smoke checks, no current independent temporal mask evaluation.",
+      "prior_reports": [
+        "docs/scenario_model_smoke.json"
+      ],
+      "new_nn_run": false
+    },
+    {
+      "flag": "harness_detection",
+      "event_kinds": [
+        "no_harness_at_height"
+      ],
+      "models": [
+        {
+          "file": "data/models/ppe-safetyvision.onnx",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/scenario-fixtures/no_harness-demo.mp4",
+          "exists": true,
+          "type": "repeated_still_video",
+          "meaning": "Repeated image of No_Harness",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/scenario-fixtures/harness-unambiguous.jpg",
+          "exists": true,
+          "type": "still_image",
+          "meaning": "Explicit no_harness integration image",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [],
+      "gap_or_semantic_limit": "NO verified real video pair at height. No positive harness/safety_harness label in deployed PPE model; only no_harness exists. Ground-level worker carrying straps is not valid height/no-harness truth.",
+      "prior_reports": [
+        "docs/scenario_extra_smoke.json",
+        "docs/scenario_e2e.json"
+      ],
+      "new_nn_run": false
+    },
+    {
+      "flag": "phone_detection",
+      "event_kinds": [
+        "possible_phone_use"
+      ],
+      "models": [
+        {
+          "file": "data/models/phone-objects.onnx",
+          "exists": true
+        },
+        {
+          "file": "data/models/yolov8n-pose.pt",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "type": "private_local_moving_video",
+          "path": null,
+          "exists": true,
+          "meaning": "User-authorized latest webcam phone clip, already checked locally; private identifiers/paths intentionally omitted from this public inventory"
+        },
+        {
+          "path": "data/datasets/scenario-fixtures/phone-demo-demo.mp4",
+          "exists": true,
+          "type": "repeated_still_video",
+          "meaning": "Repeated COCO image only",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/demo-video-selection/ppe/pexels_8964295_construction_helmets_vests.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Right worker holds a tablet/straps, not a visibly observed cell phone; useful handheld-object hard negative",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "No independently labelled factory phone-use video set. FPI validation object boxes are not temporal event truth. New phone candidate deployed class67 only, head0 never person.",
+      "prior_reports": [
+        "docs/phone-candidate-comparison-20261025.json"
+      ],
+      "new_nn_run": false
+    },
+    {
+      "flag": "fire_detection",
+      "event_kinds": [
+        "fire"
+      ],
+      "models": [
+        {
+          "file": "data/models/fire-smoke.onnx",
+          "exists": true
+        },
+        {
+          "file": "data/models/fire-dfire.onnx",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/isafety-expanded/hazard/87O1pBSGtR0_trim_122.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "6s workplace kitchen: obvious large flame at all six sampled times",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/isafety-expanded/hazard/ZNOHrOs9VMA_trim_1.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "8s factory: no flame at1.83s, obvious forklift flame from3.27s sampled onward",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/isafety-expanded/hazard/uqpP8Zcn02s_trim_1.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "7s plant: bright thermal flare/fire-like eruption grows; hot-process authorization unknown",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "No visible fire in short factory clip",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/isafety-expanded/hazard/H4sC0QCkG7I_trim_299.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Author fire label but no visible flame in six sampled frames; not a fire-positive ground-truth clip",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "Scene-level visual flame candidate, not proof an industrial hot process is unauthorized. Allowed-fire polygon must suppress. Old clip labels are coarse and not newly measured.",
+      "prior_reports": [
+        "docs/fire-candidate-clip-comparison.json",
+        "docs/fire-candidate-expanded.json"
+      ],
+      "new_nn_run": false
+    },
+    {
+      "flag": "smoke_detection",
+      "event_kinds": [
+        "smoke"
+      ],
+      "models": [
+        {
+          "file": "data/models/fire-smoke.onnx",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/isafety-inspection/hazard/3AFgNQQMRzw_trim_2.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "8.008s plant: flame and visible brown/grey rising plume at sampled1.84–7.61s",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "No visibly resolved smoke plume in short factory clip",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "Cannot identify aerosol chemistry from RGB; steam/dust negative controls are missing. D-Fire supplement is fire-only and does not upgrade smoke.",
+      "prior_reports": [
+        "docs/fire-candidate-clip-comparison.json"
+      ],
+      "new_nn_run": false
+    },
+    {
+      "flag": "smoking_detection",
+      "event_kinds": [
+        "possible_smoking"
+      ],
+      "models": [
+        {
+          "file": "data/models/smoking.onnx",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/demo-video-selection/smoking/smoking-cigarette-10s.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Real moving outdoor woman smoking; side body early, extreme cigarette close-up later; fades near9.5s",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/demo-video-selection/smoking/smoking-cigar-12s.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Real moving studio man; cigar/hand/mouth especially7–12s",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/demo-video-selection/ppe/pexels_8964295_construction_helmets_vests.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "No visibly observed smoking at sampled times",
+          "review_scope": "existing/sampled visual review"
+        },
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "No visibly resolved smoking; distant non-detection is not proof of absence",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "NO genuine distant factory CCTV positive. Person height>=120 and person association required; extreme close-ups can lack a track. Object validation cannot certify event detection.",
+      "prior_reports": [
+        "docs/smoking-candidate-comparison.json"
+      ],
+      "new_nn_run": false
+    },
+    {
+      "flag": "proximity_detection",
+      "event_kinds": [
+        "equipment_proximity"
+      ],
+      "models": [
+        {
+          "file": "data/models/construction-machinery.onnx",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/isafety-expanded/hazard/ZNOHrOs9VMA_trim_1.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Moving forklift and people visible; no calibrated hazard-distance truth",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "No moving supported machine near workers, requires source review",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "No dedicated forklift class. Alternate equipment polygon alone triggers regardless of recognized machine motion: operator-context zone presence, not autonomous measured dangerous proximity.",
+      "prior_reports": [],
+      "new_nn_run": false
+    },
+    {
+      "flag": "load_posture_detection",
+      "event_kinds": [
+        "unsafe_load_posture"
+      ],
+      "models": [
+        {
+          "file": "data/models/coco-objects.onnx",
+          "exists": true
+        },
+        {
+          "file": "data/models/yolov8n-pose.pt",
+          "exists": true
+        }
+      ],
+      "positive_sources": [
+        {
+          "path": "data/datasets/isafety-inspection/hazard/4nQuQnaZjy8_trim_3.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Person carries industrial cardboard box and slips; not labelled unsafe-lifting ergonomics",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "negative_sources": [
+        {
+          "path": "data/datasets/factory-expansion/test/6_te9.mp4",
+          "exists": true,
+          "type": "real_moving_video",
+          "meaning": "Normal work, no established carried-load posture labels",
+          "review_scope": "existing/sampled visual review"
+        }
+      ],
+      "gap_or_semantic_limit": "MAJOR semantic mismatch: current rule requires suitcase/handbag, torso angle40–75deg and movement. It does not detect arbitrary industrial boxes, load mass, or lifting ergonomics. No verified positive/negative videos for advertised industrial-load task.",
+      "prior_reports": [],
+      "new_nn_run": false
+    }
+  ],
+  "zone_variants": [
+    {
+      "kind": "danger_zone",
+      "event_kind": "danger_zone",
+      "semantics_and_gap": "Foot inside forbidden polygon, boundary time confirmation"
+    },
+    {
+      "kind": "barrier",
+      "event_kind": "barrier_crossing",
+      "semantics_and_gap": "Requires observed outside→inside; cannot distinguish climbing from walking around"
+    },
+    {
+      "kind": "under_load",
+      "event_kind": "under_load",
+      "semantics_and_gap": "Foot in operator polygon; no actual suspended-load recognition"
+    },
+    {
+      "kind": "under_conveyor",
+      "event_kind": "under_conveyor",
+      "semantics_and_gap": "Foot in operator polygon; no conveyor/crawling recognition"
+    },
+    {
+      "kind": "height",
+      "event_kind": "no_harness_at_height",
+      "semantics_and_gap": "Context polygon plus explicit No_Harness; actual height and anchoring unrecognized"
+    },
+    {
+      "kind": "equipment",
+      "event_kind": "equipment_proximity",
+      "semantics_and_gap": "Context polygon alone can trigger; actual moving equipment not independently established"
+    },
+    {
+      "kind": "smoking_allowed",
+      "event_kind": null,
+      "semantics_and_gap": "Suppress associated smoking in allowed zone; use real smoking video with/without covering polygon"
+    },
+    {
+      "kind": "fire_allowed",
+      "event_kind": null,
+      "semantics_and_gap": "Suppress scene fire/smoke in allowed zone; use real fire video with/without covering polygon"
+    },
+    {
+      "kind": "reflection",
+      "event_kind": null,
+      "semantics_and_gap": "Suppress reflected foot region, not any overlapping real worker; no reviewed real mirror-video pair available"
+    }
+  ],
+  "visual_review": {
+    "method": "CPU-decoded six distinct source frames at5/23/41/59/77/95 percent; sparse visual inspection, not full onset annotation.",
+    "contacts_directory": "tmp/pattern-audit/",
+    "notable_findings": [
+      "H4sC0QCkG7I_trim_299 author fire label is not a visible-flame label.",
+      "Pexels6921181 foreground worker wears a respirator and shield, verified from original source crop at12.26s.",
+      "Pexels8964295 left reflective vest/right ordinary polo supports a per-person clothing contrast; both wear helmets, neither visibly masks.",
+      "Smoking videos are genuine moving media, not factory CCTV. No real height/harness test pair found."
+    ]
+  },
+  "recommended_execution": {
+    "existing_renderer": "scripts/render_demo_video.py supports helmet/vest/smoking only; all other flags must explicitly remain false in config.",
+    "existing_phone_comparison": "scripts/compare_phone_candidates.py for fixed object metrics; private local regression is optional and never published.",
+    "existing_fire_fall_script_warning": "scripts/evaluate_isafety_clips.py enables fall AND fire, so is not an isolated per-pattern verdict runner.",
+    "generic_isolated_runner_contract": [
+      "Exactly one requested flag (or one zone variant), all others false; same production create_backend→PeopleTracker→Rules/ScenarioRules.",
+      "Real source timestamps, no repeated stills as video quality evidence. Preserve policy enforcement for production API; an offline audit runner must mark disabled patterns as audit-only.",
+      "Write activated events, lifecycle, proof and measured positive/negative durations; one positive plus one negative per pattern.",
+      "Use scripts/evaluate_events.py only with separately reviewed event interval truth; never infer truth from previous model output."
+    ]
+  },
+  "decision_note": "User requests removal of non-working/unverified patterns. Parent must decide using fresh isolated checks; this inventory does not silently remove settings or promote old integration fixtures to quality evidence."
+}

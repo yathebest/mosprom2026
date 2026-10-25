@@ -50,14 +50,14 @@ test('unbounded journal refresh only updates known incidents and cannot burst ol
 test('enabled sound schedules one distinct tone per new notification without overlaps',()=>{
  const start=source.indexOf('function beep()'),end=source.indexOf('function renderCameraWall',start),tones=[];
  const sound={currentTime:10,destination:{},createOscillator(){const tone={frequency:{},connect(){},start:at=>tones.push(at),stop(){}};return tone},createGain(){return {gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}}}};
- const enabled={checked:true},context={L:{sound,nextBeepAt:0},$:()=>enabled};vm.runInNewContext(source.slice(start,end),context);
+ const enabled={checked:true},context={L:{sound,nextBeepAt:0},$:()=>enabled,isChecked:()=>enabled.checked};vm.runInNewContext(source.slice(start,end),context);
  context.beep();context.beep();context.beep();assert.deepEqual(tones,[10,10.5,11]);enabled.checked=false;context.beep();assert.equal(tones.length,3);
 });
 test('UI latest/source pointer changes per episode; updates neither sound again nor force camera selection',()=>{
  const start=source.indexOf('function openNotificationSource('),end=source.indexOf("$('live-alert-clips').onclick",start);
  const q=queue();q.ingest([]);const nodes=new Map(),actions=new Map(),$=id=>{if(!nodes.has(id))nodes.set(id,{hidden:false,innerHTML:'',textContent:'',querySelector:selector=>{if(!actions.has(selector))actions.set(selector,{});return actions.get(selector)}});return nodes.get(id)};
  const L={alertQueue:q,current:{id:'a'},sessions:[{id:'a'},{id:'b'}]},S={page:'analytics'},selected=[],sounds=[];
- const context={L,S,$,labels:{no_helmet:'Без каски'},esc:String,timestamp:String,UiFormat:{clock:String},beep:()=>sounds.push(1),openLiveSource:id=>selected.push(id),showPage(){},renderClips(){}};
+ const context={IncidentUI:require('../app/static/incident-ui.js'),L,S,$,labels:{no_helmet:'Без каски'},esc:String,timestamp:String,UiFormat:{clock:String},beep:()=>sounds.push(1),openLiveSource:id=>selected.push(id),showPage(){},renderClips(){}};
  vm.runInNewContext(source.slice(start,end),context);
  context.receiveLiveAlerts([event('one')],'org');context.receiveLiveAlerts([event('two','two','b'),event('one')],'org');
  assert.equal(sounds.length,2);assert.equal(L.current.id,'a');assert.deepEqual(selected,[]);assert.equal($('global-live-alert').hidden,false);
@@ -65,4 +65,5 @@ test('UI latest/source pointer changes per episode; updates neither sound again 
  context.receiveLiveAlerts([{...event('two','two','b'),clip:'ready.mp4'},event('one')],'org');assert.equal(sounds.length,2);
  $('global-live-close').onclick();assert.equal(q.snapshot().active.event.job_id,'a');$('global-live-open').onclick();assert.deepEqual(selected,['b','a']);
  assert.match($('live-alert-queue').innerHTML,/Непрочитано: 1/);
+ $('global-live-close').onclick();assert.equal(q.snapshot().total,0);assert.equal($('live-alert-queue').innerHTML,'','An empty notification queue must not duplicate the event-feed empty state');
 });

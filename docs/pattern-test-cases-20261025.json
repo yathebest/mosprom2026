@@ -1,0 +1,390 @@
+{
+  "protocol": "Freeze cases before inference; each case enables only the named pattern. Public development examples, no blind metric claim. Unrelated safety equipment is not a required label.",
+  "cases": [
+    {
+      "id": "helmet-factory-bare-heads",
+      "pattern": "helmet",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "no_helmet"
+      ],
+      "config": {
+        "helmet_detection": true
+      },
+      "truth_basis": "Visual review of the real factory recording: two uncovered heads."
+    },
+    {
+      "id": "helmet-worn-warehouse",
+      "pattern": "helmet",
+      "file": "data/datasets/demo-video-selection/ppe/pexels_10817415_warehouse_helmets.mp4",
+      "start_s": 3,
+      "end_s": 9,
+      "expected_event": false,
+      "event_kinds": [
+        "no_helmet"
+      ],
+      "config": {
+        "helmet_detection": true
+      },
+      "truth_basis": "Reviewed source: both people wear green hard hats. Moving stock warehouse camera, not CCTV."
+    },
+    {
+      "id": "fall-urfd-positive",
+      "pattern": "fall",
+      "file": "data/datasets/urfd/fall-01-cam0-rgb.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "possible_fall",
+        "person_down"
+      ],
+      "config": {
+        "fall_detection": true
+      },
+      "truth_basis": "URFD controlled fall sequence; development example."
+    },
+    {
+      "id": "fall-urfd-normal",
+      "pattern": "fall",
+      "file": "data/datasets/urfd/adl-02-cam0-rgb.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "possible_fall",
+        "person_down"
+      ],
+      "config": {
+        "fall_detection": true
+      },
+      "truth_basis": "URFD normal activity sequence; development example."
+    },
+    {
+      "id": "fall-workplace-platform",
+      "pattern": "fall",
+      "file": "data/datasets/isafety-inspection/hazard/-BzGMvclD88_trim_1.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "possible_fall",
+        "person_down"
+      ],
+      "config": {
+        "fall_detection": true
+      },
+      "truth_basis": "Author describes a person falling from an elevated platform; coarse action label, not a precise onset annotation."
+    },
+    {
+      "id": "fall-workplace-boxes",
+      "pattern": "fall",
+      "file": "data/datasets/isafety-inspection/hazard/4nQuQnaZjy8_trim_3.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "possible_fall",
+        "person_down"
+      ],
+      "config": {
+        "fall_detection": true
+      },
+      "truth_basis": "Author describes a person carrying a box, slipping and falling; coarse action label."
+    },
+    {
+      "id": "fall-workplace-machine",
+      "pattern": "fall",
+      "file": "data/datasets/isafety-inspection/hazard/BWZSWUVBOuw_trim_5.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "possible_fall",
+        "person_down"
+      ],
+      "config": {
+        "fall_detection": true
+      },
+      "truth_basis": "Author labels falling during a machine incident; coarse action label."
+    },
+    {
+      "id": "fall-normal-fabric-work",
+      "pattern": "fall",
+      "file": "data/datasets/isafety-inspection/normal/0zQ9fI30v1E_trim_7.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "possible_fall",
+        "person_down"
+      ],
+      "config": {
+        "fall_detection": true
+      },
+      "truth_basis": "Author lists crouching, fabric work and walking, with no fall. Known development hard negative, not new blind data."
+    },
+    {
+      "id": "fall-normal-industrial-vehicle",
+      "pattern": "fall",
+      "file": "data/datasets/isafety-inspection/normal/_nm1Yb8sxxY_trim_2.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "possible_fall",
+        "person_down"
+      ],
+      "config": {
+        "fall_detection": true
+      },
+      "truth_basis": "Author lists pulling an object, vehicle operation and signalling, with no fall; known development hard negative."
+    },
+    {
+      "id": "clothing-construction-ordinary",
+      "pattern": "vest",
+      "file": "data/datasets/demo-video-selection/ppe/pexels_8964295_construction_helmets_vests.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "no_vest"
+      ],
+      "config": {
+        "vest_detection": true,
+        "signal_clothing_policy": "vest_or_reflective_uniform"
+      },
+      "truth_basis": "CPU source review: one person in ordinary blue shirt, another in signal vest; this case should alert only on ordinary shirt"
+    },
+    {
+      "id": "clothing-reflective-factory-uniform",
+      "pattern": "vest",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "no_vest"
+      ],
+      "config": {
+        "vest_detection": true,
+        "signal_clothing_policy": "vest_or_reflective_uniform"
+      },
+      "truth_basis": "Foreground factory worker has accepted reflective bands on work uniform; no separate vest is required by project policy."
+    },
+    {
+      "id": "phone-factory-negative",
+      "pattern": "phone",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "possible_phone_use"
+      ],
+      "config": {
+        "phone_detection": true,
+        "phone_work_context_only": false
+      },
+      "truth_basis": "Visual review of this short public recording: no visible phone use."
+    },
+    {
+      "id": "smoking-visible-cigarette",
+      "pattern": "smoking",
+      "file": "data/datasets/demo-video-selection/smoking/smoking-cigarette-10s.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "possible_smoking"
+      ],
+      "config": {
+        "smoking_detection": true
+      },
+      "truth_basis": "Selected public raw live-action cigarette demonstration, not factory CCTV. Needs visual temporal review."
+    },
+    {
+      "id": "smoking-visible-cigar",
+      "pattern": "smoking",
+      "file": "data/datasets/demo-video-selection/smoking/smoking-cigar-12s.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "possible_smoking"
+      ],
+      "config": {
+        "smoking_detection": true
+      },
+      "truth_basis": "Selected public raw live-action cigar demonstration, not factory CCTV. Needs visual temporal review."
+    },
+    {
+      "id": "smoking-factory-negative",
+      "pattern": "smoking",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "possible_smoking"
+      ],
+      "config": {
+        "smoking_detection": true
+      },
+      "truth_basis": "No visible smoking in the short factory recording."
+    },
+    {
+      "id": "fire-industrial-forklift",
+      "pattern": "fire",
+      "file": "data/datasets/isafety-expanded/hazard/ZNOHrOs9VMA_trim_1.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "fire"
+      ],
+      "config": {
+        "fire_detection": true
+      },
+      "truth_basis": "CPU contact review: clear flame from3.27s onward, warehouse/forklift CCTV"
+    },
+    {
+      "id": "fire-kitchen-flare",
+      "pattern": "fire",
+      "file": "data/datasets/isafety-expanded/hazard/87O1pBSGtR0_trim_122.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "fire"
+      ],
+      "config": {
+        "fire_detection": true
+      },
+      "truth_basis": "CPU contact review: large visible kitchen flame throughout6s"
+    },
+    {
+      "id": "fire-factory-negative",
+      "pattern": "fire",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "fire"
+      ],
+      "config": {
+        "fire_detection": true
+      },
+      "truth_basis": "Visual source review before inference"
+    },
+    {
+      "id": "smoke-industrial-cloud",
+      "pattern": "smoke",
+      "file": "data/datasets/isafety-inspection/hazard/3AFgNQQMRzw_trim_2.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "smoke"
+      ],
+      "config": {
+        "smoke_detection": true
+      },
+      "truth_basis": "CPU contact review: large visible brown/gray smoke cloud from1.84to7.61s"
+    },
+    {
+      "id": "smoke-factory-negative",
+      "pattern": "smoke",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "smoke"
+      ],
+      "config": {
+        "smoke_detection": true
+      },
+      "truth_basis": "Visual source review before inference"
+    },
+    {
+      "id": "mask-bare-faces-construction",
+      "pattern": "mask",
+      "file": "data/datasets/demo-video-selection/ppe/pexels_8964295_construction_helmets_vests.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "no_mask"
+      ],
+      "config": {
+        "mask_detection": true
+      },
+      "truth_basis": "CPU source review: two people without face masks; not factory CCTV"
+    },
+    {
+      "id": "mask-respirator-factory-control",
+      "pattern": "mask",
+      "file": "data/datasets/demo-video-selection/ppe/pexels_6921181_factory_ppe.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "no_mask"
+      ],
+      "config": {
+        "mask_detection": true
+      },
+      "truth_basis": "CPU source review: visible respirator on foreground worker including12.26s; moving stock factory camera",
+      "start_s": 10,
+      "end_s": 16
+    },
+    {
+      "id": "phone-tablet-hardnegative",
+      "pattern": "phone",
+      "file": "data/datasets/demo-video-selection/ppe/pexels_8964295_construction_helmets_vests.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "possible_phone_use"
+      ],
+      "config": {
+        "phone_detection": true
+      },
+      "truth_basis": "CPU source review: clipboard/tablet is held; no visible phone, static worker"
+    },
+    {
+      "id": "zone-factory-in-polygon",
+      "pattern": "danger_zone",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": true,
+      "event_kinds": [
+        "danger_zone"
+      ],
+      "config": {
+        "zones": [
+          {
+            "kind": "danger_zone",
+            "name": "Audit polygon",
+            "points": [
+              [
+                0.43,
+                0.68
+              ],
+              [
+                0.62,
+                0.68
+              ],
+              [
+                0.62,
+                1
+              ],
+              [
+                0.43,
+                1
+              ]
+            ]
+          }
+        ]
+      },
+      "truth_basis": "Operator-defined virtual area; visually reviewed foot positions on the original frame. Positive polygon contains foreground person, negative polygon contains no person."
+    },
+    {
+      "id": "zone-factory-empty-polygon",
+      "pattern": "danger_zone",
+      "file": "data/datasets/factory-expansion/test/6_te9.mp4",
+      "expected_event": false,
+      "event_kinds": [
+        "danger_zone"
+      ],
+      "config": {
+        "zones": [
+          {
+            "kind": "danger_zone",
+            "name": "Audit polygon",
+            "points": [
+              [
+                0.02,
+                0.72
+              ],
+              [
+                0.15,
+                0.72
+              ],
+              [
+                0.15,
+                0.94
+              ],
+              [
+                0.02,
+                0.94
+              ]
+            ]
+          }
+        ]
+      },
+      "truth_basis": "Operator-defined virtual area; visually reviewed foot positions on the original frame. Positive polygon contains foreground person, negative polygon contains no person."
+    }
+  ]
+}

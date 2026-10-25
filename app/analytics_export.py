@@ -101,7 +101,8 @@ def metadata(report):
         ['Дата отбора','Время источника (LIVE — получение кадра сервером), МСК (UTC+3)' if filters['time_basis']=='recording' else 'Дата обработки, МСК (UTC+3)'],
         ['Сформирован',excel_date(report['generated_at'])],
         ['Камеры',filters.get('camera') or 'Все доступные камеры'],
-        ['Отбор',('Все сценарии' if filters.get('include_experimental') else 'Основные сценарии')+'. '+
+        ['Отбор',('Вся история сценариев' if filters.get('include_experimental') else 'Разрешённые рабочие сценарии')+'. '+
+            ('Все статусы' if filters.get('status','all')=='all' else 'Статус: '+STATUSES.get(filters['status'],filters['status']))+'. '+
             ('Учебные включены.' if filters.get('include_examples') else 'Явные учебные исключены.')+
             (f' Без отметки назначения: {unknown}.' if unknown else '')]
     ]
@@ -122,9 +123,13 @@ def summary_rows(report):
         out.append(['Назначение источников',title,count,'Неотмеченные источники не считаются подтверждёнными рабочими камерами'])
     for row in report['cameras']:
         out.append(['Камеры',row['camera'],row['events'],f"Ожидают: {row['pending']}; подтверждены: {row['confirmed']}; отклонены: {row['rejected']}"])
-    for date,count in report['breakdowns']['by_processing_day'].items():
+        for kind,count in sorted(row.get('by_kind',{}).items()):
+            out.append(['Камеры / типы',row['camera']+' · '+KINDS.get(kind,kind),count,'Те же фильтры периода и статуса'])
+    for date,count in report['breakdowns'].get('by_time_day',report['breakdowns']['by_processing_day']).items():
         stamp=datetime.fromisoformat(date).strftime('%d.%m.%Y')
-        out.append(['Дни обработки',stamp,count,'Дата обработки, не дата съёмки'])
+        source_time=report['filters']['time_basis']=='recording'
+        out.append(['Дни событий' if source_time else 'Дни обработки',stamp,count,
+            'Время источника, МСК; LIVE — получение кадра сервером' if source_time else 'Дата обработки, не дата съёмки'])
     episodes=report['episodes']; closed=episodes['closed_count']
     out += [['Эпизоды','Завершённые интервалы',closed,'Незавершённые эпизоды не считаются нулевыми'],
             ['Эпизоды','Сумма завершённых интервалов',None,duration(episodes['closed_interval_total_s']) if closed else 'Нет завершённых интервалов'],
@@ -241,13 +246,15 @@ def csv_bytes(report):
 @router.get('/api/analytics/export')
 def export(request: Request, format: Literal['xlsx','csv']='xlsx', days: Literal['7','30','all']='7', camera: str='',
            time_basis: Literal['processing','recording']='processing', include_experimental: bool=False, include_examples: bool=False,
-           date_from: str | None=Query(None,alias='from'), date_to: str | None=Query(None,alias='to')):
+           date_from: str | None=Query(None,alias='from'), date_to: str | None=Query(None,alias='to'),
+           status: Literal['all','new','forwarded','confirmed','false']='all'):
     user=auth.require(request,'analytics.read')
     if len(camera)>200: raise HTTPException(422,'Название камеры слишком длинное')
     try:
         report=analytics.build_analytics(days=None if days=='all' else int(days),camera=camera,time_basis=time_basis,
             include_experimental=include_experimental,include_examples=include_examples,date_from=date_from,date_to=date_to,
-            allow_events='events.read' in user['permissions'])
+            allow_events='events.read' in user['permissions'],status=status)
+    except analytics.pattern_policy.PolicyError as exc:raise HTTPException(503,str(exc)) from None
     except ValueError as exc: raise HTTPException(422,str(exc)) from None
     if report.get('can_drilldown') and 'evidence.read' in user['permissions']:
         # Enrich only already-filtered report rows using the same tenant/camera scope.

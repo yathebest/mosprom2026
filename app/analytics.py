@@ -6,6 +6,7 @@ import re
 from statistics import median
 
 from . import storage as db
+from . import pattern_policy
 from .access import sql_scope
 from .operations import PRIORITIES
 
@@ -14,6 +15,11 @@ PENDING = frozenset(('new', 'forwarded'))
 REVIEWED = frozenset(('confirmed', 'false'))
 KNOWN_FIXTURE_FILES = frozenset(('no_hardhat-demo.mp4','hardhat-demo.mp4',
     'fire-demo-frame-demo.mp4','no_harness-demo.mp4','phone-demo-demo.mp4','smoking-output2-demo.mp4'))
+
+
+def production_catalog():
+    """One current policy snapshot; missing policy must not restore old patterns."""
+    return pattern_policy.catalog()
 
 
 def instant(value):
@@ -143,9 +149,12 @@ def coverage(jobs, *, cutoff, now, period_end=None, camera='', include_examples=
 
 def aggregate(events, jobs, templates=(), audit=(), *, days=7, camera='', time_basis='processing',
               include_experimental=False, include_examples=False, now=None, allow_events=True,
-              date_from=None, date_to=None):
+              date_from=None, date_to=None,status='all'):
     now = now or datetime.now(timezone.utc)
     if time_basis not in ('processing','recording'): raise ValueError('Invalid time basis')
+    if status not in ('all','new','forwarded','confirmed','false'):raise ValueError('Invalid review status')
+    policy=production_catalog()
+    enabled_kinds={kind for row in policy['patterns'] if row['enabled'] for kind in row['event_kinds']}
     cutoff,period_end = period(days,date_from,date_to,now)
     by_job = {job['id']: job for job in jobs}
     first_reviews = review_times(audit)
@@ -161,6 +170,7 @@ def aggregate(events, jobs, templates=(), audit=(), *, days=7, camera='', time_b
         if job is None: continue  # never aggregate orphan/cross-scope events
         if include_examples or not educational(job): cameras.add(event['camera'])
         if camera and event['camera'] != camera: continue
+        if status!='all' and event['status']!=status:continue
         occurred = instant((event.get('payload') or {}).get('occurred_at'))
         created = instant(event.get('created'))
         when = occurred if time_basis == 'recording' else created
@@ -169,7 +179,7 @@ def aggregate(events, jobs, templates=(), audit=(), *, days=7, camera='', time_b
         if when > now or when >= period_end or (cutoff and when < cutoff): continue
         if educational(job) and not include_examples:
             excluded['examples'] += 1; continue
-        if event['kind'] not in CORE_KINDS and not include_experimental:
+        if event['kind'] not in enabled_kinds and not include_experimental:
             excluded['experimental'] += 1; continue
         records.append(event)
     pending = [e for e in records if e['status'] in PENDING]
@@ -208,7 +218,7 @@ def aggregate(events, jobs, templates=(), audit=(), *, days=7, camera='', time_b
                 'observed_until_s':number(payload.get('observed_until_s')),
                 'has_evidence':bool(event.get('image') or event.get('clip')), 'priority':priority,
                 'waiting_s':round(waiting) if waiting is not None and event['status'] in PENDING else None,
-                'experimental':event['kind'] not in CORE_KINDS, 'educational':educational(by_job[event['job_id']])})
+                'experimental':event['kind'] not in enabled_kinds, 'educational':educational(by_job[event['job_id']])})
     priorities = []
     for (name,kind,zone), values in groups.items():
         awaiting = [e for e in values if e['status'] in PENDING]
@@ -221,7 +231,7 @@ def aggregate(events, jobs, templates=(), audit=(), *, days=7, camera='', time_b
             'distinct_jobs':len({e['job_id'] for e in values}),
             'oldest_waiting_s':round(max(0,(now-oldest).total_seconds())) if oldest else None,
             'event_ids':[e['id'] for e in sorted(awaiting,key=lambda e:e.get('created') or '')[:10]] if allow_events else [],
-            'experimental':kind not in CORE_KINDS})
+            'experimental':kind not in enabled_kinds})
     # Transparent ordering, not a probabilistic or invented weighted risk score.
     priorities.sort(key=lambda r:(-bool(r['high_priority_pending']), -bool(r['pending']),
         -r['confirmed'], -(r['oldest_waiting_s'] or 0), -r['events'], r['camera'],r['kind'],r['zone']))
@@ -232,14 +242,22 @@ def aggregate(events, jobs, templates=(), audit=(), *, days=7, camera='', time_b
         camera_rows.append({'camera':name, 'events':len(values), 'pending':sum(e['status'] in PENDING for e in values),
             'confirmed':sum(e['status']=='confirmed' for e in values), 'rejected':sum(e['status']=='false' for e in values),
             'top_kind':Counter(e['kind'] for e in values).most_common(1)[0][0] if values else None,
+            'by_kind':dict(Counter(e['kind'] for e in values)),
             'camera_hours':coverage_info['per_camera_hours'].get(name)})
     unresolved=sum(lifecycles[state] for state in ('open','interrupted','legacy_unknown','invalid_closed'))
     purposes=Counter(source_purpose(by_job[e['job_id']]) for e in records)
     purpose_jobs=Counter(source_purpose(by_job[key]) for key in {e['job_id'] for e in records})
+    by_time_day_kind=defaultdict(Counter)
+    for event in records:
+        when=instant((event.get('payload') or {}).get('occurred_at')) if time_basis=='recording' else instant(event.get('created'))
+        if when:
+            day=when.astimezone(timezone(timedelta(hours=3))).date().isoformat()
+            by_time_day_kind[day][event['kind']]+=1
     return {'filters':{'days':None if date_from else days,'date_from':date_from,'date_to':date_to,
-            'time_zone':'Europe/Moscow','camera':camera,'time_basis':time_basis,'include_experimental':include_experimental,'include_examples':include_examples},
+            'time_zone':'Europe/Moscow','camera':camera,'time_basis':time_basis,'status':status,'include_experimental':include_experimental,'include_examples':include_examples},
         'generated_at':now.isoformat(), 'period_start':cutoff.isoformat() if cutoff else None,'period_end':period_end.isoformat(),
-        'available_cameras':sorted(cameras), 'core_kinds':sorted(CORE_KINDS), 'excluded':dict(excluded),
+        'available_cameras':sorted(cameras), 'core_kinds':sorted(enabled_kinds),'production_kinds':sorted(enabled_kinds),
+        'pattern_policy_version':policy['version'],'excluded':dict(excluded),
         'kpis':{'automatic_events':len(records),'pending':len(pending),'confirmed':len(confirmed),
             'unresolved_episodes':unresolved,'rejected':len(rejected)},
         'queue':{'pending':len(pending),'overdue':overdue,'high_priority':high_pending,
@@ -255,21 +273,24 @@ def aggregate(events, jobs, templates=(), audit=(), *, days=7, camera='', time_b
         'cameras':camera_rows,'events':sorted(details,key=lambda e:e.get('created') or '',reverse=True),
         'breakdowns':{'by_kind':dict(Counter(e['kind'] for e in records)),
             'by_status':dict(Counter(e['status'] for e in records)),
+            'by_time_day':{day:sum(counts.values()) for day,counts in sorted(by_time_day_kind.items())},
+            'by_time_day_kind':{day:dict(counts) for day,counts in sorted(by_time_day_kind.items())},
             'by_processing_day':dict(sorted(Counter(instant(e['created']).astimezone(timezone(timedelta(hours=3))).date().isoformat()
                 for e in records if instant(e.get('created'))).items()))},
         'can_drilldown':allow_events,
         'data_quality':{'source_purpose_events':{key:purposes[key] for key in ('educational','declared_production','unclassified')},
             'source_purpose_jobs':{key:purpose_jobs[key] for key in ('educational','declared_production','unclassified')}},
         'counting_policy':'Each stored episode is counted once. Repeat analyses of the same source can create separate episodes; recurrence across jobs is not independent evidence of repeated real-world incidents.',
+        'pattern_scope_policy':'Default includes only the current production allowlist. Legacy include_experimental=true explicitly includes history of disabled/unknown patterns; it never enables their inference.',
         'time_policy':'Period uses processing created time by default, never an assumed filming date. occurred_at is the supplied file start plus offset or live server-arrival time, not certified camera exposure time.',
         'origin_policy':'Only explicitly marked examples and known project fixture/dataset filenames are excluded by default. Legacy/live sources without a purpose flag remain unclassified, not verified production; camera names are never used as proof. No history is relabelled or deleted.'}
 
 
 def build_analytics(*, days=7, camera='', time_basis='processing', include_experimental=False, include_examples=False,
-                    allow_events=False,date_from=None,date_to=None,now=None):
+                    allow_events=False,date_from=None,date_to=None,now=None,status='all'):
     return aggregate(*load_scoped(),days=days,camera=camera,time_basis=time_basis,
         include_experimental=include_experimental,include_examples=include_examples,allow_events=allow_events,
-        date_from=date_from,date_to=date_to,now=now)
+        date_from=date_from,date_to=date_to,now=now,status=status)
 
 
 summary=build_analytics
