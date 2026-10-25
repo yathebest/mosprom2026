@@ -102,6 +102,7 @@ def sources(include_linq_runtime=False):
                  'scripts/build_server_bundle.py']:
         paths.add(ROOT/name)
     for name in ['quality_report.json','quality_code_audit.json','coverage.json','linq-port.md',
+                 'repository-criteria-audit-20261025.json',
                  'framework-audit.json','yolo12m-compatibility.json','linq-sdk-2026.9.45-freeze.txt',
                  'scenarios.ru.md','trained-deployment.json','trained-model-metrics.json',
                  'pattern-audit-summary-20261025.json','pattern-unsupported-audit-20261025.json',

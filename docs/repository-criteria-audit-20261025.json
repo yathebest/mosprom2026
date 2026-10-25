@@ -1,0 +1,195 @@
+{
+  "date": "2026-10-25",
+  "audited_commit": "fc34c94820c1f9f010a3cb13375d3ef2cdecdcda",
+  "sources": {
+    "case_pdf": "docs/reference/КЕЙС_LinQ.pdf",
+    "requirements_page": 13,
+    "evaluation_rubric_page": 19,
+    "integration_task": "PROMPT.md from the user integration kit (private archive, not tracked)"
+  },
+  "overall": "partial; not all acceptance criteria evidenced",
+  "scope": "Repository/code/documentation audit and automated regressions. No new manual UI session, factory accuracy benchmark, clean pip install or real TPU session claimed.",
+  "repository": {
+    "runtime_models_in_lfs": 22,
+    "lfs_fsck": "passed",
+    "tracked_prohibited_paths": [],
+    "local_and_github_head_matched_before_audit": true,
+    "private_runtime_installation": "requires organizer ZIP as explicitly instructed by PROMPT.md",
+    "fresh_checkout_evidence": "docs/linq-integration-verification-20261025.json",
+    "broker_tcp_check": "10.0.114.30:5672 timed out in this audit; VPN unchanged"
+  },
+  "mandatory": [
+    {
+      "requirement": "Приём видеопотока",
+      "status": "local_verified",
+      "evidence": "Непрерывный HTTP MJPEG проверен; RTSP/USB требуют проверки устройства."
+    },
+    {
+      "requirement": "Распознавание нейросетями",
+      "status": "local_verified",
+      "evidence": "YOLO12m + YOLOv8n-pose + RGB ResNet18 + ONNX-детекторы; слабые наблюдения не подтверждают тревоги. Качество новых сценариев отдельно не измерено."
+    },
+    {
+      "requirement": "Оперативные Web-оповещения",
+      "status": "local_verified",
+      "evidence": "Алерт: тип, камера, время; кадр и автоматически записанный клип."
+    },
+    {
+      "requirement": "Подавление повторов",
+      "status": "local_verified",
+      "evidence": "Временные эпизоды и кратковременное связывание ID; есть ограничения окклюзий."
+    },
+    {
+      "requirement": "Журнал и фильтры",
+      "status": "local_verified",
+      "evidence": "Тип, камера, зона, время и статус."
+    },
+    {
+      "requirement": "Инференс на LinQ и замеры",
+      "status": "pending_hardware",
+      "evidence": "my_linq.py, start-linq.cmd, requirements-linq.txt и README: targeted person-YOLO12m через RabbitMQ/PyTask, URI v2. Offline pipeline и ONNX-tail parity прошли. Настоящий startup-probe не получил ответа: брокер недоступен. Замеры TPU и полное видео на TPU остаются неподтверждёнными. docs/linq-integration-verification-20261025.json."
+    }
+  ],
+  "desired": [
+    {
+      "requirement": "Правила и зоны по камере",
+      "status": "local_verified",
+      "evidence": "До 8 полигонов; доступные назначения определяются app/pattern-policy.json. Удалённые пользователем сценарии не включаются новыми настройками."
+    },
+    {
+      "requirement": "Одно нарушение — одно оповещение",
+      "status": "local_verified",
+      "evidence": "Gate с подтверждением и перевзводом после прекращения."
+    },
+    {
+      "requirement": "Статистика типов/камер/часов/дней",
+      "status": "local_verified",
+      "evidence": "Фильтры периода/камеры, типы/камеры/дни/часы, графики и Excel/CSV. Съёмка и обработка различаются явно; время МСК. tests/test_analytics*.py и tests/test_analytics_ui.cjs."
+    },
+    {
+      "requirement": "Проверка оператором для дообучения",
+      "status": "local_verified",
+      "evidence": "Статусы и ZIP с разметкой/доказательствами; автоматического дообучения нет."
+    },
+    {
+      "requirement": "Несколько потоков одновременно",
+      "status": "local_verified",
+      "evidence": "Два непрерывных HTTP-источника испытаны одновременно."
+    }
+  ],
+  "evaluation_rubric": [
+    {
+      "criterion": "Прототип",
+      "assessment": "implemented, locally exercised",
+      "evidence": [
+        "app/server.py",
+        "app/live.py",
+        "app/video.py",
+        "docs/product-ui-validation-20261025.ru.md"
+      ],
+      "limit": "Complete clean Linux installation not exercised in this audit; shared local clone was tested previously."
+    },
+    {
+      "criterion": "Решение основной проблемы",
+      "assessment": "partial industrial evidence",
+      "evidence": [
+        "docs/pattern-audit-summary-20261025.json",
+        "docs/targeted-clothing-audit-20261025.ru.md"
+      ],
+      "limit": "Selected video regressions contain missed industrial falls, cigarettes and missing signal clothing. No blind aggregate industrial P/R/F1."
+    },
+    {
+      "criterion": "Разработка и внедрение",
+      "assessment": "installation documented; capacity and economics pending",
+      "evidence": [
+        "README.md",
+        "scripts/server_preflight.py",
+        "docs/linq-site-integration.ru.md"
+      ],
+      "limit": "Only two simultaneous local feeds verified. No 5+ camera capacity experiment, TPU timing report, deployment TCO or payback calculation."
+    },
+    {
+      "criterion": "Новаторские идеи",
+      "assessment": "implemented product features; comparative novelty not established",
+      "evidence": [
+        "app/clip_groups.py",
+        "app/clip_metadata.py",
+        "app/analytics.py",
+        "app/analytics_export.py"
+      ],
+      "limit": "Clip context, grouped evidence and analytics are product differentiators; an industry-wide uniqueness claim is unsupported."
+    },
+    {
+      "criterion": "UI/UX",
+      "assessment": "automated regressions and earlier UI evidence available",
+      "evidence": [
+        "docs/product-ui-validation-20261025.ru.md",
+        "tests/test_live_layout.cjs",
+        "tests/test_analytics_ui.cjs"
+      ],
+      "limit": "No new button-click UI run in this audit; no systematic external usability study."
+    },
+    {
+      "criterion": "Второстепенные проблемы",
+      "assessment": "implemented and tested logic",
+      "evidence": [
+        "tests/test_temporal_state.py",
+        "tests/test_clip_groups.py",
+        "tests/test_multicamera_live.py",
+        "tests/test_access.py",
+        "tests/test_workspace_access.cjs"
+      ],
+      "limit": "ID reassignment and occlusion remain accuracy risks; two feeds do not establish factory-wide capacity."
+    },
+    {
+      "criterion": "Аналитика",
+      "assessment": "dashboard implemented; research evidence incomplete",
+      "evidence": [
+        "app/analytics.py",
+        "app/analytics_export.py",
+        "tests/test_analytics.py",
+        "tests/test_analytics_export.py",
+        "docs/access-control.ru.md"
+      ],
+      "limit": "Rubric covers audience, user experience and comparable services as well as product analytics. Formal audience research, competitor comparison and measured deployment benefit are not established."
+    }
+  ],
+  "scenario_selection": "Слайд 13 разрешает выбор приоритетных сценариев. Все восемь примеров не являются обязательным единым перечнем.",
+  "quality": {
+    "target": ">0.95 Precision, Recall and F1",
+    "actual": 0.9,
+    "met": false,
+    "scope": "Цель пользователя; численный порог >0.95 не указан на слайде 13.",
+    "actual_scope": "Исторический URFD event F1/P/R прежнего конвейера; не качество всех текущих моделей на заводах.",
+    "current_pipeline_independent_quality": "not_measured"
+  },
+  "blockers": [
+    "Receive a real matched TPU worker response, complete an actual video analysis with LinQ, and save measured latency/throughput and program/version evidence.",
+    "Evaluate the selected active patterns on grouped held-out factory recordings, including small people, reflections and reflective uniforms; document missed events and false alerts.",
+    "Measure intended camera count and end-to-end alert delay on target host/TPU; current local limit is two live streams."
+  ],
+  "improvements_for_judging": [
+    "Document deployment assumptions/costs and expected effect without inventing savings.",
+    "Add a concise audience/alternative solutions comparison backed by sources or tests."
+  ],
+  "fixes_during_audit": [
+    "Removed hardcoded false LinQ status from /api/scenarios; health and scenario catalog now use actual adapter status.",
+    "Synchronized coverage matrix with selected/removed patterns, targeted remote adapter and current evidence.",
+    "Clarified that >0.95 is a user goal and historical URFD 0.90 is not current industrial accuracy.",
+    "Removed obsolete duplicate/installation statements in README and updated demo caveats."
+  ],
+  "test_runs": {
+    "javascript": {
+      "passed": 110,
+      "failed": 0,
+      "log_local": "data/cache/criteria-ui-tests-20261025.log"
+    },
+    "python_full": {
+      "passed": 331,
+      "failed": 0,
+      "seconds": 82.18,
+      "warnings": 1,
+      "log_local": "data/cache/criteria-python-tests-20261025.log"
+    }
+  }
+}

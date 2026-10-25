@@ -144,3 +144,18 @@ def test_private_organizer_package_round_trip_when_locally_available():
     data,_,worker=wire.deserialize(wire.serialize(wire.PyTask({'images':tensor})))
     np.testing.assert_array_equal(data['images'],tensor)
     assert worker['status_code']==0
+
+
+@pytest.mark.parametrize('configured,verified', [(True,True),(True,False),(False,True)])
+def test_health_and_scenario_catalog_agree_about_actual_adapter_status(monkeypatch,configured,verified):
+    from app import inference,server
+    import torch
+    # This checks the transport status contract independently of GPU discovery.
+    monkeypatch.setattr(torch.cuda,'is_available',lambda:False)
+    if configured:monkeypatch.setenv('LINQ_ADAPTER','test_plugin:create_backend')
+    else:monkeypatch.delenv('LINQ_ADAPTER',raising=False)
+    monkeypatch.setattr(inference,'adapter_status',lambda:{'verified':verified,'last_reply_at':'fixture'})
+    health,catalog=server.health(),server.scenarios()
+    assert health['linq_verified']==catalog['linq_verified']==(configured and verified)
+    assert health['linq_status']==catalog['linq_status']
+    assert ('remote person head' in catalog['runtime'])==configured

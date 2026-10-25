@@ -262,7 +262,13 @@ def scenarios():
         if flag+'_detection' not in policy['enabled_flags']:continue
         names=required_models(RunConfig(**{flag+'_detection':True}))
         rows.append({'flag':flag+'_detection','models':names,'ready':all((db.DATA/'models'/n).exists() for n in names),'quality':'not_measured'})
-    return {'scenarios':rows,'runtime':'ONNX Runtime CPU; pose/fall use PyTorch','linq_verified':False,'policy_version':policy['version']}
+    from .inference import adapter_status
+    remote=bool(os.getenv('LINQ_ADAPTER'))
+    linq=adapter_status() if remote else {'verified':False}
+    runtime=('LinQ adapter: remote person head; host ONNX pose/scenarios/fall' if remote else
+             'PyTorch person/pose/fall; ONNX scenarios (provider selected at runtime)')
+    return {'scenarios':rows,'runtime':runtime,'linq_verified':bool(linq.get('verified')),
+            'linq_status':linq,'policy_version':policy['version']}
 
 
 @app.get('/api/patterns')
