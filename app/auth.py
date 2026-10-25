@@ -471,7 +471,7 @@ def audit_target_context(conn,row):
 def endpoint_permission(path,method):
     if path.startswith('/media/'):return 'evidence.read'
     if path in ('/api/health','/api/quality','/api/scenarios','/api/defaults','/api/samples'):return None
-    if path=='/api/summary':return 'analytics.read'
+    if path in ('/api/summary','/api/analytics/export'):return 'analytics.read'
     if path in ('/api/export','/api/review-dataset') or path.endswith('/report'):return 'export'
     if path=='/api/cameras':return 'rules.manage' if method!='GET' else 'jobs.read'
     if path.startswith('/api/live'):

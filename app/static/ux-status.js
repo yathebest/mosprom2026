@@ -1,16 +1,32 @@
-// Shared display formatting. UTC stays in storage; people see their local time.
+// Shared display formatting. UTC stays in storage; the interface uses Moscow time.
 (function(root){
   'use strict';
   const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const language=()=>root.document?.documentElement?.lang==='en'?'en':'ru';
   const translate=ru=>root.LinQI18n?.t?.(ru)||ru;
   const locale=()=>language()==='en'?'en-GB':'ru-RU';
+  const timeZone='Europe/Moscow';
+  const timeZoneLabel=()=>language()==='en'?'MSK · UTC+3':'МСК · UTC+3';
+  function parsedDate(value){
+    if(value===null||value===undefined||value==='')return null;
+    const date=new Date(value);return Number.isFinite(date.getTime())?date:null;
+  }
   function dateTime(value,options={}){
-    if(value===null||value===undefined||value==='')return translate('Время не указано');
-    const date=new Date(value);
-    if(!Number.isFinite(date.getTime()))return translate('Время не указано');
-    return new Intl.DateTimeFormat(options.locale||locale(),{day:'2-digit',month:'2-digit',year:'numeric',
-      hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short',...options}).format(date);
+    const date=parsedDate(value);if(!date)return translate('Время не указано');
+    const {locale:chosenLocale,...rest}=options;
+    const valueText=new Intl.DateTimeFormat(chosenLocale||locale(),{day:'2-digit',month:'2-digit',year:'numeric',
+      hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23',timeZone,...rest}).format(date);
+    return `${valueText} ${!rest.timeZone||rest.timeZone===timeZone?timeZoneLabel():rest.timeZone}`;
+  }
+  function clock(value){const date=parsedDate(value);return date?`${new Intl.DateTimeFormat(locale(),{hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23',timeZone}).format(date)} ${timeZoneLabel()}`:translate('Время не указано')}
+  function dateKey(value){const date=parsedDate(value);return date?new Intl.DateTimeFormat('sv-SE',{year:'numeric',month:'2-digit',day:'2-digit',timeZone}).format(date):''}
+  function inputDateTime(value){const date=parsedDate(value);return date?`${dateKey(date)}T${new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZone}).format(date)}`:''}
+  function fromInputDateTime(value){if(!/^\d{4}-\d\d-\d\dT\d\d:\d\d(?::\d\d)?$/.test(value||''))return null;const date=parsedDate(value+'+03:00');return date?date.toISOString():null}
+  function duration(value){
+    if(value===null||value===undefined||value===''||!Number.isFinite(Number(value))||Number(value)<0)return '—';
+    const total=Math.round(Number(value)),days=Math.floor(total/86400),hours=Math.floor(total%86400/3600),minutes=Math.floor(total%3600/60),seconds=total%60;
+    const units=language()==='en'?['d','h','min','s']:['д','ч','мин','с'];
+    return [[days,units[0]],[hours,units[1]],[minutes,units[2]],[seconds,units[3]]].filter(([n],i)=>n||i===3&&!(days||hours||minutes)).map(([n,unit])=>`${n} ${unit}`).join(' ');
   }
   function time(value){
     const date=new Date(value);
@@ -47,7 +63,7 @@
     const target=parts[0]?.startsWith('<div class="audit-target"')?parts.shift():'';
     return target+(parts.length?`<dl class="audit-details">${parts.join('')}</dl>`:'');
   }
-  const UiFormat={dateTime,time,auditDetails,locale};root.UiFormat=UiFormat;
+  const UiFormat={dateTime,time,auditDetails,locale,clock,dateKey,duration,timeZone,timeZoneLabel,inputDateTime,fromInputDateTime};root.UiFormat=UiFormat;
   if(typeof module!=='undefined'&&module.exports)module.exports=UiFormat;
   if(!root.document)return;
 

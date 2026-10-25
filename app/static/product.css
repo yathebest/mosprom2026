@@ -1,0 +1,67 @@
+/* Three primary destinations; secondary functions keep their original controls. */
+.mode-switch{display:none!important}
+aside nav{display:block;overflow:visible}
+.product-primary-nav{display:grid;gap:7px}
+.product-primary-nav>button{width:100%;font-size:15px;min-height:45px}
+.product-tools{margin-top:22px;padding-top:15px;border-color:#49655f}
+.product-tools>summary{font-size:13px;color:#d9e7dd;padding:8px 3px}
+.product-tools[open]>summary{margin-bottom:8px}
+.product-tools-content{display:grid;gap:4px}
+.product-tools-content button{font-size:13px;min-height:37px}
+.product-tools.has-current-page>summary{color:#e2f2b4}
+.event-navigation{display:flex;gap:8px;margin:0 0 23px;flex-wrap:wrap}
+.event-navigation button{border:1px solid #ced9cc;border-radius:8px;padding:10px 16px;color:#325347;background:white;font-size:14px;min-height:42px}
+.event-navigation button.on{background:#173f3e;color:white;border-color:#173f3e}
+.event-navigation button i{margin-right:8px;font-style:normal}
+.product-record-action{font-size:13px}
+.primary-ppe-choice{margin:14px 0}
+.experimental-scenarios{padding:14px 16px;background:#f7f8f5;border:1px solid #dce2d7;border-radius:10px;margin-top:18px}
+.experimental-scenarios>summary{color:#56635b;font-size:14px;font-weight:600;line-height:1.5}
+.experimental-scenarios .hint{margin:13px 0}
+.experimental-scenarios .extra-scenario-grid{margin-top:12px}
+.scenario-extension>.between,.scenario-extension>.hint{display:none}
+.scenarios .primary-ppe-choice{margin:0}
+.scenarios .core-helmet{background:#f7faf2}
+.scenario-extension{margin-top:12px}
+.core-helmet strong,.core-helmet b{font-size:15px}
+.scenario-extension .extra-scenario small{line-height:1.55}
+.product-primary-nav #new-badge{margin-left:auto}
+.side-note{margin-top:22px}
+.camera-diagnostics{margin:0 16px 12px;padding-top:10px}.camera-diagnostics>summary{font-size:13px;color:#4d655b;line-height:1.5}.camera-diagnostics .live-metrics{display:grid;gap:6px;padding:10px 0 0;font-size:12px;line-height:1.5}
+@media(max-width:850px){
+ body.authenticated>aside{display:grid;grid-template-columns:1fr auto;gap:8px 12px;padding:12px 16px 10px}
+ aside .brand{font-size:23px;margin:0;line-height:1.15}
+ aside .brand small{font-size:10px;margin-top:4px}
+ aside .mark{display:none}
+ aside>.language-control{grid-column:2;grid-row:1;margin:0;align-self:start}
+ aside>.language-control label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+ aside>.language-control select{width:80px;min-height:34px;font-size:12px;padding:5px 7px}
+ aside .workspace-panel{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:0;padding:5px 0;border:0;min-height:25px}
+ aside .workspace-panel small{display:none}
+ aside .workspace-panel strong{font-size:12px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%}
+ aside .workspace-panel button{font-size:11px;min-height:25px;padding:3px 7px;margin:0 0 0 auto}
+ aside>nav{grid-column:1/-1;margin:0;padding:0;display:block}
+ .product-primary-nav{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ aside .product-primary-nav>button{min-height:40px;font-size:13px;padding:8px 9px;display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+ .product-primary-nav button i{font-size:15px;width:auto}
+ .product-primary-nav #new-badge{margin-left:0;font-size:10px}
+ .product-tools{margin-top:4px;padding-top:0;border:0}
+ .product-tools>summary{font-size:12px;min-height:26px;padding:4px 2px}
+ .product-tools[open]{padding-bottom:9px}
+ .product-tools-content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+ aside .product-tools-content button{white-space:normal;font-size:12px;min-height:35px;line-height:1.4;padding:7px 8px}
+ aside>.nav-caption,aside>.side-note,aside>.account-chip{display:none}
+ main>header{height:44px;font-size:10px;gap:8px}
+ main>header>span{min-width:0;font-size:10px;max-width:70%;line-height:1.4}
+ main>header .breadcrumb-home{display:none}
+ main>header b{display:none}
+ main>header .product-record-action{font-size:11px;padding:5px 0;min-height:30px}
+ .event-navigation{margin:2px 0 18px;gap:6px}
+ .event-navigation button{flex:1;min-width:0;font-size:12px;padding:8px;min-height:37px}
+ .event-navigation button i{display:none}
+ .heading{margin:18px 0 20px}
+ .heading h1{font-size:26px;line-height:1.2}
+ .heading .eyebrow{font-size:10px;margin-bottom:8px}
+ .heading .lede{font-size:13px;line-height:1.55;margin-top:9px}
+ .primary-ppe-choice{margin:8px 0}
+}

@@ -23,6 +23,7 @@ from .streams import open_capture
 from .video import MODEL,draw,ffmpeg_path,state_snapshot,finish_rules,persist_episode_updates
 from .scenarios import ScenarioRules,base_config,annotate_objects,assessment_rows
 from .preview_motion import PreviewMotion
+from .access import current_scope
 
 SESSIONS={}
 LOCK=threading.Lock()
@@ -31,6 +32,8 @@ PRE_SECONDS=3.
 POST_SECONDS=4.
 SAMPLE_FPS=10.
 DISPLAY_FPS=25.
+MAX_LIVE_SESSIONS=2
+ACTIVE_STATES=('starting','running','stopping')
 
 
 def latest_only(target,item):
@@ -64,6 +67,7 @@ class LiveSession:
     def __init__(self,config,source_type,url=None):
         cv2.setNumThreads(1)
         self.id=uuid.uuid4().hex;self.config=config;self.source_type=source_type;self.url=url
+        scope=current_scope.get();self.organization_id=scope.organization_id if scope else 'legacy'
         self.folder=db.DATA/'runs'/self.id;self.folder.mkdir(parents=True)
         (self.folder/'clips').mkdir()
         self.stop_event=threading.Event();self.frames=queue.Queue(maxsize=1)
@@ -99,20 +103,28 @@ class LiveSession:
         return self
 
     def ingest(self,frame,encoded=None):
-        if self.stop_event.is_set():return
-        captured=time.monotonic();self.last_ingest=captured
+        if self.stop_event.is_set():return False
+        captured=time.monotonic()
         # Original pixels go to inference. Only the display copy is resized.
         with self.frame_lock:
+            if self.stop_event.is_set() or self.state not in ('starting','running'):return False
+            self.last_ingest=captured
             if self.first_mono is None:
                 self.first_mono=captured;self.frame_origin=datetime.now(timezone.utc)
                 self.shape=frame.shape
             elif frame.shape!=self.shape:
-                self.error='Источник изменил разрешение. Запустите новый эфир.';self.stop_event.set();return
+                self.error='Источник изменил разрешение. Запустите новый эфир.';self.stop_event.set();return False
             self.elapsed=captured-self.first_mono
             self.capture_times.append(captured);self.capture_count+=1
         self.dropped+=latest_only(self.frames,(captured,frame))
         latest_only(self.display_frames,(captured,frame))
         latest_only(self.record_frames,(captured,frame,encoded))
+        return True
+
+    def stop(self):
+        with self.frame_lock:
+            if self.state in ('starting','running'):self.state='stopping'
+            self.stop_event.set()
 
     def encode_recording(self):
         """Full-resolution evidence encoding never delays the live preview."""
@@ -259,6 +271,7 @@ class LiveSession:
             if cap is not None:cap.release()
 
     def report(self):
+        current=time.monotonic()
         with self.frame_lock:
             states={tid:dict(rows) for tid,rows in self.people_states.items()}
             for tid,rows in self.scenario_states.items():states.setdefault(tid,{}).update(rows)
@@ -276,6 +289,10 @@ class LiveSession:
                 'captured_frames':self.capture_count,'displayed_frames':self.display_count,'scenario_frames':self.scenario_count,
                 'analysis_age_ms':self.analysis_age_ms,'scenario_age_ms':self.scenario_age_ms,
                 'preview_age_ms':self.preview_age_ms,
+                'capture_age_ms':round(max(0,current-self.last_ingest)*1000,1) if self.capture_count else None,
+                'preview_frame_age_ms':round(max(0,current-self.display_times[-1])*1000,1) if self.display_times else None,
+                'preview_version':self.version,'snapshot_url':f'/api/live/{self.id}/snapshot',
+                'max_live_sessions':MAX_LIVE_SESSIONS,
                 'render_p95_ms':round(float(np.percentile(self.render_latencies,95)),2) if self.render_latencies else None,
                 'jpeg_p95_ms':round(float(np.percentile(self.jpeg_latencies,95)),2) if self.jpeg_latencies else None,
                 'inference_pipeline':self.pipeline_mode,
@@ -454,10 +471,23 @@ class LiveSession:
 
 def create(config,source_type,url):
     with LOCK:
-        if sum(s.state in ('starting','running','stopping') for s in SESSIONS.values())>=2:
-            raise ValueError('Максимум 2 прямых эфира одновременно')
+        scope=current_scope.get();organization_id=scope.organization_id if scope else 'legacy'
+        camera=config.camera.strip()
+        if scope and scope.cameras is not None and camera not in scope.cameras:
+            raise PermissionError('Эта камера не назначена вашему аккаунту')
+        if not camera:raise ValueError('Укажите название камеры')
+        config=config.model_copy(update={'camera':camera})
+        active=[s for s in SESSIONS.values() if s.state in ACTIVE_STATES]
+        if any(s.organization_id==organization_id and s.config.camera.casefold()==camera.casefold() for s in active):
+            raise ValueError('Эта камера уже в эфире. Откройте существующую карточку камеры.')
+        if source_type=='network' and any(s.organization_id==organization_id and s.url==url for s in active):
+            raise ValueError('Этот источник уже подключён. Откройте существующую карточку камеры.')
+        if len(active)>=MAX_LIVE_SESSIONS:
+            raise ValueError('Локальный стенд поддерживает до 2 одновременных эфиров из-за ресурсов оборудования. Сначала остановите один эфир.')
         for old in list(SESSIONS):
             if len(SESSIONS)<10:break
             if SESSIONS[old].state in ('stopped','failed'):del SESSIONS[old]
         session=LiveSession(config,source_type,url);SESSIONS[session.id]=session
-        return session.start()
+        try:return session.start()
+        except BaseException:
+            SESSIONS.pop(session.id,None);session.stop();raise

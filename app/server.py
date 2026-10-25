@@ -44,6 +44,8 @@ async def lifespan(app):
 
 app = FastAPI(title="LinQ Safety",version="0.3.0",lifespan=lifespan)
 auth.install(app)
+from . import analytics_export
+app.include_router(analytics_export.router)
 app.mount("/static",StaticFiles(directory=Path(__file__).parent/"static"),name="static")
 
 
@@ -106,16 +108,29 @@ class LiveRequest(BaseModel):
 def start_live(body: LiveRequest):
     validate_scenarios(body.config)
     try:return live.create(body.config,body.source_type,body.url).report()
+    except PermissionError as exc:raise HTTPException(403,str(exc)) from None
     except ValueError as exc:raise HTTPException(409,str(exc)) from None
 
 
 @app.get('/api/live')
 def list_live():
-    with live.LOCK:return [s.report() for s in live.SESSIONS.values() if db.job(s.id)]
+    with live.LOCK:sessions=list(live.SESSIONS.values())
+    return [s.report() for s in sessions if db.job(s.id)]
+
+
+@app.get('/api/live-events')
+def live_events():
+    from .access import sql_scope
+    clause,args=sql_scope('jobs','events.camera')
+    with db.connection() as connection:
+        rows=connection.execute("SELECT events.* FROM events JOIN jobs ON jobs.id=events.job_id "
+            "WHERE json_extract(jobs.meta,'$.live')=1"+clause+
+            " ORDER BY events.created DESC,events.rowid DESC LIMIT 100",args).fetchall()
+    return [db.decode(row) for row in rows]
 
 
 def get_live(session_id):
-    session=live.SESSIONS.get(session_id)
+    with live.LOCK:session=live.SESSIONS.get(session_id)
     if not session or not db.job(session_id):raise HTTPException(404,'Сеанс не найден')
     return session
 
@@ -127,7 +142,7 @@ def live_status(session_id: str):
 
 @app.post('/api/live/{session_id}/stop')
 def stop_live(session_id: str):
-    session=get_live(session_id);session.stop_event.set()
+    session=get_live(session_id);session.stop()
     return {'ok':True}
 
 
@@ -145,8 +160,16 @@ async def live_frame(session_id: str,request: Request):
     frame=await asyncio.to_thread(cv2.imdecode,np.frombuffer(content,np.uint8),cv2.IMREAD_COLOR)
     if frame is None or frame.shape[0]*frame.shape[1]>4096*2160:
         raise HTTPException(400,'Нужен JPEG-кадр не более 4K')
-    session.ingest(frame,encoded=content)
+    if session.ingest(frame,encoded=content) is False:raise HTTPException(409,'Эфир уже остановлен')
     return {'accepted':True}
+
+
+@app.get('/api/live/{session_id}/snapshot')
+def live_snapshot(session_id: str):
+    session=get_live(session_id)
+    jpeg=session.jpeg
+    if not jpeg:raise HTTPException(404,'Кадр ещё не получен')
+    return Response(jpeg,media_type='image/jpeg',headers={'Cache-Control':'no-store'})
 
 
 @app.get('/api/live/{session_id}/view')
@@ -243,24 +266,38 @@ def defaults():
     return result
 
 
+from fastapi import Query
+
+
 @app.get("/api/summary")
-def summary():
+def summary(request: Request, days: Literal['7','30','all']='7', camera: str='',
+            time_basis: Literal['processing','recording']='processing',
+            include_experimental: bool=False, include_examples: bool=False,
+            date_from: str | None=Query(None,alias='from'), date_to: str | None=Query(None,alias='to')):
+    from . import analytics
+    if len(camera)>200:raise HTTPException(422,'Название камеры слишком длинное')
     records=db.events();runs=db.jobs()
+    try:
+        operational=analytics.build_analytics(days=None if days=='all' else int(days),camera=camera,time_basis=time_basis,
+            include_experimental=include_experimental,include_examples=include_examples,date_from=date_from,date_to=date_to,
+            allow_events='events.read' in request.state.user['permissions'])
+    except ValueError as exc:raise HTTPException(422,str(exc)) from None
     types={};cameras={};days={};hours={}
     for event in records:
         types[event['kind']]=types.get(event['kind'],0)+1
         cameras[event['camera']]=cameras.get(event['camera'],0)+1
         day=event['created'][:10];days[day]=days.get(day,0)+1
-        occurred=event['payload'].get('occurred_at')
+        occurred=(event['payload'] or {}).get('occurred_at')
         if occurred:
             hour=occurred[11:13]+':00';hours[hour]=hours.get(hour,0)+1
     return {"events":len(records),"new":sum(e['status']=='new' for e in records),
             "confirmed":sum(e['status']=='confirmed' for e in records),
             "false":sum(e['status']=='false' for e in records),
             "by_type":types,"by_camera":cameras,"by_processing_day":days,"by_recorded_hour":dict(sorted(hours.items())),
-            "without_recorded_time":sum(not e['payload'].get('occurred_at') for e in records),
+            "without_recorded_time":sum(not (e['payload'] or {}).get('occurred_at') for e in records),
             "running":sum(j['status'] in ('running','exporting') for j in runs),"queued":sum(j['status']=='queued' for j in runs),
-            "max_parallel":MAX_PARALLEL}
+            "max_parallel":MAX_PARALLEL,
+            "analytics":operational}
 
 
 @app.get('/api/triage')

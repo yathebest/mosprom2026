@@ -174,6 +174,27 @@
  Object.assign(entries,{'ID без свежего замера':'IDs without a fresh measurement','Признак нарушения в зоне снят':'Zone violation evidence cleared','Накопление подтверждения':'Collecting confirmation','Нет подтверждённого состояния':'No confirmed state yet','Последнее подтверждение':'Last confirmation','Подтверждение':'Confirmation','Подтверждено правилом':'Confirmed by the rule','Замер':'Measurement','Каска отсутствует':'Hard hat missing','Жилет отсутствует':'Vest missing','Защита лица отсутствует':'Face protection missing','Привязь отсутствует':'Harness missing','Привязь обнаружена':'Harness detected','Окно':'Window','Свежих наблюдений':'Fresh observations','Нет свежего замера':'No fresh measurement','Замер показывает находку на кадре. Подтверждение относится к временному правилу; проверка оператором выполняется отдельно.':'A measurement shows frame evidence. Confirmation belongs to the temporal rule; operator review is separate.','Измерения появятся после запуска':'Measurements will appear after starting','Другой эфир продолжает работать. Настройте новый источник.':'Another stream is still running. Set up a new source.','Настройте новый источник и начните эфир.':'Set up a new source and start the stream.'});
  Object.assign(entries,{'Сигнальная одежда':'Signal clothing','Проверка сигнальной одежды':'Signal clothing check','Допускаются сигнальный жилет и форма со светоотражающими полосами. Невидимая одежда — «не определено».':'A signal vest or work uniform with reflective bands is accepted. Unobservable clothing remains unknown.','Жилет не найден, но отражающая форма не проверена. Отсутствие сигнальной одежды не подтверждено.':'A separate vest was not found, but reflective workwear was not assessed. Missing signal clothing is not confirmed.','Нужна проверка отражающей формы':'Reflective workwear needs assessment'});
  Object.assign(entries,{'Оператор отклонил событие':'Operator rejected the event','Последний признак правила':'Latest rule observation','Нужна проверка оператором':'Needs operator review','Подтверждено оператором':'Confirmed by an operator','Проверка оператором':'Operator review','Результат проверки оператором':'Operator review result'});
+ Object.assign(entries,{
+  'Камеры':'Cameras','Клипы':'Clips','Управление и справка':'Management and help','Разделы событий':'Event sections','Камеры оператора':'Operator cameras','Добавить запись ＋':'Add recording ＋',
+  'Наблюдайте за участком. Откройте тревогу, чтобы проверить кадр и видео.':'Monitor the work area. Open an alert to review the frame and video.',
+  'Возможное падение / человек на полу':'Possible fall / person on the floor','Опасные зоны':'Restricted zones',
+  'Человек вошёл в отмеченную область. Задайте её на кадре камеры.':'A person entered a marked area. Define it on the camera frame.',
+  'Событие подтверждается во времени · решение за оператором':'Evidence is confirmed over time · the operator decides',
+  'Экспериментальные сценарии':'Experimental scenarios','Настройки анализа и чувствительности':'Analysis and sensitivity settings',
+  'Для исследования и проверки на ваших записях. Независимое качество этих сценариев на заводских камерах не подтверждено. Они выключены по умолчанию.':'For research and evaluation on your recordings. Independent performance on factory cameras has not been established. These scenarios are off by default.',
+  'Сигнальная одежда: новая модель пока не принята в эксплуатацию. Отсутствие жилета не доказывает отсутствие светоотражающей рабочей формы.':'Signal clothing: the new model has not been approved for deployment. A missing vest does not establish a missing reflective uniform.',
+  'Местное время':'Moscow time · UTC+3','Открыть камеру →':'Open camera →',
+  'Начало записи, МСК (необязательно)':'Recording start, MSK (optional)'
+ });
+ Object.assign(entries,{
+  'Кадр ещё не получен':'No frame received yet','Камеры оператора':'Operator cameras','Включить звук тревог':'Enable alert sound','Звук тревог включён':'Alert sound enabled',
+  'До 2 одновременных эфиров на локальном стенде: предел связан с ресурсами оборудования. Просмотр карточки не запускает новый анализ.':'Up to 2 simultaneous streams on this local setup, limited by available hardware. Viewing a card does not start another analysis.',
+  'Нет доступных эфиров. Администратор подключает камеры, оператор наблюдает назначенные источники.':'No streams available. An administrator connects cameras; the operator monitors assigned sources.',
+  'Выбор камеры меняет только просмотр. Остальные эфиры продолжают работать.':'Selecting a camera changes the view only. Other streams keep running.',
+  'Только просмотр разрешённых камер. Подключение и остановка доступны администратору.':'View assigned cameras only. An administrator can connect and stop streams.',
+  'Последний кадр камеры':'Latest camera frame','Открыть камеру':'Open camera','Остановить эту камеру':'Stop this camera'
+ });
+ Object.assign(entries,{'Тревоги камер':'Camera alerts','История событий →':'Event history →','В работающих камерах тревог пока нет':'No alerts from running cameras yet','Прошлые происшествия доступны в истории событий.':'Past incidents are available in the event history.','Диагностика камеры':'Camera diagnostics'});
  if(root.LinQI18n)Object.assign(root.LinQI18n.translations,entries);
  if(typeof module!=='undefined'&&module.exports)module.exports=entries;
 })(typeof globalThis!=='undefined'?globalThis:this);
