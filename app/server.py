@@ -37,6 +37,9 @@ LOCK = threading.Lock()
 async def lifespan(app):
     db.init()
     auth.init()
+    if os.getenv('LINQ_ADAPTER'):
+        from .inference import probe_adapter
+        await asyncio.to_thread(probe_adapter)
     yield
     for event in list(video.CANCEL.values()):
         event.set()
@@ -58,10 +61,12 @@ def index():
 @app.get("/api/health")
 def health():
     import torch
+    from .inference import adapter_status
     cuda = torch.cuda.is_available()
+    linq=adapter_status() if os.getenv('LINQ_ADAPTER') else {'verified':False}
     return {"ok":True,"model_ready":video.MODEL.exists(),"backend":"LinQ adapter" if os.getenv("LINQ_ADAPTER") else "PyTorch",
             "device":torch.cuda.get_device_name(0) if cuda else "CPU","cuda":cuda,
-            "linq_verified":False,"version":"0.3.0","max_parallel":MAX_PARALLEL,
+            "linq_verified":bool(linq.get('verified')),"linq_status":linq,"version":"0.3.0","max_parallel":MAX_PARALLEL,
             "fall_model_ready":(db.DATA/'models/fall-resnet18.pt').exists(),
             "trained_models":{name:(db.DATA/'models'/name).exists() for name in (
                 'person-yolo12m.pt','ppe-head.onnx','ppe-vest.onnx',

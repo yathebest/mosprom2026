@@ -62,3 +62,16 @@ def test_extracted_verifier_detects_same_size_tampering_and_path_escape(tmp_path
     manifest['files']=[{**row,'path':'../outside.py'}]
     (tmp_path/'SERVER_MANIFEST.json').write_text(json.dumps(manifest))
     assert 'outside package' in verifier.verify(tmp_path)[1][0]
+
+
+def test_private_linq_runtime_is_explicit_opt_in_and_requires_complete_kit(tmp_path,monkeypatch):
+    builder=fake_source(tmp_path,monkeypatch)
+    with pytest.raises(FileNotFoundError,match='LinQ kit component'):builder.sources(True)
+    for name in ['__init__.py','_io.py','headers.py','message.proto','message_pb2.py']:
+        target=tmp_path/'tpu_pycloud_format'/name;target.parent.mkdir(exist_ok=True);target.write_text('fixture')
+    program=tmp_path/'data/linq/person-yolo12m/person-yolo12m-head-b1-o1-h1m.tpu'
+    program.parent.mkdir(parents=True);program.write_bytes(b'compiled-test')
+    assert not any(name.startswith('tpu_pycloud_format/') for name,_ in builder.sources())
+    included={name for name,_ in builder.sources(True)}
+    assert 'tpu_pycloud_format/message_pb2.py' in included
+    assert program.relative_to(tmp_path).as_posix() in included

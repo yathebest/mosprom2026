@@ -331,6 +331,23 @@ def suppress_duplicates(people,threshold=.45):
     return output
 
 
+def adapter_module():
+    configured=os.getenv('LINQ_ADAPTER','')
+    return importlib.import_module(configured.split(':',1)[0]) if configured else None
+
+
+def adapter_status():
+    module=adapter_module()
+    status=getattr(module,'get_status',None) if module else None
+    return status() if callable(status) else {'verified':False}
+
+
+def probe_adapter():
+    module=adapter_module()
+    probe=getattr(module,'startup_probe',None) if module else None
+    if callable(probe):return probe()
+
+
 def create_backend(model,confidence,fall_detection=False,config=None):
     adapter = os.getenv("LINQ_ADAPTER","")
     if adapter:

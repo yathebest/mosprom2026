@@ -87,12 +87,16 @@ MODEL_INVENTORY.json разделяет рабочие модели, альте�
 '''
 
 
-def sources():
+def sources(include_linq_runtime=False):
     # Include new application modules/assets without staging the shared tree.
     # --exclude-standard omits ignored caches/local files from untracked input.
     raw = subprocess.check_output(['git','ls-files','-z','--cached','--others','--exclude-standard','--','app'], cwd=ROOT)
     paths = {ROOT/name for name in raw.decode('utf-8').split('\0') if name}
-    for name in ['requirements.txt','requirements-server.txt','scripts/create_admin.py','scripts/verify_server_bundle.py',
+    for name in ['requirements.txt','requirements-server.txt','requirements-linq.txt','my_linq.py','start-linq.cmd',
+                 'scripts/repro_linq_adapter.py','scripts/verify_linq_decode.py','scripts/install_linq_runtime.py',
+                 'notebooks/stand-linq-check.ipynb',
+                 'docs/linq-site-integration.ru.md','scripts/create_admin.py','scripts/verify_server_bundle.py',
+                 'docs/linq-integration-verification-20261025.json',
                  'scripts/server_preflight.py','scripts/check_linq_compatibility.py',
                  'scripts/backfill_clip_metadata.py','scripts/coalesce_legacy_clips.py',
                  'scripts/build_server_bundle.py']:
@@ -114,6 +118,13 @@ def sources():
         if p.exists(): paths.add(p)
     for name in ['data/datasets/factory-expansion/test/6_te9.mp4','data/datasets/factory-cctv/ПРОЧИТАЙ МЕНЯ.txt']:
         if (ROOT/name).exists(): paths.add(ROOT/name)
+    if include_linq_runtime:
+        names=['tpu_pycloud_format/'+name for name in
+               ['__init__.py','_io.py','headers.py','message.proto','message_pb2.py']]
+        names.append('data/linq/person-yolo12m/person-yolo12m-head-b1-o1-h1m.tpu')
+        for name in names:
+            if not (ROOT/name).is_file():raise FileNotFoundError('LinQ kit component missing: '+name)
+            paths.add(ROOT/name)
     result=[]
     for path in sorted(paths):
         relative=path.relative_to(ROOT).as_posix()
@@ -147,7 +158,8 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--plan',action='store_true')
-    args=parser.parse_args();files=sources();models=inventory(files)
+    parser.add_argument('--with-linq',action='store_true',help='Include private organizer runtime and trained TPU backup for internal transfer')
+    args=parser.parse_args();files=sources(args.with_linq);models=inventory(files)
     summary={'files':len(files),'model_files':sum(Path(name).suffix in {'.pt','.onnx'} for name,_ in files if name.startswith('data/models/')),
              'uncompressed_bytes':sum(p.stat().st_size for _,p in files)}
     if args.plan: print(json.dumps(summary));return
@@ -158,8 +170,25 @@ def main():
               'git_revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
               'dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
               'application_source':'tracked and nonignored untracked app files from the current worktree; exact bytes fixed by file SHA256',
-              'model_files':summary['model_files'],'files':[]}
-    generated={'README_SERVER.txt':README.encode('utf-8'),
+              'model_files':summary['model_files'],'linq_runtime_included':args.with_linq,'files':[]}
+    linq_note='''
+ДОПОЛНЕНИЕ: УДАЛЁННЫЙ ГИБРИДНЫЙ LINQ
+Добавлен my_linq.py и requirements-linq.txt. Для удалённого режима нужны
+доступ к брокеру организаторов и приватный tpu_pycloud_format рядом с адаптером.
+Установка: python -m pip install -r requirements-linq.txt
+Windows: start-linq.cmd. Linux:
+  export LINQ_ADAPTER=my_linq:create_backend
+  export LINQ_LOGIN=hackathon74291
+  export LINQ_PROGRAM=person-yolo12m-head-b1-o1-h1m.tpu
+  python -m uvicorn app.server:app --host 127.0.0.1 --port 8765
+Сервис проверяется в startup. Без доступа к TPU режим завершается ошибкой;
+скрытой подмены person-детекции на CPU нет. Поза и сценарные модели остаются
+на хосте. Версия URI v2, адаптированная person-модель не является COCO-комплектом
+из п. LINQ TPU выше. Подробности и фактические SHA: docs/linq-site-integration.ru.md.
+'''
+    linq_note+=('Приватный сериализатор и резервный trained .tpu ВКЛЮЧЕНЫ в этот локальный архив.\n'
+                if args.with_linq else 'Приватный сериализатор НЕ включён; перенесите его из integration kit отдельно.\n')
+    generated={'README_SERVER.txt':(README+linq_note).encode('utf-8'),
                'MODEL_INVENTORY.json':json.dumps(models,ensure_ascii=False,indent=2).encode('utf-8')}
     with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=4,allowZip64=True) as archive:
         for name,path in files:

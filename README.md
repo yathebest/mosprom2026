@@ -1,10 +1,157 @@
 # LinQ Safety
 
+## Запуск из Git на LinQ TPU организаторов
+
+Сайт можно запустить на Windows или Linux и подключить к удалённому сервису
+LinQ. На TPU исполняется head обученной **person-YOLO12m**. Decode/NMS, поза,
+трекинг, СИЗ, телефон и остальные правила выполняются на компьютере с приложением.
+Наличие NVIDIA GPU на этом компьютере не обязательно; производительность
+локальных сценарных моделей зависит от его ресурсов. Это гибридный режим.
+
+**Что потребуется:** Git + Git LFS, Python (локально проверен 3.13.9), доступ
+к VPN команды и выданный организаторами `tpu_pycloud_format.zip` либо
+`linq-integration-kit.zip`. По заданию `PROMPT.md` библиотека организаторов и
+`.tpu` не публикуются в Git. Поэтому одного `git clone` без предоставленной
+библиотеки недостаточно. Все рабочие PT/ONNX-веса распространяются через Git LFS;
+обучать и компилировать модели заново для запуска не нужно.
+
+### 1. Клонировать проект и загрузить веса
+
+```shell
+git lfs install
+git clone https://github.com/yathebest/mosprom2026.git
+cd mosprom2026
+git lfs pull
+git lfs fsck
+```
+
+Не используйте GitHub «Download ZIP» вместо клонирования с Git LFS: в таком
+архиве могут оказаться указатели вместо весов.
+
+### 2. Установить зависимости и библиотеку организаторов
+
+Windows PowerShell:
+
+```powershell
+py -3.13 -m venv .venv
+.venv\Scripts\python.exe -m pip install --upgrade pip
+.venv\Scripts\python.exe -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+.venv\Scripts\python.exe -m pip install -r requirements-server.txt -r requirements-linq.txt
+.venv\Scripts\python.exe scripts/install_linq_runtime.py "C:\path\tpu_pycloud_format.zip"
+.venv\Scripts\python.exe -c "import pika, tpu_pycloud_format; print('LinQ dependencies OK')"
+.venv\Scripts\python.exe scripts/server_preflight.py
+```
+
+Linux, из корня клона:
+
+```bash
+python3.13 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r requirements-server.txt -r requirements-linq.txt
+python scripts/install_linq_runtime.py /path/to/tpu_pycloud_format.zip
+python -c "import pika, tpu_pycloud_format; print('LinQ dependencies OK')"
+python scripts/server_preflight.py
+```
+
+Вместо `tpu_pycloud_format.zip` установщик также принимает полный
+`linq-integration-kit.zip`. Он извлекает только пять файлов протокола в
+`tpu_pycloud_format/`, не запускает содержимое архива и не перезаписывает
+отличающуюся установленную версию. Архив и установленную папку в Git не добавляйте.
+Команды выше устанавливают PyTorch CPU для локальных компонентов; готовую
+совместимую CUDA-установку заменять не требуется.
+
+### 3. Создать вход в приложение
+
+На новой установке выполните в том же Python-окружении:
+
+```shell
+python scripts/create_admin.py
+```
+
+Задайте логин, имя и пароль администратора платформы. На Windows без активации
+окружения используйте `.venv\Scripts\python.exe` вместо `python`.
+Для общего локального демо можно вместо этого выполнить
+`python scripts/setup_demo.py`: вход `demo-admin` / `LinQ-Demo-2026!`.
+Учётная запись приложения отличается от VPN/Jupyter и командного логина LinQ.
+После входа создайте предприятие и откройте его рабочее пространство;
+демо-команда создаёт «Демонстрационное предприятие» автоматически.
+
+### 4. Подключить TPU и запустить сайт
+
+Подключите VPN команды на машине, где запущен Python. Брокер организаторов
+`10.0.114.30:5672` должен быть доступен. Для сервера внутри их сети достаточно
+сетевого маршрута к брокеру; устанавливать VPN в таком случае не требуется.
+Остановите другой экземпляр сайта, если он занимает порт 8765.
+
+Windows:
+
+```powershell
+.\start-linq.cmd
+```
+
+Linux, с активированным `.venv`:
+
+```bash
+export LINQ_ADAPTER=my_linq:create_backend
+export LINQ_LOGIN=hackathon74291
+export LINQ_PROGRAM=person-yolo12m-head-b1-o1-h1m.tpu
+python -m uvicorn app.server:app --host 127.0.0.1 --port 8765
+```
+
+Используется программа сервиса
+`/auto/cache/hackathon74291/person-yolo12m-head-b1-o1-h1m.tpu?v=2&raw=False`.
+Командный логин менять не нужно. По предоставленному набору программа уже
+загружена на стенд: обычный запуск не требует Jupyter, SDK или повторной компиляции.
+При удалении программы организаторами используйте резервный ноутбук и `.tpu`
+из integration kit: [подробная инструкция](docs/linq-site-integration.ru.md).
+
+Откройте [http://127.0.0.1:8765/](http://127.0.0.1:8765/), войдите и запустите
+«Анализ записей» или «Прямой эфир». Для приложения на удалённом Linux-сервере
+оставьте bind на localhost и пробросьте порт с рабочего компьютера:
+
+```shell
+ssh -L 8765:127.0.0.1:8765 user@server
+```
+
+Тогда сайт открывается на том же localhost рабочего компьютера. Для веб-камеры
+используйте Chrome/Edge и разрешите доступ к камере.
+
+### 5. Убедиться, что используется TPU
+
+При запуске адаптер отправляет настоящий пробный запрос. Ожидаемая строка:
+
+```text
+[LinQ] подтверждено удалённым воркером: pid=... status_code=0 roundtrip=...ms
+```
+
+В [http://127.0.0.1:8765/api/health](http://127.0.0.1:8765/api/health)
+проверьте `linq_verified: true` и `linq_status.last_reply_at`. После анализа
+видео поле модели в отчёте должно начинаться с `LinQ TPU / person-yolo12m...`.
+При недоступности TPU приложение завершается с ошибкой запуска и не подменяет
+детектор людей локальной моделью. Обычный `start.cmd` запускает локальный режим.
+
+| Проблема | Действие |
+|---|---|
+| Нет `tpu_pycloud_format` | Выполнить установщик из шага 2 с предоставленным ZIP |
+| Нет весов / вместо модели текст `version https://git-lfs...` | Выполнить `git lfs pull`, затем `git lfs fsck` |
+| `LinQ TPU недоступен` | Проверить маршрут/VPN к `10.0.114.30:5672`; на Windows — `Test-NetConnection 10.0.114.30 -Port 5672` |
+| Воркер сообщает об отсутствии программы | Восстановить программу из integration kit резервным ноутбуком; не менять логин произвольно |
+| Порт 8765 занят | Остановить предыдущий экземпляр приложения |
+
+Офлайн-проверка без VPN: `python scripts/repro_linq_adapter.py`. Она проверяет
+конвейер с подменённым транспортом и **не подтверждает аппаратный запуск**.
+В этой установке прошли офлайн-проверка и 322 теста; настоящий брокер на момент
+проверки был недоступен. Нового аппаратного замера пока нет.
+Контракт, фактические SHA и состояние проверок —
+[руководство по интеграции](docs/linq-site-integration.ru.md).
+
 ## Усиление детекции и обучение на Kaggle
 
 Новый конвейер отделяет обнаружение человека от позы. При наличии `data/models/yolo12m.pt` используется независимый YOLO12m вместе с pose-моделью. Дообученный `person-yolo12m.pt` работает совместно с исходным COCO-детектором: рамки объединяются с подавлением дублей. Получить исходные веса: `python scripts/download_model.py`.
 
-Обученный пакет Kaggle 361639587 установлен на локальном стенде. После клонирования установите свой скачанный архив командой `python scripts/install_trained_models.py "C:\path\linq-night-trained-models.zip"`. Установщик проверяет ONNX-графы, классы и политику crop, сохраняет прежние файлы и устанавливает модели людей, касок, жилетов и два ResNet50-классификатора. Бинарные веса хранятся отдельно от Git. Фактические метрики обучения — `docs/trained-model-metrics.json`, проверка подключения — `docs/trained-deployment.json`.
+Обученный пакет Kaggle 361639587 установлен на локальном стенде. После клонирования установите свой скачанный архив командой `python scripts/install_trained_models.py "C:\path\linq-night-trained-models.zip"`. Установщик проверяет ONNX-графы, классы и политику crop, сохраняет прежние файлы и устанавливает модели людей, касок, жилетов и два ResNet50-классификатора. Текущие рабочие веса теперь хранятся в Git LFS; архивный установщик остаётся способом установки другого обученного комплекта. Фактические метрики обучения — `docs/trained-model-metrics.json`, проверка подключения — `docs/trained-deployment.json`.
 
 При наличии `data/models/fall-temporal.pt` дополнительно включается обученный ResNet18/GRU. Его временное окно формируется по таймингам исходных кадров; вероятность падения не подменяет вероятность положения тела. Для тревоги нужен также признак позы или RGB-модели. Подключение действует и для записей, и для LIVE. Независимые event-метрики нового объединённого конвейера пока не измерены.
 

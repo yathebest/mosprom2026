@@ -56,3 +56,12 @@ data/models/dfire-installation.json
 data/models/signal-clothing.onnx
 data/models/targeted-installation.json
 /tmp/
+
+/tpu_pycloud_format/
+
+/linq-timing.json
+
+# Runtime weights are distributed via Git LFS for reproducible clones.
+# Training reports/caches and the organizer's private TPU artifacts stay local.
+!data/models/*.onnx
+!data/models/*.pt

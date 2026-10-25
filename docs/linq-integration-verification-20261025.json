@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-25",
+  "integration_kit_sha256": "b177532133bac0d95bf27023b15f3d3e4365a2b7cdb435ffa5fb8b20e307d36b",
+  "program": "person-yolo12m-head-b1-o1-h1m.tpu",
+  "program_sha256": "37281bff05117d546f1bb76d4431c41b8e7e00a88c46a16578e46e19b918cc95",
+  "program_uri_version": 2,
+  "login": "hackathon74291",
+  "onnx_decode_parity": {
+    "mode": "local FP32 ONNX parity, not TPU",
+    "source_sha256": "b92dd8b59bf461d1463e32333eb0e63135857699054bccc5a0057222d00c33fe",
+    "max_absolute_error": 0.0,
+    "output_shape": [
+      8400,
+      84
+    ]
+  },
+  "host_pose": {
+    "mode": "real local host pose ONNX, no TPU request",
+    "provider": [
+      "CPUExecutionProvider"
+    ],
+    "people": 1,
+    "keypoint_shapes": [
+      [
+        17,
+        3
+      ]
+    ],
+    "semantic_evidence": [
+      true
+    ],
+    "elapsed_ms": 104.36
+  },
+  "offline_pipeline": {
+    "passed": true,
+    "transport": "mocked",
+    "pose": "frozen test fixture",
+    "completed_video_job": true,
+    "events": 1,
+    "clip_ready": true,
+    "hardware_verified": false
+  },
+  "full_pytest": {
+    "passed": 322,
+    "seconds": 88.36,
+    "warnings": 1
+  },
+  "additional_packaging_tests": {
+    "passed": 5
+  },
+  "actual_remote_probe": {
+    "startup": "failed",
+    "actual_remote_reply": false,
+    "error": "LinQ TPU недоступен: проверьте VPN и 10.0.114.30:5672. Локальная подмена детектора людей не выполняется.",
+    "status": {
+      "verified": false,
+      "transport": "RabbitMQ",
+      "last_reply_at": null,
+      "last_error": "AMQPConnectionError: "
+    }
+  },
+  "stand_program_modified": false,
+  "vpn_changed": false,
+  "organizer_wire_package_in_git": false,
+  "limitations": [
+    "No actual TPU reply was received in this session; the broker was unreachable.",
+    "Only person-YOLO12m head uses the remote TPU. Pose/PPE/phone/fire/RGB fall remain local.",
+    "The supplied docs named a different TPU SHA; this report records the actual ZIP artifact.",
+    "The kit contains no saved hardware timing JSON and the notebook has no executed outputs."
+  ]
+}
