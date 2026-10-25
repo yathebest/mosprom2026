@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-25",
+  "archive": "linq-server-package-20261025.zip",
+  "archive_bytes": 1068506055,
+  "sha256": "a6caac99e33884625c55d73167f5968f1744a131e0542d9efc81e62702226441",
+  "zip_entries": 140,
+  "manifest_verified_files": 139,
+  "model_pt_onnx_files": 22,
+  "source_git_revision": "c7acd4574bf1ebda93c2644b044be6e813573d1c",
+  "source_dirty": true,
+  "integrity": "Full ZIP CRC, every manifest file SHA256, extracted full SHA256 and current-source equality verified",
+  "source_differences_after_build": [],
+  "no_database_credentials_or_camera_history_included": true,
+  "preflight": {
+    "python": "3.13.9",
+    "missing_packages": [],
+    "missing_models": [],
+    "cuda": false,
+    "active_patterns": [
+      "helmet",
+      "vest",
+      "phone",
+      "fire",
+      "smoke",
+      "smoking",
+      "fall",
+      "fast_motion",
+      "danger_zone",
+      "barrier",
+      "under_load",
+      "under_conveyor"
+    ]
+  },
+  "http": {
+    "/api/health": {
+      "status": 200,
+      "bytes": 334
+    },
+    "/api/patterns": {
+      "status": 200,
+      "bytes": 7543,
+      "version": "2026-10-25-selected-scenarios-v2"
+    },
+    "/api/defaults": {
+      "status": 200,
+      "bytes": 1045
+    },
+    "/api/scenarios": {
+      "status": 200,
+      "bytes": 718
+    },
+    "/api/samples": {
+      "status": 200,
+      "bytes": 1432
+    },
+    "/api/quality": {
+      "status": 200,
+      "bytes": 9275,
+      "quality_status": "stale"
+    },
+    "/api/summary?days=all&status=all": {
+      "status": 200,
+      "bytes": 3415
+    },
+    "/static/clip-archive.js": {
+      "status": 200,
+      "bytes": 3220
+    },
+    "/static/pattern-policy.js": {
+      "status": 200,
+      "bytes": 2034
+    },
+    "/api/analytics/export?days=all&status=all&format=xlsx": {
+      "status": 200,
+      "bytes": 8235
+    },
+    "/api/analytics/export?days=all&status=all&format=csv": {
+      "status": 200,
+      "bytes": 2929
+    }
+  },
+  "startup": "real isolated uvicorn HTTP startup; no uploaded media, NN inference or model quality benchmark",
+  "limitations": [
+    "Startup and export smoke verified in existing Windows Python environment, not a fresh Linux Python3.12 installation.",
+    "No NN inference, throughput benchmark or TPU hardware run performed in this package QA.",
+    "Historical quality endpoint correctly reports stale metrics for the changed model/rules.",
+    "Complete ensemble is PT/ONNX CPU or NVIDIA runtime; included compiled LinQ bundle is the stock COCO YOLO12m subset only.",
+    "New deployment requires local admin bootstrap and its own dependencies, storage and camera/network access."
+  ]
+}
