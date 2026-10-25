@@ -52,7 +52,7 @@ def test_brief_negative_ppe_frame_cannot_confirm():
 
 @pytest.mark.parametrize('key,label,kind',[('vest','no_safety_vest','no_vest'),('mask','no_mask','no_mask')])
 def test_other_explicit_ppe_classes(key,label,kind):
-    cfg=RunConfig(**{key+'_detection':True})
+    cfg=RunConfig(**{key+'_detection':True},signal_clothing_policy='vest_only')
     events,_=execute(cfg,[person()],[obj(label,(42,0,58,75))])
     assert [e['kind'] for e in events]==[kind]
 

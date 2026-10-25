@@ -11,7 +11,7 @@ from .scenario_models import iou
 
 PPE={
  'helmet':({'helmet','hardhat'},{'no_helmet','no_hardhat'},'no_helmet','Каска'),
- 'vest':({'vest','safety_vest'},{'no_vest','no_safety_vest'},'no_vest','Сигнальный жилет'),
+ 'vest':({'vest','safety_vest','hi_vis_clothing'},{'no_vest','no_safety_vest','no_hi_vis_clothing'},'no_vest','Сигнальный жилет'),
  'mask':({'mask','face_mask'},{'no_mask','no_face_mask'},'no_mask','Защита лица'),
  'harness':({'harness','safety_harness'},{'no_harness'},'no_harness_at_height','Страховочная привязь'),
 }
@@ -162,10 +162,18 @@ class ScenarioRules:
             for key,(positive,negative,kind,title) in PPE.items():
                 if not getattr(cfg,key+'_detection'):continue
                 matches=assigned[key].get(tid,[])
+                unsupported_clothing_negative=False
+                if key=='vest' and cfg.signal_clothing_policy=='vest_or_reflective_uniform':
+                    # A work uniform may have reflective bands without being a
+                    # separate vest. Legacy no_vest says nothing about that.
+                    unsupported_clothing_negative=any(o.label in {'no_vest','no_safety_vest'} for o in matches)
+                    matches=[o for o in matches if o.label not in {'no_vest','no_safety_vest'}]
+                    title='Сигнальная одежда'
                 worn=[o for o in matches if o.label in positive];missing=[o for o in matches if o.label in negative]
                 best_worn=max(worn,key=lambda o:o.confidence,default=None)
                 best_missing=max(missing,key=lambda o:o.confidence,default=None)
                 state,reason_code=ppe_measurement(matches,positive,negative,cfg.object_confidence,cfg.ppe_conflict_margin)
+                if state=='unknown' and unsupported_clothing_negative:reason_code='signal_clothing_policy_unverified'
                 head_pixels=round(min(person.box[2]-person.box[0],person.height*.22),1)
                 if key in ('helmet','mask') and head_pixels<12:
                     state='unknown';reason_code='insufficient_pixels'
@@ -180,6 +188,7 @@ class ScenarioRules:
                 self.ppe_details[tid][key]={'state':state,'reason':reason_code,'fresh':fresh,
                                           'head_pixels_estimate':head_pixels,
                                           'observed_at_s':now if fresh else previous[0] if previous else None}
+                if key=='vest':self.ppe_details[tid][key]['policy']=cfg.signal_clothing_policy
                 obj=max(missing,key=lambda o:o.confidence,default=None)
                 reason=(f'{title}: свежие измерения подтверждают отсутствие экипировки во временном окне.'+
                         (' Человек находится в размеченной зоне работы на высоте.' if key=='harness' else ''))
@@ -314,11 +323,12 @@ def base_config(config):
 def assessment_rows(people,details):
     return [{'track_id':int(p.track_id),'tracking':'predicted' if not p.observed else 'measured' if p.alert_eligible else 'weak',
              'visibility':{'person_height_px':round(p.height,1),'small_objects':'limited' if p.height<120 else 'requires_review'},
-             'ppe':details.get(p.track_id,{})} for p in people[:32]]
+             'ppe':details.get(p.track_id,{})} for p in [person for person in people if person.track_id>0][:32]]
 
 
 def ppe_overlay_label(key,measured,detail):
     """Use the same measured/confirmed fields as the state cards, separately."""
+    if key=='vest' and detail.get('policy')=='vest_or_reflective_uniform':key='signal clothing'
     observed=detail.get('observed_state',detail.get('state',measured)) or 'unknown'
     confirmed=detail.get('confirmed_state','unknown') or 'unknown'
     recent=detail.get('fresh') is False or detail.get('reason')=='recent_observation'
@@ -334,8 +344,13 @@ def ppe_overlay_label(key,measured,detail):
 
 
 def annotate_objects(frame,objects,ppe_status,people,ppe_details=None,pattern_states=None):
+    confirmed_people=[p for p in people if p.track_id>0]
+    ppe_regions={label:('head' if key in {'helmet','mask'} else 'body') for key,(positive,negative,_,_) in PPE.items() for label in positive|negative}
     for obj in objects:
         if obj.label in ('person','fall_detected'):continue
+        # Unassociated PPE proposals on machinery remain in model diagnostics,
+        # but must not look like an assessed worker in the operator preview.
+        if obj.label in ppe_regions and person_for(obj,confirmed_people,ppe_regions[obj.label]) is None:continue
         # A raw detector proposal is a measurement, never a confirmed incident.
         color=(60,205,220)
         x1,y1,x2,y2=map(int,obj.box)

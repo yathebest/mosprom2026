@@ -1,0 +1,28 @@
+{
+  "file": "linq-clothing-training-input.zip",
+  "bytes": 116628172,
+  "sha256": "3f90015492950f67cf4a78336a0c4e56db7dbaad7c708273bd6aa0d3c4adaa00",
+  "summary": {
+    "classes": [
+      "hi_vis",
+      "ordinary",
+      "unobservable"
+    ],
+    "counts": {
+      "test/hi_vis": 197,
+      "test/ordinary": 22,
+      "test/unobservable": 13,
+      "train/hi_vis": 1137,
+      "train/ordinary": 118,
+      "train/unobservable": 93,
+      "val/hi_vis": 197,
+      "val/ordinary": 24,
+      "val/unobservable": 24
+    },
+    "policy": "Vest OR visible reflective work uniform compliant; uncertain visibility is unobservable.",
+    "source_group_disjoint": true,
+    "negative_labels": "Manual review only; no automatic no_vest-to-ordinary conversion",
+    "excluded_unmatched_person_geometry": 10,
+    "warning": "Assistant reviewed clothing appearance; no physical garment certification, no independent factory event metric. Original source test is not used for model selection."
+  }
+}

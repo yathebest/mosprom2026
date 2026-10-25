@@ -8,9 +8,10 @@ from app.scenarios import ScenarioRules, person_for
 
 def test_associated_weak_detection_remains_visible_without_alert_permission():
     tracker=PeopleTracker(10,.4)
-    first=tracker.update([Person((10,10,50,110),.95)],(120,100,3),0)[0]
+    for t in [-.2,-.1,0]:
+        first=tracker.update([Person((10,10,50,110),.95,detection_sources=('person:0','person:1'))],(120,100,3),t)[0]
     weak=tracker.update([Person((11,10,51,110),.2)],(120,100,3),.1)[0]
-    assert first.track_id==weak.track_id and weak.observed and not weak.alert_eligible
+    assert first.track_id>0 and first.track_id==weak.track_id and weak.observed and not weak.alert_eligible
     assert weak.confidence==.2
 
 
@@ -24,7 +25,8 @@ def test_real_time_gap_does_not_reuse_id_when_live_processing_is_slow():
 
 def test_unobserved_track_expires_and_cannot_create_a_zone_alert():
     tracker=PeopleTracker(10,.4)
-    tracker.update([Person((10,10,50,110),.95)],(120,100,3),0)
+    for t in [-.2,-.1,0]:
+        tracker.update([Person((10,10,50,110),.95,detection_sources=('person:0','person:1'))],(120,100,3),t)
     predicted=tracker.update([],(120,100,3),.1)
     assert len(predicted)==1 and not predicted[0].observed
     config=RunConfig(zones=[Zone(points=[(0,0),(1,0),(1,1),(0,1)])],zone_hold=.2,fast_motion=False)
@@ -56,7 +58,7 @@ def test_stale_ppe_can_be_displayed_but_not_accumulate_confirmation():
 
 
 def test_weak_person_never_confirms_strong_ppe_violation():
-    rules=ScenarioRules(RunConfig(vest_detection=True,ppe_hold=.3))
+    rules=ScenarioRules(RunConfig(vest_detection=True,ppe_hold=.3,signal_clothing_policy='vest_only'))
     people=[Person((10,0,50,100),.2,track_id=1,alert_eligible=False)]
     obs=[Observation((12,25,48,80),.95,'no_vest','test')]
     for i in range(20):assert rules.step(people,obs,i/10,100,100)[0]==[]

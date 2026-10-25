@@ -73,6 +73,7 @@ class RunConfig(BaseModel):
     body_transition_max_s: float = Field(default=1.0,ge=.2,le=3)
     helmet_detection: bool = False
     vest_detection: bool = False
+    signal_clothing_policy: Literal['vest_only','vest_or_reflective_uniform'] = 'vest_or_reflective_uniform'
     mask_detection: bool = False
     harness_detection: bool = False
     phone_detection: bool = False
@@ -124,6 +125,8 @@ class Person:
     track_id: int = -1
     observed: bool = True
     alert_eligible: bool = True
+    detection_sources: tuple[str, ...] = ()
+    tracking_state: str = 'measured'
 
     @property
     def height(self):

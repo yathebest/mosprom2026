@@ -1,0 +1,3870 @@
+{
+  "status": "completed",
+  "deployment_decision": "accept",
+  "reason": "Held-out mAP50-95 delta +0.249430; reviewed production recall delta +0/25; machine confirmed samples 0. Parent review required before installation.",
+  "ultralytics": "8.4.88",
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "weights": {
+    "baseline": {
+      "path": "C:\\Users\\User\\Desktop\\mosprom2026\\data\\models\\person-yolo12m.pt",
+      "sha256": "014bba5070722b4a95c6fbb5658707c0ac00ef2dd0499a10d50cd63ec5ddce32"
+    },
+    "candidate": {
+      "path": "C:\\Users\\User\\Desktop\\mosprom2026\\data\\cache\\targeted-completed-20261025\\person\\person\\person\\weights\\best.pt",
+      "sha256": "3c2f9fc99bf6fbd11f72c2f8243c753cd671145c8cfbb3d7b36ac3c2750de4c2"
+    },
+    "stock": {
+      "path": "C:\\Users\\User\\Desktop\\mosprom2026\\data\\models\\yolo12m.pt",
+      "sha256": "4c6d179786eddf6134ee469ae2f4ce04cbe4e9d1a47d6b669d9cd6b9c6c513d8"
+    }
+  },
+  "factory_review": {
+    "source": "https://data.mendeley.com/datasets/xjmtb22pff/1",
+    "reviewer": "assistant visual review before running this comparison; not expert ground truth",
+    "scope": "Eight middle frames; coarse visible-person rectangles. Includes partial bodies and a forklift driver. Ambiguous machine-shaped clutter is excluded; no claim of exhaustive hidden/occluded people. Coordinates refer to a 960x540 review image, original video is 1920x1080. DEBUG ONLY: after prediction review, two initially missed real workers were added (2_te1 background press and 7_te2 foreground machine). The first review was incomplete and this is not blind evaluation.",
+    "rows": [
+      {
+        "clip": "0_te1",
+        "frame": 186,
+        "boxes": [
+          [
+            14,
+            190,
+            43,
+            236
+          ],
+          [
+            156,
+            192,
+            187,
+            253
+          ],
+          [
+            726,
+            186,
+            749,
+            241
+          ],
+          [
+            741,
+            195,
+            775,
+            268
+          ]
+        ]
+      },
+      {
+        "clip": "1_te1",
+        "frame": 210,
+        "boxes": [
+          [
+            15,
+            194,
+            45,
+            235
+          ],
+          [
+            697,
+            159,
+            717,
+            204
+          ]
+        ]
+      },
+      {
+        "clip": "2_te1",
+        "frame": 46,
+        "boxes": [
+          [
+            107,
+            391,
+            219,
+            540
+          ],
+          [
+            489,
+            297,
+            572,
+            529
+          ],
+          [
+            594,
+            342,
+            691,
+            540
+          ],
+          [
+            847,
+            118,
+            899,
+            253
+          ],
+          [
+            155,
+            45,
+            182,
+            114
+          ]
+        ]
+      },
+      {
+        "clip": "3_te1",
+        "frame": 125,
+        "boxes": [
+          [
+            816,
+            49,
+            846,
+            110
+          ]
+        ]
+      },
+      {
+        "clip": "4_te1",
+        "frame": 86,
+        "boxes": [
+          [
+            88,
+            54,
+            124,
+            114
+          ],
+          [
+            435,
+            302,
+            538,
+            540
+          ]
+        ]
+      },
+      {
+        "clip": "5_te1",
+        "frame": 87,
+        "boxes": [
+          [
+            106,
+            47,
+            142,
+            114
+          ],
+          [
+            47,
+            419,
+            121,
+            540
+          ],
+          [
+            107,
+            404,
+            193,
+            540
+          ],
+          [
+            207,
+            370,
+            294,
+            540
+          ]
+        ]
+      },
+      {
+        "clip": "6_te1",
+        "frame": 65,
+        "boxes": [
+          [
+            105,
+            43,
+            141,
+            113
+          ],
+          [
+            188,
+            44,
+            221,
+            106
+          ],
+          [
+            73,
+            399,
+            180,
+            540
+          ],
+          [
+            173,
+            483,
+            285,
+            540
+          ]
+        ]
+      },
+      {
+        "clip": "7_te2",
+        "frame": 75,
+        "boxes": [
+          [
+            378,
+            138,
+            433,
+            241
+          ],
+          [
+            816,
+            49,
+            850,
+            112
+          ],
+          [
+            779,
+            208,
+            823,
+            316
+          ]
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    "Eight debug frames were reviewed after previous predictions; not blind/exhaustive factory ground truth.",
+    "Unmatched predictions are not necessarily false positives; hidden/omitted people need review.",
+    "Small means reviewed source-frame box height below 150px, fixed before this comparison.",
+    "Held-out test is post-training evaluation only; no threshold/checkpoint tuning or training here.",
+    "Test/source splits are inherited; independent factory cameras and zero false positives are not established.",
+    "Candidate ONNX parity, LinQ compilation and end-to-end live latency were not evaluated by this PyTorch comparison."
+  ],
+  "direct_confidence": 0.4,
+  "direct_imgsz": 640,
+  "direct_factory": {
+    "baseline": {
+      "rows": [
+        {
+          "clip": "0_te1",
+          "frame": 186,
+          "elapsed_s": 0.01679380000132369,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 4,
+              "small_matched": 0,
+              "small_reviewed": 4
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 4,
+              "small_matched": 0,
+              "small_reviewed": 4
+            }
+          }
+        },
+        {
+          "clip": "1_te1",
+          "frame": 210,
+          "elapsed_s": 0.01647679999950924,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 2
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 2
+            }
+          }
+        },
+        {
+          "clip": "2_te1",
+          "frame": 46,
+          "elapsed_s": 0.01621759999761707,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 5,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 5,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 5,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 5,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "3_te1",
+          "frame": 125,
+          "elapsed_s": 0.016470900001877453,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 1,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 1,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "4_te1",
+          "frame": 86,
+          "elapsed_s": 0.01659500000096159,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "5_te1",
+          "frame": 87,
+          "elapsed_s": 0.017400499997165753,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 4,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 4,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "6_te1",
+          "frame": 65,
+          "elapsed_s": 0.018404099999315804,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 4,
+              "small_matched": 0,
+              "small_reviewed": 3
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 4,
+              "small_matched": 0,
+              "small_reviewed": 3
+            }
+          }
+        },
+        {
+          "clip": "7_te2",
+          "frame": 75,
+          "elapsed_s": 0.01672580000013113,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 3,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 3,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 3,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 3,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        }
+      ],
+      "totals": {
+        "0.3": {
+          "matched": 0,
+          "reviewed": 25,
+          "unmatched_predictions": 0,
+          "missed_reviewed": 25,
+          "small_matched": 0,
+          "small_reviewed": 14
+        },
+        "0.5": {
+          "matched": 0,
+          "reviewed": 25,
+          "unmatched_predictions": 0,
+          "missed_reviewed": 25,
+          "small_matched": 0,
+          "small_reviewed": 14
+        }
+      },
+      "median_s": 0.01666040000054636
+    },
+    "candidate": {
+      "rows": [
+        {
+          "clip": "0_te1",
+          "frame": 186,
+          "elapsed_s": 0.15439770000011777,
+          "predictions": [
+            {
+              "box": [
+                1448.112548828125,
+                372.40911865234375,
+                1494.7586669921875,
+                481.889892578125
+              ],
+              "score": 0.8125665783882141
+            },
+            {
+              "box": [
+                1486.139404296875,
+                391.0417785644531,
+                1540.6533203125,
+                534.225341796875
+              ],
+              "score": 0.8064833283424377
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 2,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 2,
+              "small_reviewed": 4
+            },
+            "0.5": {
+              "matched": 2,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 2,
+              "small_reviewed": 4
+            }
+          }
+        },
+        {
+          "clip": "1_te1",
+          "frame": 210,
+          "elapsed_s": 0.1409961999997904,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 2
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 2
+            }
+          }
+        },
+        {
+          "clip": "2_te1",
+          "frame": 46,
+          "elapsed_s": 0.15064410000195494,
+          "predictions": [
+            {
+              "box": [
+                1165.4365234375,
+                648.3701171875,
+                1400.44091796875,
+                1076.5595703125
+              ],
+              "score": 0.8250114917755127
+            },
+            {
+              "box": [
+                1679.864990234375,
+                223.81918334960938,
+                1822.40869140625,
+                508.7237548828125
+              ],
+              "score": 0.7923893928527832
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 2,
+              "reviewed": 5,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 3,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 2,
+              "reviewed": 5,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 3,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "3_te1",
+          "frame": 125,
+          "elapsed_s": 0.12103530000240426,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 1,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 1,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "4_te1",
+          "frame": 86,
+          "elapsed_s": 0.12820039999860455,
+          "predictions": [
+            {
+              "box": [
+                870.7476196289062,
+                607.5606689453125,
+                1084.66015625,
+                1005.3876342773438
+              ],
+              "score": 0.8371927738189697
+            },
+            {
+              "box": [
+                177.3545684814453,
+                125.22136688232422,
+                241.46511840820312,
+                213.87164306640625
+              ],
+              "score": 0.756658136844635
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 2,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 2,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "5_te1",
+          "frame": 87,
+          "elapsed_s": 0.14393500000005588,
+          "predictions": [
+            {
+              "box": [
+                260.0068359375,
+                108.09290313720703,
+                330.9872131347656,
+                184.44813537597656
+              ],
+              "score": 0.8191908001899719
+            },
+            {
+              "box": [
+                213.97232055664062,
+                95.72456359863281,
+                285.203369140625,
+                229.50315856933594
+              ],
+              "score": 0.5904691219329834
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 1,
+              "reviewed": 4,
+              "unmatched_predictions": 1,
+              "missed_reviewed": 3,
+              "small_matched": 1,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 1,
+              "reviewed": 4,
+              "unmatched_predictions": 1,
+              "missed_reviewed": 3,
+              "small_matched": 1,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "6_te1",
+          "frame": 65,
+          "elapsed_s": 0.1221192000011797,
+          "predictions": [
+            {
+              "box": [
+                376.04119873046875,
+                85.98875427246094,
+                450.47454833984375,
+                206.69839477539062
+              ],
+              "score": 0.8158056139945984
+            },
+            {
+              "box": [
+                202.3293914794922,
+                95.21348571777344,
+                277.60540771484375,
+                229.61334228515625
+              ],
+              "score": 0.7577767372131348
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 2,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 2,
+              "small_reviewed": 3
+            },
+            "0.5": {
+              "matched": 2,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 2,
+              "small_reviewed": 3
+            }
+          }
+        },
+        {
+          "clip": "7_te2",
+          "frame": 75,
+          "elapsed_s": 0.12853480000194395,
+          "predictions": [
+            {
+              "box": [
+                1530.2486572265625,
+                428.39337158203125,
+                1658.5418701171875,
+                643.72265625
+              ],
+              "score": 0.8145802617073059
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 1,
+              "reviewed": 3,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 1,
+              "reviewed": 3,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        }
+      ],
+      "totals": {
+        "0.3": {
+          "matched": 10,
+          "reviewed": 25,
+          "unmatched_predictions": 1,
+          "missed_reviewed": 15,
+          "small_matched": 6,
+          "small_reviewed": 14
+        },
+        "0.5": {
+          "matched": 10,
+          "reviewed": 25,
+          "unmatched_predictions": 1,
+          "missed_reviewed": 15,
+          "small_matched": 6,
+          "small_reviewed": 14
+        }
+      },
+      "median_s": 0.13476550000086718
+    },
+    "stock": {
+      "rows": [
+        {
+          "clip": "0_te1",
+          "frame": 186,
+          "elapsed_s": 0.19898079999984475,
+          "predictions": [
+            {
+              "box": [
+                1484.105224609375,
+                393.3177795410156,
+                1541.486083984375,
+                531.484619140625
+              ],
+              "score": 0.8101008534431458
+            },
+            {
+              "box": [
+                1453.115966796875,
+                377.99798583984375,
+                1489.2779541015625,
+                480.81207275390625
+              ],
+              "score": 0.7474253177642822
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 2,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 2,
+              "small_reviewed": 4
+            },
+            "0.5": {
+              "matched": 2,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 2,
+              "small_reviewed": 4
+            }
+          }
+        },
+        {
+          "clip": "1_te1",
+          "frame": 210,
+          "elapsed_s": 0.2030747999997402,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 2
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 2
+            }
+          }
+        },
+        {
+          "clip": "2_te1",
+          "frame": 46,
+          "elapsed_s": 0.21250320000035572,
+          "predictions": [
+            {
+              "box": [
+                978.837890625,
+                594.2689819335938,
+                1143.2369384765625,
+                1027.087646484375
+              ],
+              "score": 0.9076848030090332
+            },
+            {
+              "box": [
+                1207.1260986328125,
+                685.1559448242188,
+                1377.3497314453125,
+                1073.797119140625
+              ],
+              "score": 0.8781692981719971
+            },
+            {
+              "box": [
+                1696.4248046875,
+                235.3681182861328,
+                1804.2255859375,
+                503.865478515625
+              ],
+              "score": 0.863905131816864
+            },
+            {
+              "box": [
+                216.77169799804688,
+                733.0446166992188,
+                485.4870300292969,
+                1077.665283203125
+              ],
+              "score": 0.8390847444534302
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 4,
+              "reviewed": 5,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 4,
+              "reviewed": 5,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "3_te1",
+          "frame": 125,
+          "elapsed_s": 0.15919930000018212,
+          "predictions": [],
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 1,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 1,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "4_te1",
+          "frame": 86,
+          "elapsed_s": 0.12449869999909424,
+          "predictions": [
+            {
+              "box": [
+                865.81787109375,
+                605.7006225585938,
+                1073.8289794921875,
+                977.7614135742188
+              ],
+              "score": 0.8993002772331238
+            },
+            {
+              "box": [
+                179.3072509765625,
+                119.65570068359375,
+                236.8542938232422,
+                196.65257263183594
+              ],
+              "score": 0.5022234916687012
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 2,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 2,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "5_te1",
+          "frame": 87,
+          "elapsed_s": 0.12769330000082846,
+          "predictions": [
+            {
+              "box": [
+                94.56275939941406,
+                843.0232543945312,
+                253.28152465820312,
+                1078.00390625
+              ],
+              "score": 0.8369902968406677
+            },
+            {
+              "box": [
+                429.31256103515625,
+                791.2728881835938,
+                604.1495361328125,
+                1077.002685546875
+              ],
+              "score": 0.8220297694206238
+            },
+            {
+              "box": [
+                226.8266143798828,
+                828.1631469726562,
+                396.025146484375,
+                1078.064697265625
+              ],
+              "score": 0.6975716948509216
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 3,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 3,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        },
+        {
+          "clip": "6_te1",
+          "frame": 65,
+          "elapsed_s": 0.13454920000003767,
+          "predictions": [
+            {
+              "box": [
+                397.6628723144531,
+                963.0684814453125,
+                571.1778564453125,
+                1077.5009765625
+              ],
+              "score": 0.6466189026832581
+            },
+            {
+              "box": [
+                385.3656921386719,
+                82.17745971679688,
+                444.3443298339844,
+                213.64605712890625
+              ],
+              "score": 0.6349008083343506
+            },
+            {
+              "box": [
+                218.16156005859375,
+                88.98324584960938,
+                271.59283447265625,
+                224.96250915527344
+              ],
+              "score": 0.5260686278343201
+            },
+            {
+              "box": [
+                128.521240234375,
+                818.4027099609375,
+                305.2926940917969,
+                1077.4888916015625
+              ],
+              "score": 0.47946497797966003
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 4,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 3,
+              "small_reviewed": 3
+            },
+            "0.5": {
+              "matched": 4,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 3,
+              "small_reviewed": 3
+            }
+          }
+        },
+        {
+          "clip": "7_te2",
+          "frame": 75,
+          "elapsed_s": 0.15854419999959646,
+          "predictions": [
+            {
+              "box": [
+                1563.5086669921875,
+                426.09619140625,
+                1639.141845703125,
+                626.9603271484375
+              ],
+              "score": 0.6208947896957397
+            }
+          ],
+          "overlap": {
+            "0.3": {
+              "matched": 1,
+              "reviewed": 3,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 1,
+              "reviewed": 3,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          }
+        }
+      ],
+      "totals": {
+        "0.3": {
+          "matched": 16,
+          "reviewed": 25,
+          "unmatched_predictions": 0,
+          "missed_reviewed": 9,
+          "small_matched": 6,
+          "small_reviewed": 14
+        },
+        "0.5": {
+          "matched": 16,
+          "reviewed": 25,
+          "unmatched_predictions": 0,
+          "missed_reviewed": 9,
+          "small_matched": 6,
+          "small_reviewed": 14
+        }
+      },
+      "median_s": 0.1588717499998893
+    }
+  },
+  "heldout_test": {
+    "baseline": {
+      "elapsed_s": 39.29828140000245,
+      "metrics": {
+        "metrics/precision(B)": 0.7521444964256306,
+        "metrics/recall(B)": 0.5396322130627774,
+        "metrics/mAP50(B)": 0.6247965973774824,
+        "metrics/mAP50-95(B)": 0.36266064471235415,
+        "fitness": 0.36266064471235415
+      },
+      "speed_ms_per_image": {
+        "preprocess": 0.6891621311386517,
+        "inference": 22.411139180305742,
+        "loss": 0.004086229491207871,
+        "postprocess": 4.183541967191917
+      },
+      "per_class_ids": [
+        0
+      ],
+      "test_evaluated": true
+    },
+    "candidate": {
+      "elapsed_s": 46.383660299998155,
+      "metrics": {
+        "metrics/precision(B)": 0.9128501741124815,
+        "metrics/recall(B)": 0.8325935320228282,
+        "metrics/mAP50(B)": 0.8656570572125855,
+        "metrics/mAP50-95(B)": 0.6120906133719709,
+        "fitness": 0.6120906133719709
+      },
+      "speed_ms_per_image": {
+        "preprocess": 0.9609368852445604,
+        "inference": 22.139064917964937,
+        "loss": 0.005608524594715506,
+        "postprocess": 5.59711131146421
+      },
+      "per_class_ids": [
+        0
+      ],
+      "test_evaluated": true
+    }
+  },
+  "production_backend": {
+    "baseline": {
+      "config": {
+        "camera": "Камера 01",
+        "recorded_at": null,
+        "zones": [],
+        "zone_hold": 1.0,
+        "fast_motion": false,
+        "speed_threshold": 1.25,
+        "motion_hold": 1.0,
+        "fall_detection": false,
+        "fall_hold": 1.0,
+        "lying_hold": 5.0,
+        "release_hold": 2.0,
+        "observation_gap": 0.8,
+        "sample_fps": 10,
+        "confidence": 0.4,
+        "calibration": null,
+        "speed_threshold_m_s": 2.5,
+        "body_threshold": 0.9,
+        "body_hold": 0.5,
+        "body_transition_max_s": 1.0,
+        "helmet_detection": true,
+        "vest_detection": false,
+        "signal_clothing_policy": "vest_or_reflective_uniform",
+        "mask_detection": false,
+        "harness_detection": false,
+        "phone_detection": false,
+        "fire_detection": false,
+        "smoke_detection": false,
+        "smoking_detection": false,
+        "proximity_detection": false,
+        "load_posture_detection": false,
+        "ppe_hold": 1.5,
+        "object_hold": 1.0,
+        "object_confidence": 0.5,
+        "phone_confidence": 0.3,
+        "phone_work_context_only": false,
+        "distant_people": true,
+        "smoking_min_person_height": 120,
+        "ppe_crops": true,
+        "ppe_max_people": 8,
+        "ppe_memory_s": 0.5,
+        "ppe_conflict_margin": 0.15,
+        "proximity_heights": 0.6,
+        "proximity_m": 3.0,
+        "state_confirmation_ratio": 0.75,
+        "state_min_samples": 3,
+        "state_windows": {}
+      },
+      "scenario_models_excluded": "Person comparison only; same head-pose refinement enabled, no PPE inference needed.",
+      "warmup_s": 16.842327500002284,
+      "rows": [
+        {
+          "clip": "0_te1",
+          "elapsed_s": 0.305510599999252,
+          "overlap": {
+            "0.3": {
+              "matched": 2,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 2,
+              "small_reviewed": 4
+            },
+            "0.5": {
+              "matched": 2,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 2,
+              "small_reviewed": 4
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                1485.2734375,
+                394.68963623046875,
+                1541.3291015625,
+                530.737060546875
+              ],
+              "score": 0.8316516876220703,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                1454.17919921875,
+                376.77496337890625,
+                1490.537109375,
+                479.41595458984375
+              ],
+              "score": 0.8040042519569397,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            }
+          ]
+        },
+        {
+          "clip": "1_te1",
+          "elapsed_s": 0.2907742999996117,
+          "overlap": {
+            "0.3": {
+              "matched": 1,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 1,
+              "small_reviewed": 2
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 2,
+              "unmatched_predictions": 1,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 2
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                1412.47509765625,
+                322.75543212890625,
+                1435.43896484375,
+                404.75909423828125
+              ],
+              "score": 0.7039918899536133,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": false
+            }
+          ]
+        },
+        {
+          "clip": "2_te1",
+          "elapsed_s": 0.381408500001271,
+          "overlap": {
+            "0.3": {
+              "matched": 5,
+              "reviewed": 5,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 5,
+              "reviewed": 5,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                979.4351806640625,
+                597.1339111328125,
+                1143.7625732421875,
+                1028.16943359375
+              ],
+              "score": 0.8906150460243225,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                1210.758056640625,
+                686.1348876953125,
+                1376.802978515625,
+                1078.7694091796875
+              ],
+              "score": 0.8824360370635986,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                1695.677490234375,
+                235.50303649902344,
+                1806.498291015625,
+                505.412353515625
+              ],
+              "score": 0.8732051849365234,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                212.10874938964844,
+                730.359130859375,
+                500.6827392578125,
+                1079.11474609375
+              ],
+              "score": 0.8017264604568481,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": false
+            },
+            {
+              "box": [
+                312.85198974609375,
+                95.42251586914062,
+                361.764892578125,
+                220.7833251953125
+              ],
+              "score": 0.5431280732154846,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            }
+          ]
+        },
+        {
+          "clip": "3_te1",
+          "elapsed_s": 0.29210539999985485,
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 1,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 1,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          },
+          "predictions": []
+        },
+        {
+          "clip": "4_te1",
+          "elapsed_s": 0.357948300003045,
+          "overlap": {
+            "0.3": {
+              "matched": 2,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 2,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                866.3963623046875,
+                605.0748291015625,
+                1076.7862548828125,
+                990.18994140625
+              ],
+              "score": 0.8522186279296875,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                179.8997802734375,
+                120.03496551513672,
+                236.3134765625,
+                197.3897705078125
+              ],
+              "score": 0.4294852614402771,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            }
+          ]
+        },
+        {
+          "clip": "5_te1",
+          "elapsed_s": 0.45545539999875473,
+          "overlap": {
+            "0.3": {
+              "matched": 4,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 4,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                93.19450378417969,
+                843.435302734375,
+                255.4912567138672,
+                1079.1131591796875
+              ],
+              "score": 0.8730517029762268,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                217.8295135498047,
+                97.36341857910156,
+                268.6776428222656,
+                229.73712158203125
+              ],
+              "score": 0.6230098009109497,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                428.42578125,
+                792.59228515625,
+                599.06787109375,
+                1077.7862548828125
+              ],
+              "score": 0.5715912580490112,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                225.5709686279297,
+                826.9871826171875,
+                365.17266845703125,
+                1080.0
+              ],
+              "score": 0.46823176741600037,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": false
+            }
+          ]
+        },
+        {
+          "clip": "6_te1",
+          "elapsed_s": 0.5778954999987036,
+          "overlap": {
+            "0.3": {
+              "matched": 4,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 3,
+              "small_reviewed": 3
+            },
+            "0.5": {
+              "matched": 4,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 3,
+              "small_reviewed": 3
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                397.6628723144531,
+                963.0684814453125,
+                571.1778564453125,
+                1077.5009765625
+              ],
+              "score": 0.6466189026832581,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": false
+            },
+            {
+              "box": [
+                385.6064147949219,
+                80.9610595703125,
+                443.9309997558594,
+                212.79861450195312
+              ],
+              "score": 0.6387364864349365,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                217.00814819335938,
+                93.38593292236328,
+                271.7486877441406,
+                223.8916015625
+              ],
+              "score": 0.5186483263969421,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                128.521240234375,
+                818.4027099609375,
+                305.2926940917969,
+                1077.4888916015625
+              ],
+              "score": 0.47946497797966003,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": false
+            }
+          ]
+        },
+        {
+          "clip": "7_te2",
+          "elapsed_s": 0.4175775000003341,
+          "overlap": {
+            "0.3": {
+              "matched": 1,
+              "reviewed": 3,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 1,
+              "reviewed": 3,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                1564.206787109375,
+                424.88043212890625,
+                1638.048583984375,
+                625.1525268554688
+              ],
+              "score": 0.7263171672821045,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            }
+          ]
+        }
+      ],
+      "totals": {
+        "0.3": {
+          "matched": 19,
+          "reviewed": 25,
+          "unmatched_predictions": 0,
+          "missed_reviewed": 6,
+          "small_matched": 9,
+          "small_reviewed": 14
+        },
+        "0.5": {
+          "matched": 18,
+          "reviewed": 25,
+          "unmatched_predictions": 1,
+          "missed_reviewed": 7,
+          "small_matched": 8,
+          "small_reviewed": 14
+        }
+      },
+      "median_s": 0.369678400002158,
+      "fp_sequence": {
+        "source": "C:\\Users\\User\\Desktop\\mosprom2026\\data\\datasets\\factory-expansion\\test\\6_te9.mp4",
+        "sha256": "7434951bbc7f87ba144436863f7128e8780b14721191431aa30d7f3020ac0987",
+        "measurements": [
+          {
+            "at_s": 0.0,
+            "elapsed_s": 0.5737636999983806,
+            "people": [
+              {
+                "box": [
+                  931.1495361328125,
+                  596.400146484375,
+                  1074.0433349609375,
+                  940.4554443359375
+                ],
+                "score": 0.7901807427406311,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.78176879882812,
+                  118.86150360107422,
+                  257.0500183105469,
+                  255.91815185546875
+                ],
+                "score": 0.5693647265434265,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 0.19912385503783353,
+            "elapsed_s": 0.602381400000013,
+            "people": [
+              {
+                "box": [
+                  876.1815185546875,
+                  600.4459228515625,
+                  1060.3846435546875,
+                  1021.5081787109375
+                ],
+                "score": 0.8854892253875732,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.5848388671875,
+                  117.68895721435547,
+                  243.06265258789062,
+                  198.362060546875
+                ],
+                "score": 0.48035383224487305,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 0.39824771007566706,
+            "elapsed_s": 0.4678916999982903,
+            "people": [
+              {
+                "box": [
+                  874.848876953125,
+                  594.9852294921875,
+                  1042.16748046875,
+                  1024.5869140625
+                ],
+                "score": 0.8915082216262817,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.67364501953125,
+                  120.2110824584961,
+                  242.27471923828125,
+                  196.02346801757812
+                ],
+                "score": 0.48507848381996155,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 0.5973715651135006,
+            "elapsed_s": 0.4972752999965451,
+            "people": [
+              {
+                "box": [
+                  867.7923583984375,
+                  601.3604736328125,
+                  1025.8956298828125,
+                  1023.1199951171875
+                ],
+                "score": 0.8880281448364258,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  180.23220825195312,
+                  119.11648559570312,
+                  240.78378295898438,
+                  196.41650390625
+                ],
+                "score": 0.5673786401748657,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 0.7964954201513341,
+            "elapsed_s": 0.9167845999982092,
+            "people": [
+              {
+                "box": [
+                  858.9173583984375,
+                  606.950439453125,
+                  1016.4708251953125,
+                  1022.6478271484375
+                ],
+                "score": 0.863025963306427,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.71029663085938,
+                  119.30230712890625,
+                  241.733642578125,
+                  195.78457641601562
+                ],
+                "score": 0.527434229850769,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 0.9956192751891677,
+            "elapsed_s": 1.568907400000171,
+            "people": [
+              {
+                "box": [
+                  857.3466186523438,
+                  614.795654296875,
+                  1012.3739624023438,
+                  1034.02978515625
+                ],
+                "score": 0.8660919666290283,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  180.30941772460938,
+                  119.07221984863281,
+                  239.95948791503906,
+                  197.62911987304688
+                ],
+                "score": 0.5774444341659546,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 1.1947431302270013,
+            "elapsed_s": 1.6053881000007095,
+            "people": [
+              {
+                "box": [
+                  862.3633422851562,
+                  623.790283203125,
+                  1015.8234252929688,
+                  1030.194091796875
+                ],
+                "score": 0.8667518496513367,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.43450927734375,
+                  119.56936645507812,
+                  240.303955078125,
+                  197.006103515625
+                ],
+                "score": 0.5087733864784241,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 1.3938669852648347,
+            "elapsed_s": 1.6978860000017448,
+            "people": [
+              {
+                "box": [
+                  867.1868896484375,
+                  640.7608642578125,
+                  1028.3167724609375,
+                  1050.3349609375
+                ],
+                "score": 0.8753962516784668,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  180.200927734375,
+                  119.41315460205078,
+                  239.345703125,
+                  196.94342041015625
+                ],
+                "score": 0.6394175291061401,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 1.5929908403026682,
+            "elapsed_s": 1.257322400000703,
+            "people": [
+              {
+                "box": [
+                  866.529296875,
+                  654.12646484375,
+                  1038.0703125,
+                  1054.14453125
+                ],
+                "score": 0.8899957537651062,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.30984497070312,
+                  120.20244598388672,
+                  240.65689086914062,
+                  195.784423828125
+                ],
+                "score": 0.4397144317626953,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 1.7921146953405018,
+            "elapsed_s": 1.2889589000005799,
+            "people": [
+              {
+                "box": [
+                  864.3814697265625,
+                  660.4588623046875,
+                  1041.1629638671875,
+                  1060.599853515625
+                ],
+                "score": 0.8583941459655762,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.47604370117188,
+                  120.34071350097656,
+                  240.02413940429688,
+                  195.5746307373047
+                ],
+                "score": 0.4643147885799408,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 1.9912385503783354,
+            "elapsed_s": 1.2521195000008447,
+            "people": [
+              {
+                "box": [
+                  863.4869384765625,
+                  667.4239501953125,
+                  1040.4796142578125,
+                  1076.6121826171875
+                ],
+                "score": 0.894418478012085,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.5296173095703,
+                  119.85250854492188,
+                  238.8472442626953,
+                  195.88720703125
+                ],
+                "score": 0.45546960830688477,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  49.280731201171875,
+                  385.51171875,
+                  245.54946899414062,
+                  782.0709228515625
+                ],
+                "score": 0.4802680015563965,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "pose:full"
+                ],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 2.190362405416169,
+            "elapsed_s": 1.1592604999968898,
+            "people": [
+              {
+                "box": [
+                  857.25537109375,
+                  673.6466064453125,
+                  1034.0419921875,
+                  1076.4864501953125
+                ],
+                "score": 0.8876453638076782,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.885986328125,
+                  119.61578369140625,
+                  259.048583984375,
+                  253.19146728515625
+                ],
+                "score": 0.45545318722724915,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  48.382049560546875,
+                  394.51885986328125,
+                  225.57984924316406,
+                  768.3936767578125
+                ],
+                "score": 0.40248891711235046,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "pose:full"
+                ],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 2.3894862604540026,
+            "elapsed_s": 1.4458306999986235,
+            "people": [
+              {
+                "box": [
+                  843.746826171875,
+                  679.802490234375,
+                  1022.45361328125,
+                  1076.3538818359375
+                ],
+                "score": 0.8542812466621399,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  180.07196044921875,
+                  119.97149658203125,
+                  239.65057373046875,
+                  197.182861328125
+                ],
+                "score": 0.5998319387435913,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": false
+              },
+              {
+                "box": [
+                  47.61725616455078,
+                  392.95953369140625,
+                  231.06504821777344,
+                  768.3890991210938
+                ],
+                "score": 0.38877564668655396,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 2.588610115491836,
+            "elapsed_s": 1.3771885999994993,
+            "people": [
+              {
+                "box": [
+                  839.9063720703125,
+                  688.1680908203125,
+                  1008.7811279296875,
+                  1076.910400390625
+                ],
+                "score": 0.859815776348114,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.92269897460938,
+                  119.10440063476562,
+                  239.34176635742188,
+                  196.3817138671875
+                ],
+                "score": 0.6189430952072144,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  49.151458740234375,
+                  393.48028564453125,
+                  233.7472686767578,
+                  772.6400756835938
+                ],
+                "score": 0.27906230092048645,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 2.7877339705296693,
+            "elapsed_s": 1.2079916000002413,
+            "people": [
+              {
+                "box": [
+                  829.992431640625,
+                  698.2880859375,
+                  1003.6513671875,
+                  1076.03564453125
+                ],
+                "score": 0.8150762915611267,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.86892700195312,
+                  119.01905822753906,
+                  239.18545532226562,
+                  196.58094787597656
+                ],
+                "score": 0.6263552308082581,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  45.59227752685547,
+                  392.1308898925781,
+                  235.92063903808594,
+                  768.9361572265625
+                ],
+                "score": 0.3489284813404083,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [],
+                "semantic_person": false
+              }
+            ]
+          }
+        ],
+        "machine_region_is_reporting_only": true,
+        "machine_samples": [
+          {
+            "at_s": 1.9912385503783354,
+            "box": [
+              49.280731201171875,
+              385.51171875,
+              245.54946899414062,
+              782.0709228515625
+            ],
+            "score": 0.4802680015563965,
+            "track_id": -1,
+            "observed": true,
+            "alert_eligible": false,
+            "tracking_state": "tentative",
+            "sources": [
+              "pose:full"
+            ],
+            "semantic_person": false
+          },
+          {
+            "at_s": 2.190362405416169,
+            "box": [
+              48.382049560546875,
+              394.51885986328125,
+              225.57984924316406,
+              768.3936767578125
+            ],
+            "score": 0.40248891711235046,
+            "track_id": -1,
+            "observed": true,
+            "alert_eligible": false,
+            "tracking_state": "tentative",
+            "sources": [
+              "pose:full"
+            ],
+            "semantic_person": false
+          },
+          {
+            "at_s": 2.3894862604540026,
+            "box": [
+              47.61725616455078,
+              392.95953369140625,
+              231.06504821777344,
+              768.3890991210938
+            ],
+            "score": 0.38877564668655396,
+            "track_id": -1,
+            "observed": true,
+            "alert_eligible": false,
+            "tracking_state": "tentative",
+            "sources": [],
+            "semantic_person": false
+          },
+          {
+            "at_s": 2.588610115491836,
+            "box": [
+              49.151458740234375,
+              393.48028564453125,
+              233.7472686767578,
+              772.6400756835938
+            ],
+            "score": 0.27906230092048645,
+            "track_id": -1,
+            "observed": true,
+            "alert_eligible": false,
+            "tracking_state": "tentative",
+            "sources": [],
+            "semantic_person": false
+          },
+          {
+            "at_s": 2.7877339705296693,
+            "box": [
+              45.59227752685547,
+              392.1308898925781,
+              235.92063903808594,
+              768.9361572265625
+            ],
+            "score": 0.3489284813404083,
+            "track_id": -1,
+            "observed": true,
+            "alert_eligible": false,
+            "tracking_state": "tentative",
+            "sources": [],
+            "semantic_person": false
+          }
+        ],
+        "machine_confirmed_count": 0,
+        "confirmed_ids": [
+          1,
+          2
+        ]
+      }
+    },
+    "candidate": {
+      "config": {
+        "camera": "Камера 01",
+        "recorded_at": null,
+        "zones": [],
+        "zone_hold": 1.0,
+        "fast_motion": false,
+        "speed_threshold": 1.25,
+        "motion_hold": 1.0,
+        "fall_detection": false,
+        "fall_hold": 1.0,
+        "lying_hold": 5.0,
+        "release_hold": 2.0,
+        "observation_gap": 0.8,
+        "sample_fps": 10,
+        "confidence": 0.4,
+        "calibration": null,
+        "speed_threshold_m_s": 2.5,
+        "body_threshold": 0.9,
+        "body_hold": 0.5,
+        "body_transition_max_s": 1.0,
+        "helmet_detection": true,
+        "vest_detection": false,
+        "signal_clothing_policy": "vest_or_reflective_uniform",
+        "mask_detection": false,
+        "harness_detection": false,
+        "phone_detection": false,
+        "fire_detection": false,
+        "smoke_detection": false,
+        "smoking_detection": false,
+        "proximity_detection": false,
+        "load_posture_detection": false,
+        "ppe_hold": 1.5,
+        "object_hold": 1.0,
+        "object_confidence": 0.5,
+        "phone_confidence": 0.3,
+        "phone_work_context_only": false,
+        "distant_people": true,
+        "smoking_min_person_height": 120,
+        "ppe_crops": true,
+        "ppe_max_people": 8,
+        "ppe_memory_s": 0.5,
+        "ppe_conflict_margin": 0.15,
+        "proximity_heights": 0.6,
+        "proximity_m": 3.0,
+        "state_confirmation_ratio": 0.75,
+        "state_min_samples": 3,
+        "state_windows": {}
+      },
+      "scenario_models_excluded": "Person comparison only; same head-pose refinement enabled, no PPE inference needed.",
+      "warmup_s": 4.110831099998904,
+      "rows": [
+        {
+          "clip": "0_te1",
+          "elapsed_s": 1.1697929999972985,
+          "overlap": {
+            "0.3": {
+              "matched": 2,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 2,
+              "small_reviewed": 4
+            },
+            "0.5": {
+              "matched": 2,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 2,
+              "small_reviewed": 4
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                1485.2734375,
+                394.68963623046875,
+                1541.3291015625,
+                530.737060546875
+              ],
+              "score": 0.8316516876220703,
+              "sources": [
+                "person:0",
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                1448.112548828125,
+                372.40911865234375,
+                1494.7586669921875,
+                481.889892578125
+              ],
+              "score": 0.8125665783882141,
+              "sources": [
+                "person:0",
+                "person:1"
+              ],
+              "semantic_person": true
+            }
+          ]
+        },
+        {
+          "clip": "1_te1",
+          "elapsed_s": 1.272702099999151,
+          "overlap": {
+            "0.3": {
+              "matched": 1,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 1,
+              "small_reviewed": 2
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 2,
+              "unmatched_predictions": 1,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 2
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                1412.47509765625,
+                322.75543212890625,
+                1435.43896484375,
+                404.75909423828125
+              ],
+              "score": 0.7039918899536133,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": false
+            }
+          ]
+        },
+        {
+          "clip": "2_te1",
+          "elapsed_s": 1.336060699999507,
+          "overlap": {
+            "0.3": {
+              "matched": 5,
+              "reviewed": 5,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 5,
+              "reviewed": 5,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                979.4351806640625,
+                597.1339111328125,
+                1143.7625732421875,
+                1028.16943359375
+              ],
+              "score": 0.8906150460243225,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                1210.758056640625,
+                686.1348876953125,
+                1376.802978515625,
+                1078.7694091796875
+              ],
+              "score": 0.8824360370635986,
+              "sources": [
+                "person:0",
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                1695.677490234375,
+                235.50303649902344,
+                1806.498291015625,
+                505.412353515625
+              ],
+              "score": 0.8732051849365234,
+              "sources": [
+                "person:0",
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                212.10874938964844,
+                730.359130859375,
+                500.6827392578125,
+                1079.11474609375
+              ],
+              "score": 0.8017264604568481,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": false
+            },
+            {
+              "box": [
+                312.85198974609375,
+                95.42251586914062,
+                361.764892578125,
+                220.7833251953125
+              ],
+              "score": 0.5431280732154846,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            }
+          ]
+        },
+        {
+          "clip": "3_te1",
+          "elapsed_s": 1.0041420000015933,
+          "overlap": {
+            "0.3": {
+              "matched": 0,
+              "reviewed": 1,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 0,
+              "reviewed": 1,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 1,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          },
+          "predictions": []
+        },
+        {
+          "clip": "4_te1",
+          "elapsed_s": 1.2857269999985874,
+          "overlap": {
+            "0.3": {
+              "matched": 2,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 2,
+              "reviewed": 2,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                866.3963623046875,
+                605.0748291015625,
+                1076.7862548828125,
+                990.18994140625
+              ],
+              "score": 0.8522186279296875,
+              "sources": [
+                "person:0",
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                177.3545684814453,
+                125.22136688232422,
+                241.46511840820312,
+                213.87164306640625
+              ],
+              "score": 0.756658136844635,
+              "sources": [
+                "person:0",
+                "person:1"
+              ],
+              "semantic_person": true
+            }
+          ]
+        },
+        {
+          "clip": "5_te1",
+          "elapsed_s": 1.3482794999981706,
+          "overlap": {
+            "0.3": {
+              "matched": 4,
+              "reviewed": 4,
+              "unmatched_predictions": 1,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 4,
+              "reviewed": 4,
+              "unmatched_predictions": 1,
+              "missed_reviewed": 0,
+              "small_matched": 1,
+              "small_reviewed": 1
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                93.19450378417969,
+                843.435302734375,
+                255.4912567138672,
+                1079.1131591796875
+              ],
+              "score": 0.8730517029762268,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                260.0068359375,
+                108.09290313720703,
+                330.9872131347656,
+                184.44813537597656
+              ],
+              "score": 0.8191908001899719,
+              "sources": [
+                "person:0"
+              ],
+              "semantic_person": false
+            },
+            {
+              "box": [
+                213.97232055664062,
+                95.72456359863281,
+                285.203369140625,
+                229.50315856933594
+              ],
+              "score": 0.5904691219329834,
+              "sources": [
+                "person:0",
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                428.42578125,
+                792.59228515625,
+                599.06787109375,
+                1077.7862548828125
+              ],
+              "score": 0.5715912580490112,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                225.5709686279297,
+                826.9871826171875,
+                365.17266845703125,
+                1080.0
+              ],
+              "score": 0.46823176741600037,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": false
+            }
+          ]
+        },
+        {
+          "clip": "6_te1",
+          "elapsed_s": 1.394519899997249,
+          "overlap": {
+            "0.3": {
+              "matched": 4,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 3,
+              "small_reviewed": 3
+            },
+            "0.5": {
+              "matched": 4,
+              "reviewed": 4,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 0,
+              "small_matched": 3,
+              "small_reviewed": 3
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                376.04119873046875,
+                85.98875427246094,
+                450.47454833984375,
+                206.69839477539062
+              ],
+              "score": 0.8158056139945984,
+              "sources": [
+                "person:0",
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                202.3293914794922,
+                95.21348571777344,
+                277.60540771484375,
+                229.61334228515625
+              ],
+              "score": 0.7577767372131348,
+              "sources": [
+                "person:0",
+                "person:1"
+              ],
+              "semantic_person": true
+            },
+            {
+              "box": [
+                397.6628723144531,
+                963.0684814453125,
+                571.1778564453125,
+                1077.5009765625
+              ],
+              "score": 0.6466189026832581,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": false
+            },
+            {
+              "box": [
+                128.521240234375,
+                818.4027099609375,
+                305.2926940917969,
+                1077.4888916015625
+              ],
+              "score": 0.47946497797966003,
+              "sources": [
+                "person:1"
+              ],
+              "semantic_person": false
+            }
+          ]
+        },
+        {
+          "clip": "7_te2",
+          "elapsed_s": 1.2021662000006472,
+          "overlap": {
+            "0.3": {
+              "matched": 1,
+              "reviewed": 3,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 1
+            },
+            "0.5": {
+              "matched": 1,
+              "reviewed": 3,
+              "unmatched_predictions": 0,
+              "missed_reviewed": 2,
+              "small_matched": 0,
+              "small_reviewed": 1
+            }
+          },
+          "predictions": [
+            {
+              "box": [
+                1530.2486572265625,
+                428.39337158203125,
+                1658.5418701171875,
+                643.72265625
+              ],
+              "score": 0.8145802617073059,
+              "sources": [
+                "person:0",
+                "person:1"
+              ],
+              "semantic_person": true
+            }
+          ]
+        }
+      ],
+      "totals": {
+        "0.3": {
+          "matched": 19,
+          "reviewed": 25,
+          "unmatched_predictions": 1,
+          "missed_reviewed": 6,
+          "small_matched": 9,
+          "small_reviewed": 14
+        },
+        "0.5": {
+          "matched": 18,
+          "reviewed": 25,
+          "unmatched_predictions": 2,
+          "missed_reviewed": 7,
+          "small_matched": 8,
+          "small_reviewed": 14
+        }
+      },
+      "median_s": 1.2792145499988692,
+      "fp_sequence": {
+        "source": "C:\\Users\\User\\Desktop\\mosprom2026\\data\\datasets\\factory-expansion\\test\\6_te9.mp4",
+        "sha256": "7434951bbc7f87ba144436863f7128e8780b14721191431aa30d7f3020ac0987",
+        "measurements": [
+          {
+            "at_s": 0.0,
+            "elapsed_s": 1.8585559999992256,
+            "people": [
+              {
+                "box": [
+                  931.1495361328125,
+                  596.400146484375,
+                  1074.0433349609375,
+                  940.4554443359375
+                ],
+                "score": 0.7901807427406311,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  177.15284729003906,
+                  114.21089172363281,
+                  247.30833435058594,
+                  220.3678436279297
+                ],
+                "score": 0.7886424660682678,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 0.19912385503783353,
+            "elapsed_s": 1.7225520000029064,
+            "people": [
+              {
+                "box": [
+                  876.1815185546875,
+                  600.4459228515625,
+                  1060.3846435546875,
+                  1021.5081787109375
+                ],
+                "score": 0.8854892253875732,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  178.0758819580078,
+                  114.9891586303711,
+                  248.96351623535156,
+                  216.12796020507812
+                ],
+                "score": 0.820540726184845,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 0.39824771007566706,
+            "elapsed_s": 1.662779500002216,
+            "people": [
+              {
+                "box": [
+                  874.848876953125,
+                  594.9852294921875,
+                  1042.16748046875,
+                  1024.5869140625
+                ],
+                "score": 0.8915082216262817,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  179.1591339111328,
+                  116.44844055175781,
+                  250.97483825683594,
+                  217.32687377929688
+                ],
+                "score": 0.8119989633560181,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 0.5973715651135006,
+            "elapsed_s": 1.6954598999982409,
+            "people": [
+              {
+                "box": [
+                  861.2407836914062,
+                  598.6958618164062,
+                  1046.079833984375,
+                  1017.6046142578125
+                ],
+                "score": 0.8928273916244507,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  178.34532165527344,
+                  115.43689727783203,
+                  244.42337036132812,
+                  213.12310791015625
+                ],
+                "score": 0.8200939297676086,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 0.7964954201513341,
+            "elapsed_s": 1.39748150000014,
+            "people": [
+              {
+                "box": [
+                  858.9173583984375,
+                  606.950439453125,
+                  1016.4708251953125,
+                  1022.6478271484375
+                ],
+                "score": 0.863025963306427,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  177.23866271972656,
+                  114.95498657226562,
+                  247.02255249023438,
+                  217.08018493652344
+                ],
+                "score": 0.7640223503112793,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 0.9956192751891677,
+            "elapsed_s": 1.4515621999998984,
+            "people": [
+              {
+                "box": [
+                  851.8897705078125,
+                  613.759033203125,
+                  1022.51513671875,
+                  1025.6300048828125
+                ],
+                "score": 0.870864987373352,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  177.7771453857422,
+                  115.48951721191406,
+                  243.43190002441406,
+                  215.99574279785156
+                ],
+                "score": 0.756415069103241,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 1.1947431302270013,
+            "elapsed_s": 1.2715497000026517,
+            "people": [
+              {
+                "box": [
+                  862.3633422851562,
+                  623.790283203125,
+                  1015.8234252929688,
+                  1030.194091796875
+                ],
+                "score": 0.8667518496513367,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  178.4798126220703,
+                  115.18734741210938,
+                  245.7466278076172,
+                  215.72731018066406
+                ],
+                "score": 0.8096935153007507,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 1.3938669852648347,
+            "elapsed_s": 1.3306325000012293,
+            "people": [
+              {
+                "box": [
+                  867.1868896484375,
+                  640.7608642578125,
+                  1028.3167724609375,
+                  1050.3349609375
+                ],
+                "score": 0.8753962516784668,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  177.92250061035156,
+                  116.65084838867188,
+                  241.48406982421875,
+                  208.90113830566406
+                ],
+                "score": 0.8223722577095032,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 1.5929908403026682,
+            "elapsed_s": 1.5653377000016917,
+            "people": [
+              {
+                "box": [
+                  866.529296875,
+                  654.12646484375,
+                  1038.0703125,
+                  1054.14453125
+                ],
+                "score": 0.8899957537651062,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  175.756591796875,
+                  115.93553924560547,
+                  243.52874755859375,
+                  211.89663696289062
+                ],
+                "score": 0.8135494589805603,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 1.7921146953405018,
+            "elapsed_s": 1.135324999999284,
+            "people": [
+              {
+                "box": [
+                  864.3814697265625,
+                  660.4588623046875,
+                  1041.1629638671875,
+                  1060.599853515625
+                ],
+                "score": 0.8583941459655762,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  177.40249633789062,
+                  116.19807434082031,
+                  252.14175415039062,
+                  225.68023681640625
+                ],
+                "score": 0.7621643543243408,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              }
+            ]
+          },
+          {
+            "at_s": 1.9912385503783354,
+            "elapsed_s": 0.8305567999996128,
+            "people": [
+              {
+                "box": [
+                  863.4869384765625,
+                  667.4239501953125,
+                  1040.4796142578125,
+                  1076.6121826171875
+                ],
+                "score": 0.894418478012085,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  177.73736572265625,
+                  114.4588623046875,
+                  243.8770751953125,
+                  218.53697204589844
+                ],
+                "score": 0.7944547533988953,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  49.280731201171875,
+                  385.51171875,
+                  245.54946899414062,
+                  782.0709228515625
+                ],
+                "score": 0.4802680015563965,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "pose:full"
+                ],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 2.190362405416169,
+            "elapsed_s": 0.45545789999960107,
+            "people": [
+              {
+                "box": [
+                  857.25537109375,
+                  673.6466064453125,
+                  1034.0419921875,
+                  1076.4864501953125
+                ],
+                "score": 0.8876453638076782,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  177.92446899414062,
+                  118.22195434570312,
+                  251.71121215820312,
+                  225.06234741210938
+                ],
+                "score": 0.7212144732475281,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  48.382049560546875,
+                  394.51885986328125,
+                  225.57984924316406,
+                  768.3936767578125
+                ],
+                "score": 0.40248891711235046,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [
+                  "pose:full"
+                ],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 2.3894862604540026,
+            "elapsed_s": 0.5684557000022323,
+            "people": [
+              {
+                "box": [
+                  843.746826171875,
+                  679.802490234375,
+                  1022.45361328125,
+                  1076.3538818359375
+                ],
+                "score": 0.8542812466621399,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  178.23675537109375,
+                  117.25350952148438,
+                  247.27134704589844,
+                  219.94972229003906
+                ],
+                "score": 0.7570794820785522,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  47.61725616455078,
+                  392.95953369140625,
+                  231.06504821777344,
+                  768.3890991210938
+                ],
+                "score": 0.38877564668655396,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 2.588610115491836,
+            "elapsed_s": 1.2822789000019839,
+            "people": [
+              {
+                "box": [
+                  839.9063720703125,
+                  688.1680908203125,
+                  1008.7811279296875,
+                  1076.910400390625
+                ],
+                "score": 0.859815776348114,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  177.78753662109375,
+                  114.87183380126953,
+                  249.70220947265625,
+                  220.95745849609375
+                ],
+                "score": 0.73899906873703,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  49.151458740234375,
+                  393.48028564453125,
+                  233.7472686767578,
+                  772.6400756835938
+                ],
+                "score": 0.27906230092048645,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [],
+                "semantic_person": false
+              }
+            ]
+          },
+          {
+            "at_s": 2.7877339705296693,
+            "elapsed_s": 0.9895795000011276,
+            "people": [
+              {
+                "box": [
+                  829.992431640625,
+                  698.2880859375,
+                  1003.6513671875,
+                  1076.03564453125
+                ],
+                "score": 0.8150762915611267,
+                "track_id": 1,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  177.4080352783203,
+                  113.60212707519531,
+                  254.23507690429688,
+                  224.08868408203125
+                ],
+                "score": 0.7326062321662903,
+                "track_id": 2,
+                "observed": true,
+                "alert_eligible": true,
+                "tracking_state": "confirmed",
+                "sources": [
+                  "person:0",
+                  "person:1"
+                ],
+                "semantic_person": true
+              },
+              {
+                "box": [
+                  45.59227752685547,
+                  392.1308898925781,
+                  235.92063903808594,
+                  768.9361572265625
+                ],
+                "score": 0.3489284813404083,
+                "track_id": -1,
+                "observed": true,
+                "alert_eligible": false,
+                "tracking_state": "tentative",
+                "sources": [],
+                "semantic_person": false
+              }
+            ]
+          }
+        ],
+        "machine_region_is_reporting_only": true,
+        "machine_samples": [
+          {
+            "at_s": 1.9912385503783354,
+            "box": [
+              49.280731201171875,
+              385.51171875,
+              245.54946899414062,
+              782.0709228515625
+            ],
+            "score": 0.4802680015563965,
+            "track_id": -1,
+            "observed": true,
+            "alert_eligible": false,
+            "tracking_state": "tentative",
+            "sources": [
+              "pose:full"
+            ],
+            "semantic_person": false
+          },
+          {
+            "at_s": 2.190362405416169,
+            "box": [
+              48.382049560546875,
+              394.51885986328125,
+              225.57984924316406,
+              768.3936767578125
+            ],
+            "score": 0.40248891711235046,
+            "track_id": -1,
+            "observed": true,
+            "alert_eligible": false,
+            "tracking_state": "tentative",
+            "sources": [
+              "pose:full"
+            ],
+            "semantic_person": false
+          },
+          {
+            "at_s": 2.3894862604540026,
+            "box": [
+              47.61725616455078,
+              392.95953369140625,
+              231.06504821777344,
+              768.3890991210938
+            ],
+            "score": 0.38877564668655396,
+            "track_id": -1,
+            "observed": true,
+            "alert_eligible": false,
+            "tracking_state": "tentative",
+            "sources": [],
+            "semantic_person": false
+          },
+          {
+            "at_s": 2.588610115491836,
+            "box": [
+              49.151458740234375,
+              393.48028564453125,
+              233.7472686767578,
+              772.6400756835938
+            ],
+            "score": 0.27906230092048645,
+            "track_id": -1,
+            "observed": true,
+            "alert_eligible": false,
+            "tracking_state": "tentative",
+            "sources": [],
+            "semantic_person": false
+          },
+          {
+            "at_s": 2.7877339705296693,
+            "box": [
+              45.59227752685547,
+              392.1308898925781,
+              235.92063903808594,
+              768.9361572265625
+            ],
+            "score": 0.3489284813404083,
+            "track_id": -1,
+            "observed": true,
+            "alert_eligible": false,
+            "tracking_state": "tentative",
+            "sources": [],
+            "semantic_person": false
+          }
+        ],
+        "machine_confirmed_count": 0,
+        "confirmed_ids": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  "heldout_protocol": {
+    "images": 610,
+    "manifest_sha256": "81a1ef168bed20e72707238aada0206c2f6befdd396cdcdcc3522d427863ca67",
+    "split": "test",
+    "classes": [
+      0
+    ],
+    "imgsz": 640,
+    "batch": 8,
+    "workers": 0,
+    "ap_confidence_floor": 0.001,
+    "ap_note": "Standard YOLO AP integrates confidence >=.001; reported precision/recall are library operating-point summaries, not fixed-conf .4. Factory comparisons use fixed .4."
+  },
+  "decision_gate": {
+    "heldout_ap_non_regression": true,
+    "factory_drop_at_most_one": true,
+    "no_confirmed_machine_on_fixed_sequence": true
+  },
+  "test_evaluated": true,
+  "timing_interpretation": {
+    "design": "Sequential model runs, same GPU; not an alternating latency experiment. Other CPU audit/tests and low available RAM were observed.",
+    "production_reviewed_median_s": {
+      "baseline": 0.369678400002158,
+      "candidate": 1.2792145499988692
+    },
+    "conclusion": "Candidate sequential wall time is higher; no live speed improvement or causal model slowdown is established. Validate live latency after deployment; AP gain alone is not an FPS claim."
+  },
+  "qualitative_extra_prediction": {
+    "clip": "5_te1",
+    "frame": 87,
+    "candidate_box": [
+      260.0068359375,
+      108.09290313720703,
+      330.9872131347656,
+      184.44813537597656
+    ],
+    "score": 0.8191908001899719,
+    "sources": [
+      "person:0"
+    ],
+    "semantic_person": false,
+    "visual_observation": "Raw magnified crop shows a second worker (head and upper body) to the right of the coarse-reviewed worker behind the machine guard. This appears to be an omitted visible person, not a machine-shaped hallucination.",
+    "overlay": "data/cache/targeted-training/person-candidate-extra-5_te1.jpg",
+    "raw_crop": "data/cache/targeted-training/person-candidate-extra-5_te1-crop.jpg",
+    "policy": "No ground-truth boxes or matching metrics were changed. Single-frame output does not establish temporal confirmation; semantic flag is false and ID remains protected by PersonConfirmation."
+  },
+  "reproduction": {
+    "script": "scripts/compare_targeted_person.py",
+    "arguments": [
+      "--baseline",
+      "<original baseline backup .pt>",
+      "--candidate",
+      "C:\\Users\\User\\Desktop\\mosprom2026\\data\\cache\\targeted-completed-20261025\\person\\person\\person\\weights\\best.pt",
+      "--stock",
+      "C:\\Users\\User\\Desktop\\mosprom2026\\data\\models\\yolo12m.pt",
+      "--output",
+      "<new report path>"
+    ],
+    "baseline_sha256": "014bba5070722b4a95c6fbb5658707c0ac00ef2dd0499a10d50cd63ec5ddce32",
+    "resume_policy": "--resume refuses changed model paths or hashes; use original paths or run a fresh output after moving backups."
+  }
+}

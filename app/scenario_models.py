@@ -182,23 +182,36 @@ class CropClassifier:
         self.std=np.asarray(json.loads(meta['rgb_std']),np.float32)[None,:,None,None]
         inp=self.session.get_inputs()[0];self.input_name=inp.name;self.size=int(inp.shape[-1])
         self.threshold=max(.8,float(meta.get('abstain_threshold','.8')))
-        if meta.get('crop_policy')!='proposal_context_1.3':
+        self.crop_policy=meta.get('crop_policy')
+        self.clothing=self.crop_policy=='person_body_context_1.05'
+        self.class_thresholds=json.loads(meta.get('class_thresholds','[]'))
+        if self.clothing and (region!='torso' or self.labels!=['hi_vis','ordinary','unobservable'] or meta.get('policy')!='vest_or_reflective_uniform'):
+            raise ValueError('Unexpected signal-clothing policy or class order')
+        if self.crop_policy not in {'proposal_context_1.3','person_body_context_1.05'}:
             raise ValueError('PPE classifier must declare its training crop policy')
         if meta.get('resize_algorithm','pil_bilinear')!='pil_bilinear':
             raise ValueError('Unsupported PPE classifier resize algorithm')
-        if set(self.labels)-{'hardhat','no_hardhat','vest','no_vest','unknown'}:
+        if not self.clothing and set(self.labels)-{'hardhat','no_hardhat','vest','no_vest','unknown'}:
             raise ValueError('Unsupported PPE classifier classes')
+        if self.clothing and (len(self.class_thresholds)!=3 or any(not np.isfinite(t) or not .8<=t<=1.01 for t in self.class_thresholds)):
+            raise ValueError('Signal-clothing class thresholds are missing or invalid')
 
     def predict(self,frame,person,proposals=()):
         # Training uses annotated PPE boxes with 30% context, not arbitrary
         # person-derived regions. Reproduce that geometry on detector proposals.
         labels={'hardhat','helmet','no_hardhat','no_helmet','head_proposal'} if self.region=='head' else {'vest','safety_vest','no_vest','no_safety_vest','torso_proposal'}
         candidates=[o for o in proposals if o.label in labels]
-        if not candidates:return None
-        proposal=max(candidates,key=lambda o:o.confidence)
-        a,b,c,d=proposal.box;bw,bh=c-a,d-b;h,w=frame.shape[:2]
-        x1,y1=max(0,int(a-bw*.15)),max(0,int(b-bh*.15))
-        x2,y2=min(w,int(c+bw*.15)),min(h,int(d+bh*.15))
+        if getattr(self,'clothing',False):
+            a,b,c,d=person.box;context=.025
+        else:
+            if not candidates:return None
+            proposal=max(candidates,key=lambda o:o.confidence)
+            a,b,c,d=proposal.box;context=.15
+        bw,bh=c-a,d-b;h,w=frame.shape[:2]
+        x1,y1=max(0,int(a-bw*context)),max(0,int(b-bh*context))
+        if getattr(self,'clothing',False):
+            x2,y2=min(w,int(np.ceil(c+bw*context))),min(h,int(np.ceil(d+bh*context)))
+        else:x2,y2=min(w,int(c+bw*context)),min(h,int(d+bh*context))
         if min(x2-x1,y2-y1)<20:return None
         from PIL import Image
         crop=np.asarray(Image.fromarray(frame[y1:y2,x1:x2,::-1]).resize(
@@ -209,7 +222,10 @@ class CropClassifier:
         logits=np.asarray(output)[0]
         values=np.exp(logits-logits.max());scores=values/values.sum();index=int(scores.argmax())
         label=self.labels[index]
-        if scores[index]<self.threshold or label=='unknown':return None
+        if getattr(self,'clothing',False):
+            if label=='unobservable' or scores[index]<self.class_thresholds[index]:return None
+            label={'hi_vis':'hi_vis_clothing','ordinary':'no_hi_vis_clothing'}[label]
+        elif scores[index]<self.threshold or label=='unknown':return None
         return Observation((x1,y1,x2,y2),float(scores[index]),label,self.name,tuple(person.box),self.region)
 
 
@@ -253,9 +269,10 @@ class ScenarioModels:
                                  else config.object_confidence) for name in required_models(config)]
         if config.fire_detection and (folder/'fire-dfire.onnx').exists():
             self.models.append(OnnxDetector(folder/'fire-dfire.onnx',config.object_confidence))
+        signal_model=folder/'signal-clothing.onnx'
         self.classifiers=[CropClassifier(folder/name,region) for name,region,enabled in [
             ('ppe-head-classifier.onnx','head',config.helmet_detection),
-            ('ppe-torso-classifier.onnx','torso',config.vest_detection)] if enabled and (folder/name).exists()]
+            ('signal-clothing.onnx' if signal_model.exists() and config.signal_clothing_policy=='vest_or_reflective_uniform' else 'ppe-torso-classifier.onnx','torso',config.vest_detection)] if enabled and (folder/name).exists()]
         for name,enabled in [('ppe-head.onnx',config.helmet_detection),('ppe-vest.onnx',config.vest_detection)]:
             # Low-score proposals may be independently verified by the crop
             # classifier. They cannot become violations on detector score alone.
@@ -337,7 +354,7 @@ class ScenarioModels:
             for person in sorted(indexed_people,key=lambda p:p.height)[:self.max_people]:
                 proposals=[o for o in result if person_for(o,indexed_people,'head' if classifier.region=='head' else 'body')==person.track_id]
                 observation=classifier.predict(frame,person,proposals)
-                if observation is None:
+                if observation is None and not getattr(classifier,'clothing',False):
                     proposal_fn=pose_head_proposal if classifier.region=='head' else pose_torso_proposal
                     proposal=proposal_fn(person,frame.shape[1],frame.shape[0])
                     if proposal:

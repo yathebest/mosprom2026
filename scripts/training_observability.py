@@ -47,7 +47,7 @@ class Progress:
             if stage is not None:self.payload['stage']=stage
             self.payload.update(fields);self.work_at=time.monotonic()
             if changed or force or self.work_at-self.written>=2:self._write()
-            if changed:print('PHONE_HEAD_STAGE',self.payload['stage'],json.dumps(fields),flush=True)
+            if changed:print('TRAINING_STAGE',self.payload['stage'],json.dumps(fields),flush=True)
     def _heartbeat(self):
         while not self.stop.wait(self.interval):
             with self.lock:self._write()

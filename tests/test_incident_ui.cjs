@@ -3,6 +3,24 @@ const assert=require('node:assert/strict');
 const ui=require('../app/static/incident-ui.js');
 const i18n=require('../app/static/i18n.js');require('../app/static/i18n-extra.js');
 const open={id:'one',start_s:10,clip_end_s:17,payload:{episode_id:'ep1',episode_state:'open',end_s:null,observed_until_s:82}};
+test('ID7 broader clothing policy remains unknown when only legacy missing-vest evidence exists',()=>{
+ const assessment={track_id:7,tracking:'measured',ppe:{vest:{state:'unknown',observed_state:'unknown',confirmed_state:'unknown',fresh:true,observed_at_s:3,reason:'signal_clothing_policy_unverified',policy:'vest_or_reflective_uniform'}}};
+ const states={7:{no_vest:{state:'unknown',observed_state:'unknown',observation_fresh:false,observed_at_s:3,last_sample_s:3}}};
+ const view=ui.stateView(states,[assessment],{now:3});const pattern=view.rows[0].patterns[0];
+ assert.equal(pattern.assessment.reason,'signal_clothing_policy_unverified');assert.equal(pattern.assessment.policy,'vest_or_reflective_uniform');
+ assert.equal(pattern.state,'unknown');assert.equal(pattern.historyState,'unknown');assert.equal(view.violations,0);
+ const html=ui.statesMarkup(states,[assessment],{now:3,labels:{no_vest:'Сигнальная одежда'},expandedKeys:new Set(['group:history'])});
+ assert.match(html,/Человек #7/);assert.match(html,/Нужна проверка отражающей формы/);assert.match(html,/Нет подтверждённого состояния/);
+ assert.doesNotMatch(html,/Сигнальная одежда отсутствует|Жилет отсутствует|Жилет обнаружен|ordinary|confirmed-violation|confirmed-clear/);
+});
+test('confirmed compliant reflective workwear is labelled signal clothing, not a separate vest',()=>{
+ const states={7:{no_vest:{state:'clear',observed_state:'clear',observation_fresh:true,confirmed_at_s:2,observed_at_s:3,last_sample_s:3}}};
+ const rows=[{track_id:7,tracking:'measured',ppe:{vest:{state:'worn',observed_state:'worn',confirmed_state:'worn',confirmed_at_s:2,fresh:true,observed_at_s:3,reason:'measured',policy:'vest_or_reflective_uniform'}}}];
+ const html=ui.statesMarkup(states,rows,{now:3,labels:{no_vest:'Сигнальная одежда'}});
+ assert.match(html,/Сигнальная одежда обнаружена/);assert.doesNotMatch(html,/Жилет обнаружен|Жилет отсутствует/);
+ // An explicitly stricter legacy vest-only requirement keeps its precise name.
+ rows[0].ppe.vest.policy='vest_only';assert.match(ui.statesMarkup(states,rows,{now:3}),/Жилет обнаружен/);
+});
 test('excerpt bounds and last observation never imply an episode end',()=>{
  for(const state of ['open','interrupted','unknown']){
   const event={...open,payload:{...open.payload,episode_state:state}};

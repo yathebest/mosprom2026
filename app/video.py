@@ -88,9 +88,10 @@ def draw(frame, people, details, config, now, scene_state=None, scene_alerts=())
         if not p.alert_eligible:color=(190,160,80)
         x1,y1,x2,y2 = map(int,p.box)
         cv2.rectangle(output,(x1,y1),(x2,y2),color,2)
-        label = f"#{p.track_id} {d.get('speed',0):.2f} h/s {d.get('posture','')} {d.get('tracking','')}"
+        identity=f'#{p.track_id}' if p.track_id>0 else 'CANDIDATE - VERIFYING PERSON'
+        label = f"{identity} {d.get('speed',0):.2f} h/s {d.get('posture','')} {d.get('tracking','')}" if p.track_id>0 else identity
         cv2.putText(output,label,(max(0,x1),max(20,y1-8)),cv2.FONT_HERSHEY_SIMPLEX,.5,color,1,cv2.LINE_AA)
-        if p.keypoints is not None:
+        if p.keypoints is not None and p.track_id>0:
             for x,y,c in p.keypoints:
                 if c>=.4:
                     cv2.circle(output,(int(x),int(y)),3,color,-1)
@@ -181,7 +182,7 @@ def run(job_id: str, config: RunConfig, cancel: threading.Event):
                 gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
                 brightness.append(float(gray.mean()));sharpness.append(float(cv2.Laplacian(gray,cv2.CV_64F).var()))
             for person in people:
-                if not person.observed:continue
+                if not person.observed or person.track_id<=0:continue
                 x,y=person.foot
                 density[min(17,max(0,int(y/h*18))),min(31,max(0,int(x/w*32)))]+=1
             events,details = rules.step(people,now,w,h,getattr(backend,"scene_state",None))

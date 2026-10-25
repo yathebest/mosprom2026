@@ -1,6 +1,8 @@
 """Only this boundary changes when porting inference from PyTorch to LinQ."""
 import importlib
 import os
+from collections import deque
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Protocol
@@ -65,6 +67,13 @@ class Backend(Protocol):
     def predict(self, bgr: np.ndarray) -> list[Person]: ...
 
 
+def validate_person_class(model):
+    names=getattr(model,'names',{})
+    label=names.get(0,names.get('0')) if isinstance(names,dict) else names[0] if names else None
+    if not isinstance(label,str) or label.casefold()!='person':
+        raise ValueError('Person weights must declare class 0 = person. Phone/head proposal weights are not person detectors.')
+
+
 class YoloBackend:
     def _model_predict(self,model,*args,**kwargs):
         from .scenario_models import accelerator_lane
@@ -102,6 +111,7 @@ class YoloBackend:
         stock_path=model.parent/'yolo12m.pt'
         if people_path.name=='person-yolo12m.pt' and stock_path.exists():
             self.person_models.append(YOLO(str(stock_path),task='detect'))
+        for detector in self.person_models:validate_person_class(detector)
         if self.person_model:
             self.name+=' + '+people_path.name
         if len(self.person_models)>1:self.name+=' + COCO person ensemble'
@@ -179,29 +189,32 @@ class YoloBackend:
                 points = keypoints[i].copy() if keypoints is not None else None
                 if points is not None:
                     points[:,:2] = inverse_rotation(points[:,:2],k,w,h)
-                candidates.append(Person(box,float(b[4]),points))
+                candidates.append(Person(box,float(b[4]),points,detection_sources=('pose:full',) if b[4]>=self.confidence else ()))
         candidates=suppress_duplicates(candidates)
         if self.person_model:
             from .scenario_models import iou
             strong=[]
-            for detector in self.person_models:
+            for detector_index,detector in enumerate(self.person_models):
                 size=max(self.imgsz,960) if self.distant_people and w>=1600 and detector is self.person_models[-1] else self.imgsz
                 detected=self._model_predict(detector,bgr,classes=[0],conf=.1,imgsz=size,
                                           device=self.device,verbose=False)[0]
                 for row in detected.boxes.data.cpu().numpy():
                     box=tuple(map(float,row[:4]));matches=[p for p in candidates if iou(p.box,box)>.3]
                     pose=max(matches,key=lambda p:iou(p.box,box)).keypoints if matches else None
-                    strong.append(Person(box,float(row[4]),pose))
+                    strong.append(Person(box,float(row[4]),pose,detection_sources=(f'person:{detector_index}',) if row[4]>=self.confidence else ()))
             candidates=suppress_duplicates(strong+[p for p in candidates if not any(iou(p.box,s.box)>.3 for s in strong)])
             if self.distant_people and w>=1600:
                 ordinary=self._model_predict(self.person_models[-1],bgr,classes=[0],conf=max(.4,self.confidence),
                     imgsz=self.imgsz,device=self.device,verbose=False)[0]
                 for row in ordinary.boxes.data.cpu().numpy():
                     box=tuple(map(float,row[:4]))
+                    for prior in candidates:
+                        if prior.confidence>=self.confidence and iou(prior.box,box)>.45:
+                            prior.detection_sources=tuple(sorted(set(prior.detection_sources)|{f'person:{len(self.person_models)-1}'}))
                     if any(p.confidence>=self.confidence and iou(p.box,box)>.3 for p in candidates):continue
                     matches=[p for p in candidates if p.keypoints is not None and iou(p.box,box)>.3]
                     pose=max(matches,key=lambda p:iou(p.box,box)).keypoints if matches else None
-                    candidates.append(Person(box,float(row[4]),pose))
+                    candidates.append(Person(box,float(row[4]),pose,detection_sources=(f'person:{len(self.person_models)-1}',)))
                 # Native-pixel overlapping tiles supplement the ordinary pass.
                 # Replacing 640 with 960 alone regressed two reviewed workers;
                 # preserve strong original boxes and add only new/weak people.
@@ -232,10 +245,13 @@ class YoloBackend:
                         if (x>0 and a<6) or (y>0 and b<6) or (x+cw<w and c>cw-6) or (y+ch<h and d>ch-6):continue
                         box=(a+x,b+y,c+x,d+y)
                         if d-b<48 or d-b>h*.4:continue
+                        for prior in candidates:
+                            if prior.confidence>=self.confidence and iou(prior.box,box)>.45:
+                                prior.detection_sources=tuple(sorted(set(prior.detection_sources)|{f'person:{len(self.person_models)-1}'}))
                         if any(p.confidence>=self.confidence and iou(p.box,box)>.3 for p in candidates):continue
                         matches=[p for p in candidates if p.keypoints is not None and iou(p.box,box)>.3]
                         pose=max(matches,key=lambda p:iou(p.box,box)).keypoints if matches else None
-                        candidates.append(Person(box,float(row[4]),pose))
+                        candidates.append(Person(box,float(row[4]),pose,detection_sources=(f'person:{len(self.person_models)-1}',)))
                 candidates=suppress_duplicates(candidates)
         if self.reflections:
             from .scenarios import contains
@@ -307,6 +323,7 @@ def suppress_duplicates(people,threshold=.45):
             inter=np.maximum(0,np.minimum(a[2:],b[2:])-np.maximum(a[:2],b[:2])).prod()
             union=np.maximum(0,a[2:]-a[:2]).prod()+np.maximum(0,b[2:]-b[:2]).prod()-inter
             if inter/max(union,1e-9)>threshold:
+                other.detection_sources=tuple(sorted(set(other.detection_sources)|set(p.detection_sources)))
                 duplicate=True
                 break
         if not duplicate:
@@ -349,7 +366,7 @@ class StableTracks:
             raw=p.track_id;canonical=self.mapping.get(raw)
             if (canonical in self.recent and canonical not in occupied
                     and now-self.recent[canonical][0] <= self.max_gap
-                    and (now-self.recent[canonical][0]<=1.2 or box_iou(p.box,self.recent[canonical][1])>=.6)):
+                    and box_iou(p.box,self.recent[canonical][1])>=(.15 if now-self.recent[canonical][0]<=1.2 else .6)):
                 p.track_id=canonical;occupied.add(canonical)
             else:
                 pending.append((raw,p))
@@ -365,18 +382,60 @@ class StableTracks:
                 iou=inter/max(aa+bb-inter,1e-9)
                 if iou>=(.6 if now-last>1.2 else .3) and .3<aa/max(bb,1)<3:
                     matches.append((iou,canonical))
-            if matches:
-                canonical=max(matches)[1]
+            matches.sort(reverse=True)
+            if matches and (len(matches)==1 or matches[0][0]-matches[1][0]>=.12):
+                canonical=matches[0][1]
             else:
                 canonical=self.next_id;self.next_id+=1
             self.mapping[raw]=canonical;p.track_id=canonical;occupied.add(canonical)
         for p in people:
+            if not p.observed:continue
             self.recent[p.track_id]=(now,p.box)
         for canonical,(last,_) in list(self.recent.items()):
             if now-last>15:
                 del self.recent[canonical]
         self.mapping={k:v for k,v in self.mapping.items() if v in self.recent}
         return people
+
+
+def semantic_person_evidence(person):
+    """Corroboration is by model weights, never repeated scales of one model.
+
+    A machine can hallucinate a complete body skeleton. Require visible facial
+    landmarks as well, or agreement of the two distinct person detectors.
+    Ambiguous backs/occlusions remain candidates rather than asserted people.
+    """
+    sources={source for source in person.detection_sources if source.startswith('person:')}
+    if len(sources)>=2:return True
+    points=person.keypoints
+    if points is None or np.shape(points)!=(17,3) or not np.isfinite(points).all():return False
+    face=points[:5][points[:5,2]>=.55]
+    torso=points[[5,6,11,12]];torso=torso[torso[:,2]>=.5]
+    if len(face)<2 or len(torso)<2:return False
+    a,b,c,d=person.box;pad=person.height*.12
+    useful=np.vstack([face,torso])
+    if not np.all((useful[:,0]>=a-pad)&(useful[:,0]<=c+pad)&(useful[:,1]>=b-pad)&(useful[:,1]<=d+pad)):return False
+    return np.linalg.norm(face[:,:2].mean(0)-torso[:,:2].mean(0))>=person.height*.06
+
+
+class PersonConfirmation:
+    """Three independent fresh measurements before publishing an identity."""
+    def __init__(self,confidence,max_gap):self.confidence=confidence;self.max_gap=max_gap;self.states={}
+    def update(self,person,now):
+        from .scenario_models import iou
+        if not np.isfinite(now):return False
+        self.states={tid:row for tid,row in self.states.items() if now-(row['last'] if row['last'] is not None else row['created'])<=15}
+        state=self.states.setdefault(person.track_id,{'created':now,'last':None,'box':None,'votes':deque(maxlen=3),'confirmed':False})
+        if not person.observed or person.confidence<self.confidence:
+            if not state['confirmed']:state['votes'].clear()
+            return state['confirmed']
+        if state['last'] is not None and now<=state['last']:return state['confirmed']
+        if state['last'] is not None and (now-state['last']>self.max_gap or iou(person.box,state['box'])<.15):
+            state['votes'].clear();state['confirmed']=False
+        state['last']=now;state['box']=tuple(person.box)
+        state['votes'].append(semantic_person_evidence(person))
+        if len(state['votes'])>=3 and sum(state['votes'])>=2:state['confirmed']=True
+        return state['confirmed']
 
 
 class PeopleTracker:
@@ -391,6 +450,7 @@ class PeopleTracker:
         # existing IDs; the separate alert threshold remains unchanged.
         self.confidence = confidence
         self.stable=StableTracks(fps,max_gap)
+        self.confirmation=PersonConfirmation(confidence,max_gap)
         self.fps=fps;self.frame=0;self.recent={}
 
     def update(self, people, shape, now=None):
@@ -407,16 +467,23 @@ class PeopleTracker:
             p = people[index]
             # ByteTrack already associates these with a confirmed track. Keep the
             # measured box visible; alert rules use the separate eligibility flag.
-            p.alert_eligible=p.confidence >= self.confidence
+            p.alert_eligible=False
             p.track_id = int(row[4])
             output.append(p)
         output=self.stable.update(output,now)
-        visible={p.track_id for p in output}
+        confirmed_output=[];visible=set()
         for p in output:
-            self.recent[p.track_id]=(now,tuple(p.box),p.confidence)
+            confirmed=self.confirmation.update(p,now)
+            if confirmed:
+                p.alert_eligible=p.observed and p.confidence>=self.confidence
+                p.tracking_state='confirmed' if p.observed else 'predicted'
+                visible.add(p.track_id)
+                if p.observed:self.recent[p.track_id]=(now,tuple(p.box),p.confidence)
+                confirmed_output.append(p)
+            else:confirmed_output.append(replace(p,track_id=-1,alert_eligible=False,tracking_state='tentative'))
         for tid,(last,box,score) in list(self.recent.items()):
             if now-last > .5:
                 del self.recent[tid]
             elif tid not in visible:
-                output.append(Person(box,score,track_id=tid,observed=False,alert_eligible=False))
-        return output
+                confirmed_output.append(Person(box,score,track_id=tid,observed=False,alert_eligible=False,tracking_state='predicted'))
+        return confirmed_output

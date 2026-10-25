@@ -1,0 +1,21 @@
+{
+  "file": "linq-person-training-input.zip",
+  "bytes": 454525619,
+  "sha256": "6aff11395b3707b6e346346b37c52636a1a58baa900571c933cd70a1e03aed9e",
+  "summary": {
+    "images": {
+      "train": 4472,
+      "val": 674,
+      "test": 610
+    },
+    "sources": {
+      "construction": 1849,
+      "site_safety": 3845,
+      "factory_assistant_review": 6,
+      "factory_reviewed_negative": 56
+    },
+    "derived_train_views": 1556,
+    "existing_prepared_source_splits_preserved": true,
+    "warning": "Added factory examples are assistant-reviewed training material, not a factory benchmark. Far-view/negative variants do not count as independent source images."
+  }
+}
