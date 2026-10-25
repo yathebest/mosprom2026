@@ -160,17 +160,16 @@
   },
   {
     "file": "phone-objects.onnx",
-    "sha256": "0ec03ce790d47ff514880fb94b1116b029f64cb0b4a7735e5253085d368c09df",
-    "bytes": 44842716,
-    "source": null,
+    "sha256": "00b345f1432c17cbe0547b63f970acb5b7248b9783a12ebc2a2d9771d6c55f45",
+    "bytes": 80964900,
+    "source": "Locally trained FPI-Det phone/head candidate; evaluation report in docs",
     "conversion": {
       "file": "phone-objects.onnx",
-      "source_checkpoint": "phone-coco-source.pt",
-      "source_sha256": "1f47a78bf100391c2a140b7ac73a1caae18c32779be7d310658112f7ac9aa78a",
-      "onnx_sha256": "0ec03ce790d47ff514880fb94b1116b029f64cb0b4a7735e5253085d368c09df",
-      "export": "static FP32 1x3x640x640, opset12, host NMS",
+      "source_checkpoint": "phone-head/weights/best.pt",
+      "onnx_sha256": "00b345f1432c17cbe0547b63f970acb5b7248b9783a12ebc2a2d9771d6c55f45",
+      "export": "static FP32 1x3x640x640; host original argmax/NMS",
       "classes": {
-        "0": "person",
+        "0": "head_proposal",
         "1": "bicycle",
         "2": "car",
         "3": "motorcycle",
@@ -237,7 +236,7 @@
         "64": "mouse",
         "65": "remote",
         "66": "keyboard",
-        "67": "cell phone",
+        "67": "cell_phone",
         "68": "microwave",
         "69": "oven",
         "70": "toaster",
@@ -250,13 +249,19 @@
         "77": "teddy bear",
         "78": "hair drier",
         "79": "toothbrush"
-      },
-      "weights_only_restricted_load": true,
-      "linq_compiled": false
+      }
     },
-    "quality": "not independently measured",
-    "runtime": "ONNX Runtime CPU",
-    "linq_compiled": false
+    "quality": {
+      "scope": "Frozen FPI validation object boxes, not independent factory phone-use event accuracy",
+      "confidence": 0.3,
+      "comparison": "docs\\phone-candidate-comparison-20261025.json"
+    },
+    "runtime": "ONNX Runtime CPU/CUDA selected by environment",
+    "linq_compiled": false,
+    "admitted_classes": {
+      "67": "cell_phone"
+    },
+    "ignored_classes": "All other outputs, including class 0 head_proposal, are never person proposals."
   },
   {
     "file": "ppe-safetyvision.onnx",

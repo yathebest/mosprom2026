@@ -11,6 +11,11 @@
    add(id,entry){if(entries.has(id))throw Error('Device session already attached');entries.set(id,{...entry,id});return entries.get(id)},remove,stopAll(){for(const id of Array.from(entries.keys()))remove(id)}};
  }
  function freshness(session){
+  if(['stopped','failed'].includes(session.state)){
+   const stopped=session.stopped_at&&globalThis.UiFormat?.clock?globalThis.UiFormat.clock(session.stopped_at):null;
+   return {text:(en()?(session.state==='failed'?'Last frame of unavailable stream':'Last frame of stopped stream'):(session.state==='failed'?'Последний кадр недоступного эфира':'Последний кадр остановленного эфира'))+(stopped?' · '+stopped:''),stale:false,terminal:true};
+  }
+  if(session.state==='stopping')return {text:en()?'Stream stopping · last received frame':'Эфир завершается · последний полученный кадр',stale:false,terminal:true};
   const ms=session.preview_frame_age_ms;
   if(!Number.isFinite(ms))return {text:en()?'No frame received yet':'Кадр ещё не получен',stale:true};
   return {text:ms>3000?(en()?`Frame stale · ${(ms/1000).toFixed(1)} s`:`Кадр устарел · ${(ms/1000).toFixed(1)} с`):(en()?`Frame ${(ms/1000).toFixed(1)} s ago`:`Кадр ${(ms/1000).toFixed(1)} с назад`),stale:ms>3000};
@@ -19,7 +24,7 @@
  function eventFeed(sessions,events,options={}){
   const rows=activeEvents(sessions,events).slice(0,6),format=options.time||String;
   if(!rows.length)return '<div class="empty camera-alert-empty"><b>В работающих камерах тревог пока нет</b><p>Прошлые происшествия доступны в истории событий.</p></div>';
-  return rows.map(event=>`<article class="camera-alert-row"><div><h3>${escape(options.labels?.[event.kind]||event.kind)}</h3><p data-i18n-ignore>${escape(event.camera)}</p><p class="hint">${escape(format(event.start_s))} → ${escape(format(event.alert_s))} · ${event.payload?.occurred_at?escape(options.clock?.(event.payload.occurred_at)||event.payload.occurred_at):'обработано '+escape(options.clock?.(event.created)||event.created)}</p></div><div class="camera-wall-card-actions"><button type="button" class="btn ghost small" data-alert-source="${escape(event.job_id)}">Открыть камеру</button><button type="button" class="btn ghost small" data-alert-review="${escape(event.id)}">Разобрать</button></div></article>`).join('');
+  return rows.map(event=>{const track=Number(event.track_id??event.payload?.track_id),person=Number.isSafeInteger(track)&&track>0?` · ${en()?'person':'человек'} #${track}`:'';return `<article class="camera-alert-row"><div><h3>${escape(options.labels?.[event.kind]||event.kind)}</h3><p data-i18n-ignore>${escape(event.camera)}${person}</p><p class="hint">${escape(format(event.start_s))} → ${escape(format(event.alert_s))} · ${event.payload?.occurred_at?escape(options.clock?.(event.payload.occurred_at)||event.payload.occurred_at):'обработано '+escape(options.clock?.(event.created)||event.created)}</p></div><div class="camera-wall-card-actions"><button type="button" class="btn ghost small" data-alert-source="${escape(event.job_id)}">Открыть камеру</button><button type="button" class="btn ghost small" data-alert-review="${escape(event.id)}">Разобрать</button></div></article>`}).join('');
  }
  function renderEvents(container,sessions,events,options={}){
   if(!container)return;const html=eventFeed(sessions,events,options);if(container._wallEventHTML===html)return;container._wallEventHTML=html;container.innerHTML=html;

@@ -71,7 +71,7 @@ class LiveSession:
         self.folder=db.DATA/'runs'/self.id;self.folder.mkdir(parents=True)
         (self.folder/'clips').mkdir()
         self.stop_event=threading.Event();self.frames=queue.Queue(maxsize=1)
-        self.state='starting';self.error=None;self.jpeg=None;self.version=0
+        self.state='starting';self.error=None;self.jpeg=None;self.version=0;self.stopped_at=None
         self.started=datetime.now(timezone.utc);self.first_mono=None;self.frame_origin=None
         self.last_ingest=time.monotonic();self.last_processed=None
         self.processed=0;self.dropped=0;self.elapsed=0.;self.events=0;self.pending=[]
@@ -275,7 +275,7 @@ class LiveSession:
         with self.frame_lock:
             states={tid:dict(rows) for tid,rows in self.people_states.items()}
             for tid,rows in self.scenario_states.items():states.setdefault(tid,{}).update(rows)
-        return {'id':self.id,'camera':self.config.camera,'state':self.state,'error':self.error,
+        return {'id':self.id,'camera':self.config.camera,'state':self.state,'error':self.error,'stopped_at':self.stopped_at,
                 'current_states':states,'current_states_updated_s':self.states_updated_s,
                 'effective_observation_gap_s':self.effective_observation_gap_s,
                 'effective_people_observation_gap_s':self.effective_observation_gap_s,
@@ -454,6 +454,7 @@ class LiveSession:
                 try:future.result(timeout=30)
                 except Exception:pass
             self.state='failed' if self.error else 'stopped'
+            self.stopped_at=datetime.now(timezone.utc).isoformat()
             stats=self.report();stats['backend']=getattr(self.backend,'name','unknown')
             db.update_job(self.id,status='failed' if self.error else 'completed',stats=stats,progress=1,error=self.error)
             self.backend=None;self.ring.clear()

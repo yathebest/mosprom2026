@@ -267,6 +267,9 @@ class ScenarioModels:
             if getattr(config,flag+'_detection'):self.allowed.update(labels)
         self.models=[OnnxDetector(folder/name,config.phone_confidence if name=='phone-objects.onnx'
                                  else config.object_confidence) for name in required_models(config)]
+        for model in self.models:
+            if model.name=='phone-objects' and model.names.get(67)!='cell_phone':
+                raise ValueError('Phone model must declare class 67 = cell_phone; head proposals are not people')
         if config.fire_detection and (folder/'fire-dfire.onnx').exists():
             self.models.append(OnnxDetector(folder/'fire-dfire.onnx',config.object_confidence))
         signal_model=folder/'signal-clothing.onnx'
@@ -287,7 +290,8 @@ class ScenarioModels:
         for model in self.models:
             # D-Fire supplements flames only. Its new steam/dust false positives
             # must not change the existing smoke operating point.
-            allowed={'fire'} if model.name=='fire-dfire' else self.allowed
+            allowed=({'cell_phone'} if model.name=='phone-objects' else
+                     {'fire'} if model.name=='fire-dfire' else self.allowed)
             result.extend(o for o in model.predict(frame) if o.label in allowed)
             if self.ppe_crops and model.name.startswith('ppe-'):
                 h,w=frame.shape[:2]

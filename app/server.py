@@ -73,6 +73,7 @@ def samples():
               ('adl-02','Обычное действие','Нормальная активность без тревоги падения.'),
               ('helmet-missing','Без каски · учебный','Повтор изображения Construction-PPE; проверка конвейера, не качества.'),
               ('helmet-worn','В каске · учебный','Отрицательный пример для тревоги «без каски»; повтор изображения.'),
+              ('factory-helmet-missing','Заводская камера · без каски','Настоящая запись производства, 6_te9. Демонстрация отдельного события; не оценка полноты.'),
               ('fire-demo','Огонь · учебный','Повтор кадра демонстрации автора модели; не независимый тест.')]
     return [{"id":name,"name":title,"description":description,
              "available":sample_source(name)[0].exists()}
@@ -80,6 +81,8 @@ def samples():
 
 
 def sample_source(name):
+    if name=='factory-helmet-missing':
+        return db.DATA/'datasets/factory-expansion/test/6_te9.mp4',{'fast_motion':False,'fall_detection':False,'helmet_detection':True,'vest_detection':False,'zones':[]}
     extras={
         'helmet-missing':('no_hardhat-demo.mp4',{'helmet_detection':True}),
         'helmet-worn':('hardhat-demo.mp4',{'helmet_detection':True}),
@@ -195,7 +198,7 @@ async def live_view(session_id: str,request: Request):
 
 @app.post("/api/samples/{sample_id}/import")
 def import_sample(sample_id: str):
-    if sample_id not in {'fall-01','adl-02','helmet-missing','helmet-worn','fire-demo'}:
+    if sample_id not in {'fall-01','adl-02','helmet-missing','helmet-worn','fire-demo','factory-helmet-missing'}:
         raise HTTPException(404,"Пример не найден")
     source,recommended=sample_source(sample_id)
     if not source.exists():
@@ -206,6 +209,9 @@ def import_sample(sample_id: str):
     meta['example']=True;meta['source']='URFD';meta['evaluation_split']='train'
     if recommended:
         meta.update(source='Selected upstream image repeated as video',evaluation_split='integration_only',recommended_config=recommended)
+    if sample_id=='factory-helmet-missing':
+        meta.update(source='Safe and Unsafe Behaviours / Onal and Dandil / 6_te9',evaluation_split='integration_only',
+                    source_url='https://data.mendeley.com/datasets/xjmtb22pff/1',source_license='CC BY 4.0')
     db.add_job(job_id,source.name,meta)
     return db.job(job_id)
 

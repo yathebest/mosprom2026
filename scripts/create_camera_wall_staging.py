@@ -85,5 +85,9 @@ if __name__=='__main__':
     if args.serve:
         sys.path.insert(0,str(ROOT));from app import storage as db
         db.DATA=Path(fixture['data_directory']);db.DB=Path(fixture['database'])
+        # Browser cookies are shared across ports on the same host. Keep QA
+        # sign-ins separate from the real localhost session.
+        from app import auth
+        auth.COOKIE='safety_session_qa'
         import uvicorn
         uvicorn.run('app.server:app',host='127.0.0.1',port=args.port)

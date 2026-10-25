@@ -1,4 +1,31 @@
 // Setup controls: camera preview and the always-visible zone editor.
+window.LiveLayout={
+  openSetup(options={}){
+    const drawer=$('live-setup-drawer');if(!drawer)return;
+    drawer.open=true;$('live-config-open')?.setAttribute('aria-expanded','true');
+    if(options.scroll!==false)drawer.scrollIntoView({behavior:'smooth',block:'start'});
+  },
+  closeSetup(){const drawer=$('live-setup-drawer');if(drawer)drawer.open=false;$('live-config-open')?.setAttribute('aria-expanded','false');}
+};
+$('live-config-open').onclick=()=>LiveLayout.openSetup();
+$('live-config-close').onclick=()=>{LiveLayout.closeSetup();$('live-config-open').focus()};
+$('live-setup-drawer').addEventListener('toggle',()=>{$('live-config-open').setAttribute('aria-expanded',String($('live-setup-drawer').open))});
+// Source cards and toolbars have different heights for operators and admins.
+// Size the workspace from its actual document position, rather than a fixed offset.
+function fitLiveWorkspace(){
+  const workspace=document.querySelector('#live .live-workspace');
+  if(!workspace||!workspace.getClientRects().length)return;
+  const top=workspace.getBoundingClientRect().top+window.scrollY;
+  workspace.style.setProperty('--live-workspace-height',Math.max(260,Math.min(700,window.innerHeight-top-18))+'px');
+}
+if(typeof ResizeObserver!=='undefined'){
+  const liveSizeObserver=new ResizeObserver(fitLiveWorkspace);
+  [document.querySelector('#live>.heading'),$('live-camera-wall'),document.querySelector('.live-operation-actions')].filter(Boolean).forEach(el=>liveSizeObserver.observe(el));
+}
+window.addEventListener('resize',fitLiveWorkspace);
+window.addEventListener('hashchange',fitLiveWorkspace);
+requestAnimationFrame(fitLiveWorkspace);
+let setupActiveSession=null;
 const cameraPreview=createCameraPreview({
   getMediaDevices:()=>navigator.mediaDevices,
   video:$('webcam-preview'),
@@ -35,6 +62,7 @@ $('live-disconnect').onclick=async()=>{
 const previousCameraMode=cameraMode;
 cameraMode=function(){previousCameraMode();renderCameraControls()};
 function focusLiveZones(){
+  LiveLayout.openSetup({scroll:false});
   $('live-zone-details').scrollIntoView({behavior:'smooth',block:'start'});
   $('live-zone-details').classList.add('zone-attention');
   setTimeout(()=>$('live-zone-details').classList.remove('zone-attention'),1800);
@@ -114,11 +142,14 @@ $('live-start').onclick=()=>{
 const previousLiveStatus=renderLiveStatus;
 renderLiveStatus=function(){
   previousLiveStatus();$('live').classList.toggle('live-active',liveSetupLocked());
+  const activeSession=liveSetupLocked()?L.current?.id:null;
+  if(activeSession&&activeSession!==setupActiveSession)LiveLayout.closeSetup();
+  setupActiveSession=activeSession;
   if(L.browserSession&&L.current?.id===L.browserSession&&['stopped','failed'].includes(L.current.state))stopWebcam();
   renderCameraControls();updateLiveZoneControls();
 };
 const previousLiveNewSetup=$('live-new').onclick;
-$('live-new').onclick=()=>{if(!L.browserSession)stopWebcam();previousLiveNewSetup();paintLiveZones();renderCameraControls()};
+$('live-new').onclick=()=>{if(!L.browserSession)stopWebcam();previousLiveNewSetup();paintLiveZones();renderCameraControls();if(L.drafting&&!L.current)LiveLayout.openSetup()};
 const previousLiveStop=$('live-stop').onclick;
 $('live-stop').onclick=()=>{if(L.current?.id===L.browserSession)stopWebcam();return previousLiveStop()};
 window.addEventListener('pagehide',()=>stopWebcam());

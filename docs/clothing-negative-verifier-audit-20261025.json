@@ -1,0 +1,53 @@
+{
+  "decision": "do_not_install",
+  "limitation_fixed": false,
+  "runtime_changes": false,
+  "new_events_generated": false,
+  "policy": "Reflective working uniform is compliant; legacy no_vest alone is not absence of signal clothing.",
+  "validation_existing_probe": {
+    "n": 245,
+    "ordinary_support": 24,
+    "ordinary_pose_visible": 11,
+    "gate": {
+      "shoulder_confidence_min": 0.5,
+      "one_elbow_confidence_min": 0.5,
+      "shoulder_horizontal_span_px_min": 20
+    },
+    "reported_diagnostics": [
+      {
+        "threshold": 0.6,
+        "tp": 8,
+        "fp": 0
+      },
+      {
+        "threshold": 0.8,
+        "tp": 5,
+        "fp": 0
+      },
+      {
+        "threshold": 0.9,
+        "tp": 2,
+        "fp": 0
+      }
+    ],
+    "support_minimum_for_original_gate": 10,
+    "eight_of_eight_precision_one_sided_95_lower_bound": 0.6876560219336321
+  },
+  "existing_test_fixed_point_nongated": {
+    "threshold": 0.9,
+    "tp": 9,
+    "fp": 0,
+    "ordinary_support": 22,
+    "recall": 0.4090909090909091,
+    "pose_gate_evaluated": false,
+    "legacy_corroboration_evaluated": false,
+    "threshold_selected_using_test": false,
+    "blind_independent_factory_test": false
+  },
+  "caveats": [
+    "Validation visibility used PT pose320 on prepared crops, not full deployment pipeline measurements.",
+    "The old and new classifier share transfer-learning lineage; corroboration probabilities are not independent.",
+    "No sidecar integration, no threshold reduction, no candidate installation. Unknown remains for inadequate evidence."
+  ],
+  "next_work": "Collect labelled ordinary/reflective workwear across real viewing scales, people, upper-body crop truncation and occlusion; use grouped splits and a new sealed evaluation before deployment."
+}

@@ -195,6 +195,8 @@
   'Последний кадр камеры':'Latest camera frame','Открыть камеру':'Open camera','Остановить эту камеру':'Stop this camera'
  });
  Object.assign(entries,{'Тревоги камер':'Camera alerts','История событий →':'Event history →','В работающих камерах тревог пока нет':'No alerts from running cameras yet','Прошлые происшествия доступны в истории событий.':'Past incidents are available in the event history.','Диагностика камеры':'Camera diagnostics'});
+ Object.assign(entries,{'Настройка камеры':'Camera setup','Настройка источника, зон и сценариев':'Source, zone and scenario setup','Закрыть настройки камеры':'Close camera setup','Готово ✕':'Done ✕','Состояния людей и сеансов':'Person and session states'});
+ Object.assign(entries,{'Новых уведомлений нет. События камер показаны ниже.':'No new notifications. Camera events are listed below.','Непрочитано':'Unread','Эпизод уже завершён':'Episode already closed','Прочитано':'Read','Далее':'Next'});
  if(root.LinQI18n)Object.assign(root.LinQI18n.translations,entries);
  if(typeof module!=='undefined'&&module.exports)module.exports=entries;
 })(typeof globalThis!=='undefined'?globalThis:this);
